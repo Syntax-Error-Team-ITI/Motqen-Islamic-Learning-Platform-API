@@ -1,4 +1,5 @@
-﻿using MotqenIslamicLearningPlatform_API.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using MotqenIslamicLearningPlatform_API.Models;
 
 namespace MotqenIslamicLearningPlatform_API.Repositories
 {
@@ -27,11 +28,23 @@ namespace MotqenIslamicLearningPlatform_API.Repositories
         }
         public virtual void Delete(int id)
         {
-            TEntity? t = GetById(id);
-            if (t != null)
+            TEntity? entity = GetById(id);
+            if (entity != null)
             {
-                Db.Set<TEntity>().Remove(t);
+                var prop = typeof(TEntity).GetProperty("IsDeleted");
+                if (prop != null && prop.PropertyType == typeof(bool))
+                {
+                    prop.SetValue(entity, true);
+                    Db.Entry(entity).State = EntityState.Modified;
+                }
+                else
+                {
+                    Db.Set<TEntity>().Remove(entity); 
+                }
+                
             }
         }
+
+
     }
 }
