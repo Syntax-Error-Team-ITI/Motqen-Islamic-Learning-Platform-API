@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MotqenIslamicLearningPlatform_API.Models.Shared;
 
-namespace MotqenIslamicLearningPlatform_API.Models
+namespace MotqenIslamicLearningPlatform_API.Models.TeacherModel
 {
     [PrimaryKey(nameof(TeacherId) , nameof(SubjectId))]
 

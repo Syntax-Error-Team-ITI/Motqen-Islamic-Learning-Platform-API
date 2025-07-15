@@ -1,4 +1,7 @@
-﻿namespace MotqenIslamicLearningPlatform_API.Models
+﻿using MotqenIslamicLearningPlatform_API.Models.HalaqaModel;
+using MotqenIslamicLearningPlatform_API.Models.Shared;
+
+namespace MotqenIslamicLearningPlatform_API.Models.StudentModel
 {
     public class Student : BaseEntity
     {

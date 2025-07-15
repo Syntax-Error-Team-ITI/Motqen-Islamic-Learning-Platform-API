@@ -1,4 +1,7 @@
-﻿namespace MotqenIslamicLearningPlatform_API.Models
+﻿using MotqenIslamicLearningPlatform_API.Models.Shared;
+using MotqenIslamicLearningPlatform_API.Models.HalaqaModel;
+
+namespace MotqenIslamicLearningPlatform_API.Models.StudentModel
 {
     public class ProgressTracking : BaseEntity
     {

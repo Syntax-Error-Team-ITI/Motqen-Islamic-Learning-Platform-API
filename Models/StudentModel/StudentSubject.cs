@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MotqenIslamicLearningPlatform_API.Models.Shared;
 
-namespace MotqenIslamicLearningPlatform_API.Models
+namespace MotqenIslamicLearningPlatform_API.Models.StudentModel
 {
     [PrimaryKey(nameof(StudentId), nameof(SubjectId))]
     public class StudentSubject

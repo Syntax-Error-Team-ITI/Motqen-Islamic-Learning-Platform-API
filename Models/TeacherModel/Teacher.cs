@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MotqenIslamicLearningPlatform_API.Models.HalaqaModel;
+using MotqenIslamicLearningPlatform_API.Models.Shared;
 
-namespace MotqenIslamicLearningPlatform_API.Models
+namespace MotqenIslamicLearningPlatform_API.Models.TeacherModel
 {
     public class Teacher : BaseEntity
     {

@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MotqenIslamicLearningPlatform_API.Enums;
+using MotqenIslamicLearningPlatform_API.Models.HalaqaModel;
 
-namespace MotqenIslamicLearningPlatform_API.Models
+namespace MotqenIslamicLearningPlatform_API.Models.StudentModel
 {
     [PrimaryKey(nameof(StudentId), nameof(HalaqaId))]
 

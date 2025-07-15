@@ -1,4 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MotqenIslamicLearningPlatform_API.Models.HalaqaModel;
+using MotqenIslamicLearningPlatform_API.Models.Shared;
+using MotqenIslamicLearningPlatform_API.Models.StudentModel;
+using MotqenIslamicLearningPlatform_API.Models.TeacherModel;
 
 namespace MotqenIslamicLearningPlatform_API.Models
 {

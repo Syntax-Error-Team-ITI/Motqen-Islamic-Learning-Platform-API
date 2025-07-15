@@ -1,4 +1,7 @@
-﻿namespace MotqenIslamicLearningPlatform_API.Models
+﻿using MotqenIslamicLearningPlatform_API.Models.StudentModel;
+using MotqenIslamicLearningPlatform_API.Models.TeacherModel;
+
+namespace MotqenIslamicLearningPlatform_API.Models.Shared
 {
     public class User : BaseEntity
     {

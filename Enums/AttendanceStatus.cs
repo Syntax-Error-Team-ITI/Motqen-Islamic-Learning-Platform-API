@@ -1,9 +1,9 @@
-﻿namespace MotqenIslamicLearningPlatform_API.Models
+﻿namespace MotqenIslamicLearningPlatform_API.Enums
 {
     public enum AttendanceStatus
     {
         Present,
         Absent,
-        Late
+        //Late
     }
 }
