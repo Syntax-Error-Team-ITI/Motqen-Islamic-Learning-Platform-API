@@ -9,7 +9,7 @@ namespace MotqenIslamicLearningPlatform_API.Models.TeacherModel
         public string Pic { get; set; }
         public string Gender { get; set; }
         public int Age { get; set; }
-        public string Specialization { get; set; }
+        //public string Specialization { get; set; }
         public int UserId { get; set; }
         public virtual User User { get; set; }
         public virtual IList<TeacherSubject> TeacherSubjects { get; set; } = new List<TeacherSubject>();

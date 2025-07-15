@@ -6,6 +6,7 @@ namespace MotqenIslamicLearningPlatform_API.UnitOfWorks
     public class UnitOfWork
     {
         private MotqenDbContext db;
+        private SubjectRepository subjectRepo;
         private StudentRepository studentRepo;
         private TeacherRepository teacherRepo;
         private ClassScheduleRepository classScheduleRepo;
@@ -17,9 +18,11 @@ namespace MotqenIslamicLearningPlatform_API.UnitOfWorks
         private ProgressTrackingRepository progressTrackingRepo;
         private QuranProgressTrackingRepository quranProgressTrackingRepo;
         private StudentAttendanceRepository studentAttendanceRepo;
+        private StudentSubjectRepository studentSubjectRepo;
+
         private TeacherAttendanceRepository teacherAttendanceRepo;
 
-
+        private TeacherRepository teacherRepository;
         public UnitOfWork(MotqenDbContext db)
         {
             this.db = db;
@@ -154,6 +157,40 @@ namespace MotqenIslamicLearningPlatform_API.UnitOfWorks
                     teacherAttendanceRepo = new TeacherAttendanceRepository(db);
                 }
                 return this.teacherAttendanceRepo;
+            }
+        }
+
+        public StudentSubjectRepository StudentSubjectRepo
+        {
+            get
+            {
+                if (studentSubjectRepo == null)
+                {
+                    studentSubjectRepo = new StudentSubjectRepository(db);
+                }
+                return this.studentSubjectRepo;
+            }
+        }
+        public SubjectRepository SubjectRepo
+        {
+            get
+            {
+                if (subjectRepo == null)
+                {
+                    subjectRepo = new SubjectRepository(db);
+                }
+                return this.subjectRepo;
+            }
+        }
+        public TeacherRepository TeacherRepository
+        {
+            get
+            {
+                if (teacherRepository == null)
+                {
+                    teacherRepository = new TeacherRepository(db);
+                }
+                return this.teacherRepository;
             }
         }
 
