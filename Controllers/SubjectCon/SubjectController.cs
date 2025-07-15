@@ -87,7 +87,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.SubjectCon
             Unit.Save();
             return NoContent();
         }
-        [HttpPut("restore/{id :int}")]
+        [HttpPut("restore/{id:int}")]
         public IActionResult Restore(int id)
         {
             var subject = Unit.SubjectRepo.GetById(id);

@@ -17,7 +17,7 @@ namespace MotqenIslamicLearningPlatform_API.Models
         public DbSet<Teacher> Teachers { get; set; }
         public DbSet<Parent> Parents { get; set; }
         public DbSet<ClassSchedule> ClassSchedules { get; set; }
-        public HalaqaStudent HalaqaStudent { get; set; }
+        public DbSet<HalaqaStudent> HalaqaStudent { get; set; }
         public DbSet<HalaqaTeacher> HalaqaTeacher { get; set; }
         public DbSet<StudentAttendance> StudentAttendances { get; set; }
         public DbSet<TeacherAttendance> TeacherAttendances { get; set; }

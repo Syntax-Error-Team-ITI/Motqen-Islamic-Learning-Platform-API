@@ -9,7 +9,7 @@ namespace MotqenIslamicLearningPlatform_API.Models.HalaqaModel
     {
         public int HalaqaId { get; set; }
         public int StudentId { get; set; }
-        public DateTime DateJoined { get; set; }
+        public DateTime DateJoined { get; set; } = DateTime.UtcNow;
         public virtual Halaqa Halaqa { get; set; }
         public virtual Student Student { get; set; }
     }

@@ -49,7 +49,7 @@ namespace MotqenIslamicLearningPlatform_API.Migrations
 
                     b.HasIndex("HalaqaId");
 
-                    b.ToTable("ClassSchedules");
+                    b.ToTable("ClassSchedules", (string)null);
                 });
 
             modelBuilder.Entity("MotqenIslamicLearningPlatform_API.Models.HalaqaModel.Halaqa", b =>
@@ -86,7 +86,7 @@ namespace MotqenIslamicLearningPlatform_API.Migrations
 
                     b.HasIndex("SubjectId");
 
-                    b.ToTable("Halaqas");
+                    b.ToTable("Halaqas", (string)null);
                 });
 
             modelBuilder.Entity("MotqenIslamicLearningPlatform_API.Models.HalaqaModel.HalaqaStudent", b =>
@@ -104,7 +104,7 @@ namespace MotqenIslamicLearningPlatform_API.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("HalaqaStudent");
+                    b.ToTable("HalaqaStudent", (string)null);
                 });
 
             modelBuilder.Entity("MotqenIslamicLearningPlatform_API.Models.HalaqaModel.HalaqaTeacher", b =>
@@ -119,7 +119,7 @@ namespace MotqenIslamicLearningPlatform_API.Migrations
 
                     b.HasIndex("HalaqaId");
 
-                    b.ToTable("HalaqaTeacher");
+                    b.ToTable("HalaqaTeacher", (string)null);
                 });
 
             modelBuilder.Entity("MotqenIslamicLearningPlatform_API.Models.Shared.Subject", b =>
@@ -139,7 +139,7 @@ namespace MotqenIslamicLearningPlatform_API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Subjects");
+                    b.ToTable("Subjects", (string)null);
                 });
 
             modelBuilder.Entity("MotqenIslamicLearningPlatform_API.Models.Shared.User", b =>
@@ -171,7 +171,7 @@ namespace MotqenIslamicLearningPlatform_API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("MotqenIslamicLearningPlatform_API.Models.StudentModel.IslamicSubjectsProgressTracking", b =>
@@ -208,7 +208,7 @@ namespace MotqenIslamicLearningPlatform_API.Migrations
                         .IsUnique()
                         .HasFilter("[ProgressTrackingId] IS NOT NULL");
 
-                    b.ToTable("IslamicSubjectsProgressTrackings");
+                    b.ToTable("IslamicSubjectsProgressTrackings", (string)null);
                 });
 
             modelBuilder.Entity("MotqenIslamicLearningPlatform_API.Models.StudentModel.Parent", b =>
@@ -243,7 +243,7 @@ namespace MotqenIslamicLearningPlatform_API.Migrations
                         .IsUnique()
                         .HasFilter("[UserId] IS NOT NULL");
 
-                    b.ToTable("Parents");
+                    b.ToTable("Parents", (string)null);
                 });
 
             modelBuilder.Entity("MotqenIslamicLearningPlatform_API.Models.StudentModel.ProgressTracking", b =>
@@ -284,7 +284,7 @@ namespace MotqenIslamicLearningPlatform_API.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("ProgressTrackings");
+                    b.ToTable("ProgressTrackings", (string)null);
                 });
 
             modelBuilder.Entity("MotqenIslamicLearningPlatform_API.Models.StudentModel.QuranProgressTracking", b =>
@@ -319,7 +319,7 @@ namespace MotqenIslamicLearningPlatform_API.Migrations
                         .IsUnique()
                         .HasFilter("[ProgressTrackingId] IS NOT NULL");
 
-                    b.ToTable("QuranProgressTrackings");
+                    b.ToTable("QuranProgressTrackings", (string)null);
                 });
 
             modelBuilder.Entity("MotqenIslamicLearningPlatform_API.Models.StudentModel.Student", b =>
@@ -364,7 +364,7 @@ namespace MotqenIslamicLearningPlatform_API.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Students");
+                    b.ToTable("Students", (string)null);
                 });
 
             modelBuilder.Entity("MotqenIslamicLearningPlatform_API.Models.StudentModel.StudentAttendance", b =>
@@ -385,7 +385,7 @@ namespace MotqenIslamicLearningPlatform_API.Migrations
 
                     b.HasIndex("HalaqaId");
 
-                    b.ToTable("StudentAttendances");
+                    b.ToTable("StudentAttendances", (string)null);
                 });
 
             modelBuilder.Entity("MotqenIslamicLearningPlatform_API.Models.StudentModel.StudentSubject", b =>
@@ -409,7 +409,7 @@ namespace MotqenIslamicLearningPlatform_API.Migrations
 
                     b.HasIndex("SubjectId");
 
-                    b.ToTable("StudentSubjects");
+                    b.ToTable("StudentSubjects", (string)null);
                 });
 
             modelBuilder.Entity("MotqenIslamicLearningPlatform_API.Models.TeacherModel.Teacher", b =>
@@ -442,7 +442,7 @@ namespace MotqenIslamicLearningPlatform_API.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Teachers");
+                    b.ToTable("Teachers", (string)null);
                 });
 
             modelBuilder.Entity("MotqenIslamicLearningPlatform_API.Models.TeacherModel.TeacherAttendance", b =>
@@ -463,7 +463,7 @@ namespace MotqenIslamicLearningPlatform_API.Migrations
 
                     b.HasIndex("HalaqaId");
 
-                    b.ToTable("TeacherAttendances");
+                    b.ToTable("TeacherAttendances", (string)null);
                 });
 
             modelBuilder.Entity("MotqenIslamicLearningPlatform_API.Models.TeacherModel.TeacherSubject", b =>
@@ -487,7 +487,7 @@ namespace MotqenIslamicLearningPlatform_API.Migrations
 
                     b.HasIndex("SubjectId");
 
-                    b.ToTable("TeacherSubjects");
+                    b.ToTable("TeacherSubjects", (string)null);
                 });
 
             modelBuilder.Entity("MotqenIslamicLearningPlatform_API.Models.HalaqaModel.ClassSchedule", b =>
