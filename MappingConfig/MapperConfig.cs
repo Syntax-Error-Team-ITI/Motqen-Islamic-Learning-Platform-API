@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+using AutoMapper;
+using MotqenIslamicLearningPlatform_API.DTOs.SubjectDtos;
+using MotqenIslamicLearningPlatform_API.Models.Shared;
 using MotqenIslamicLearningPlatform_API.DTOs.ParentDTOs;
 using MotqenIslamicLearningPlatform_API.DTOs.StudentDTOs;
 using MotqenIslamicLearningPlatform_API.Models.HalaqaModel;
@@ -10,6 +12,9 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
     {
         public MapperConfig()
         {
+            CreateMap<Subject , SubjectDto>().ReverseMap();
+            CreateMap<Subject , CreateSubjectDto>().ReverseMap();
+            CreateMap<Subject , UpdateSubjectDto>().ReverseMap();
             //////////// Student
             // Student => ParentChildDTO
             CreateMap<Student,ParentChildDTO>()
@@ -21,7 +26,6 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => $"{src.Student.User.FirstName} {src.Student.User.LastName}"));
             // HalaqaStudent => StudentHalaqaFormDTO
             CreateMap<HalaqaStudent, StudentHalaqaFormDTO>().ReverseMap();
-
         }
     }
 }

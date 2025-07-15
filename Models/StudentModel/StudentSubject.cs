@@ -10,8 +10,5 @@ namespace MotqenIslamicLearningPlatform_API.Models.StudentModel
         public virtual Student Student { get; set; }
         public int SubjectId { get; set; }
         public virtual Subject Subject { get; set; }
-        public bool IsDeleted { get; set; } = false;
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     }
 }
