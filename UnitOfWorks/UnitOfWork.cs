@@ -19,10 +19,9 @@ namespace MotqenIslamicLearningPlatform_API.UnitOfWorks
         private QuranProgressTrackingRepository quranProgressTrackingRepo;
         private StudentAttendanceRepository studentAttendanceRepo;
         private StudentSubjectRepository studentSubjectRepo;
-
         private TeacherAttendanceRepository teacherAttendanceRepo;
+        private TeacherSubjectRepository teacherSubjectRepo;
 
-        private TeacherRepository teacherRepository;
         public UnitOfWork(MotqenDbContext db)
         {
             this.db = db;
@@ -182,15 +181,15 @@ namespace MotqenIslamicLearningPlatform_API.UnitOfWorks
                 return this.subjectRepo;
             }
         }
-        public TeacherRepository TeacherRepository
+        public TeacherSubjectRepository TeacherSubjectRepo
         {
             get
             {
-                if (teacherRepository == null)
+                if (teacherSubjectRepo == null)
                 {
-                    teacherRepository = new TeacherRepository(db);
+                    teacherSubjectRepo = new TeacherSubjectRepository(db);
                 }
-                return this.teacherRepository;
+                return this.teacherSubjectRepo;
             }
         }
 
