@@ -1,4 +1,6 @@
-﻿namespace MotqenIslamicLearningPlatform_API.Models
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace MotqenIslamicLearningPlatform_API.Models
 {
     public class Teacher : BaseEntity
     {
@@ -8,6 +10,7 @@
         public string Specialization { get; set; }
         public int UserId { get; set; }
         public virtual User User { get; set; }
+        public virtual IList<TeacherSubject> TeacherSubjects { get; set; } = new List<TeacherSubject>();
         public virtual IList<HalaqaTeacher> HalaqaTeachers { get; set; }
         public virtual IList<TeacherAttendance> TeacherAttendances { get; set; } 
     }

@@ -17,10 +17,13 @@ namespace MotqenIslamicLearningPlatform_API.Models
         public DbSet<HalaqaTeacher> HalaqaTeacher { get; set; }
         public DbSet<StudentAttendance> StudentAttendances { get; set; }
         public DbSet<TeacherAttendance> TeacherAttendances { get; set; }
-
         public DbSet<ProgressTracking> ProgressTrackings { get; set; }
         public DbSet<QuranProgressTracking> QuranProgressTrackings { get; set; }
         public DbSet<IslamicSubjectsProgressTracking> IslamicSubjectsProgressTrackings { get; set; }
+        public DbSet<TeacherSubject> TeacherSubjects { get; set; }
+        public DbSet<StudentSubject> StudentSubjects { get; set; }
+        public DbSet<Subject> Subjects { get; set; }
+
 
     }
 }
