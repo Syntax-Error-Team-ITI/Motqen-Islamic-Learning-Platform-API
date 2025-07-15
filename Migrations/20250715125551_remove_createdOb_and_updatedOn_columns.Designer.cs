@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MotqenIslamicLearningPlatform_API.Models;
 
@@ -11,9 +12,11 @@ using MotqenIslamicLearningPlatform_API.Models;
 namespace MotqenIslamicLearningPlatform_API.Migrations
 {
     [DbContext(typeof(MotqenDbContext))]
-    partial class MotqenDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250715125551_remove_createdOb_and_updatedOn_columns")]
+    partial class remove_createdOb_and_updatedOn_columns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
