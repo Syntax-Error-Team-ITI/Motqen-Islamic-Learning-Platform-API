@@ -14,11 +14,11 @@ namespace MotqenIslamicLearningPlatform_API.Repositories
         {
             return Db.HalaqaStudent.Find(new HalaqaStudent {StudentId= studentId, HalaqaId = halaqaId });
         }
-        public ICollection<HalaqaStudent> getAllStudentsByHalaqaId(int parentId, bool includeDeleted = false)
+        public ICollection<HalaqaStudent> getAllStudentsByHalaqaId(int halaqaId, bool includeDeleted = false)
         {
-            var halaqaStudents = Db.HalaqaStudent.Where(hs => hs.HalaqaId == parentId).Include(hs => hs.Student).ThenInclude(s => s.User).ToList();
+            var halaqaStudents = Db.HalaqaStudent.Where(hs => hs.HalaqaId == halaqaId).Include(hs => hs.Student).ThenInclude(s => s.User).ToList();
             if (!includeDeleted)
-                return halaqaStudents.Where(hs => hs.Student.IsDeleted == true).ToList();
+                return halaqaStudents.Where(hs => hs.Student.IsDeleted == false).ToList();
             return halaqaStudents;
         }
         public HalaqaStudent? getStudentByHalaqaId(int studentId,int halaqaId)

@@ -8,6 +8,7 @@ using MotqenIslamicLearningPlatform_API.Models.StudentModel;
 using MotqenIslamicLearningPlatform_API.DTOs.TeacherDTOs;
 using MotqenIslamicLearningPlatform_API.Models.TeacherModel;
 using MotqenIslamicLearningPlatform_API.DTOs.TeacherDTOs.TeacherAttendanceDtos;
+using MotqenIslamicLearningPlatform_API.DTOs.HalaqaDTOs;
 
 namespace MotqenIslamicLearningPlatform_API.MappingConfig
 {
@@ -39,6 +40,13 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
                 .ForMember(dest => dest.TeacherName, opt => opt.MapFrom(src => $"{src.Teacher.User.FirstName} {src.Teacher.User.LastName}"));
             CreateMap<TeacherAttendance, CreateTeacherAttendanceDto>().ReverseMap();
             CreateMap<TeacherAttendance, UpdateTeacherAttendanceDto>().ReverseMap();
+
+            // Halaqa Mapping
+            CreateMap<Halaqa, HalaqaDto>().ForMember(dest => dest.SubjectName , opt => opt.MapFrom(src => src.Subject.Name)).ReverseMap();
+            CreateMap<Halaqa, CreateHalaqaDto>()
+                .ReverseMap();
+            CreateMap<Halaqa, UpdateHalaqaDto>()
+                .ReverseMap();
         }
     }
 }
