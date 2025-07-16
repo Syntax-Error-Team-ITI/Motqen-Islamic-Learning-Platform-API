@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MotqenIslamicLearningPlatform_API.DTOs.ProgressDTOs;
 using MotqenIslamicLearningPlatform_API.Models;
 using MotqenIslamicLearningPlatform_API.Models.StudentModel;
 
@@ -56,6 +57,20 @@ namespace MotqenIslamicLearningPlatform_API.Repositories
                 .Include(pt => pt.Halaqa)
                 .ThenInclude(h => h.Subject)
                 .FirstOrDefault(pt => pt.StudentId == studentId && pt.HalaqaId == halaqaId);
+        }
+        public bool IsQuranProgressValid(ProgressFormDTO progress)
+        {
+            return progress.FromSurah != null 
+                && progress.ToSurah != null 
+                && progress.FromAyah != null
+                && progress.ToAyah != null;
+        }
+        public bool IsIslamicProgressValid(ProgressFormDTO progress)
+        {
+            return progress.FromPage != null 
+                && progress.ToPage != null 
+                && progress.Subject != null
+                && progress.LessonName != null;
         }
     }
 }
