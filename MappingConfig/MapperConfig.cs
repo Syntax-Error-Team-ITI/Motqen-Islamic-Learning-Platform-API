@@ -11,6 +11,7 @@ using MotqenIslamicLearningPlatform_API.DTOs.TeacherDTOs.TeacherAttendanceDtos;
 using MotqenIslamicLearningPlatform_API.DTOs.HalaqaDTOs;
 using MotqenIslamicLearningPlatform_API.DTOs.ProgressDTOs;
 using MotqenIslamicLearningPlatform_API.DTOs.TeacherDTOs.TeacherSubjectDtos;
+using MotqenIslamicLearningPlatform_API.DTOs.StudentDTOs.StudentAttendanceDtos;
 
 namespace MotqenIslamicLearningPlatform_API.MappingConfig
 {
@@ -74,7 +75,12 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
             CreateMap<Student, StudentDetailedDisplayDTO>()
                 .ForMember(dest => dest.Name, src => src.MapFrom(data => $"{data.User.FirstName} {data.User.LastName}"))
                 .ForMember(dest => dest.Parent, src => src.MapFrom(data => $"{data.Parent.User.FirstName} {data.Parent.User.LastName}"));
-
+            //studentAttendance Mapping
+            CreateMap<StudentAttendance, StudentAttendanceDto>()
+                .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => $"{src.Student.User.FirstName} {src.Student.User.LastName}"))
+                .ForMember(desc => desc.HalaqaName, opt => opt.MapFrom(src => src.Halaqa.Name));
+            CreateMap<StudentAttendance, CreateStudentAttendanceDto>().ReverseMap();
+            CreateMap<StudentAttendance, UpdateStudentAttendanceDto>().ReverseMap();
             // ProgressTracking Mapping
             CreateMap<ProgressTracking, ProgressListDTO>()
                 .ForMember(ProgrssListDTO => ProgrssListDTO.StudentName, opt => opt.MapFrom(src => $"{src.Student.User.FirstName} {src.Student.User.LastName}"))

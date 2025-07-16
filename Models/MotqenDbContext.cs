@@ -36,6 +36,12 @@ namespace MotqenIslamicLearningPlatform_API.Models
             modelBuilder.Entity<TeacherAttendance>()
                 .HasIndex(a => new { a.TeacherId, a.HalaqaId, a.AttendanceDate })
                 .IsUnique();
+
+            // Unique index on StudentAttendance (StudentId, HalaqaId, AttendanceDate)
+
+            modelBuilder.Entity<StudentAttendance>()
+                .HasIndex(a => new { a.StudentId, a.HalaqaId, a.AttendanceDate })
+                .IsUnique();
         }
     }
 }
