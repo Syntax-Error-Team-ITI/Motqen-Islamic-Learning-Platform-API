@@ -20,16 +20,16 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.TeacherCon
             this.Mapper = _mapper;
         }
         [HttpGet]
-        public IActionResult GetAllTeacherAttendance(bool includeDeleted = false)
+        public IActionResult GetAll()
         {
-            var attendances = Unit.TeacherAttendanceRepo.GetAll(includeDeleted);
+            var attendances = Unit.TeacherAttendanceRepo.GetAllWithInclude();
             var result = Mapper.Map<IEnumerable<TeacherAttendanceDto>>(attendances);
             return Ok(result);
         }
         [HttpGet("{id:int}")]
         public IActionResult GetById(int id)
         {
-            var attendance = Unit.TeacherAttendanceRepo.GetById(id);
+            var attendance = Unit.TeacherAttendanceRepo.GetByIdWithInclude(id);
             if (attendance == null)
                 return NotFound();
 
@@ -37,7 +37,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.TeacherCon
             return Ok(result);
         }
         [HttpGet("byComposite/{teacherId:int}/{halaqaId:int}")]
-        public IActionResult GetTeacherAttendanceByTeacherIdAndHalaqaId(int teacherId, int halaqaId)
+        public IActionResult GetByTeacherIdAndHalaqaId(int teacherId, int halaqaId)
         {
             var attendance = Unit.TeacherAttendanceRepo.GetByTeacherIdAndHalaqaId(teacherId, halaqaId);
             
@@ -45,16 +45,16 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.TeacherCon
             return Ok(result);
         }
 
-        [HttpGet("teacher/{teacherId:int}")]
-        public IActionResult GetTeacherAttendanceByTeacherId(int teacherId)
+        [HttpGet("byTeacherId/{teacherId:int}")]
+        public IActionResult GetByTeacherId(int teacherId)
         {
             var attendance = Unit.TeacherAttendanceRepo.GetByTeacherId(teacherId);
 
             var result = Mapper.Map<IEnumerable< TeacherAttendanceDto>>(attendance);
             return Ok(result);
         }
-        [HttpGet("halaqa/{halaqaId:int}")]
-        public IActionResult GetTeacherAttendanceByHalaqaId(int halaqaId)
+        [HttpGet("byHalaqaId/{halaqaId:int}")]
+        public IActionResult GetByHalaqaId(int halaqaId)
         {
             var attendance = Unit.TeacherAttendanceRepo.GetByHalaqaId(halaqaId);
 
@@ -92,7 +92,6 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.TeacherCon
             return CreatedAtAction(nameof(GetById), new {  id = attendance.Id}, result);
         }
 
-        //needupdate
 
         [HttpPut("{id:int}")]
         public IActionResult Update(int id, UpdateTeacherAttendanceDto attendanceDto)
@@ -101,7 +100,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.TeacherCon
             {
                 return BadRequest(ModelState);
             }
-            var existingAttendance = Unit.TeacherAttendanceRepo.GetById(id);
+            var existingAttendance = Unit.TeacherAttendanceRepo.GetByIdWithInclude(id);
             if (existingAttendance == null)
             {
                 return NotFound();
@@ -115,7 +114,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.TeacherCon
         [HttpDelete("{id:int}")]
         public IActionResult Delete(int id)
         {
-            var attendance = Unit.TeacherAttendanceRepo.GetById( id );
+            var attendance = Unit.TeacherAttendanceRepo.GetByIdWithInclude( id );
             if (attendance == null)
             {
                 return NotFound();
