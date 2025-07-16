@@ -4,10 +4,10 @@ using MotqenIslamicLearningPlatform_API.Models.HalaqaModel;
 
 namespace MotqenIslamicLearningPlatform_API.Models.TeacherModel
 {
-    [PrimaryKey(nameof(TeacherId), nameof(HalaqaId))]
-
+   
     public class TeacherAttendance
     {
+        public int Id { get; set; }
         public int TeacherId { get; set; }
         public int HalaqaId { get; set; }
         public DateTime AttendanceDate { get; set; }

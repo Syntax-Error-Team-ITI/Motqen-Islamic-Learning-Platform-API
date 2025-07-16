@@ -29,7 +29,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Studnet
             var student = Unit.StudentRepo.GetById(id);
             if (student == null)
                 return NotFound(new { message = "Student Not Found!!" });
-            Unit.StudentRepo.Delete(id);
+            Unit.StudentRepo.SoftDelete(id);
             Unit.Save();
             return Ok();
         }

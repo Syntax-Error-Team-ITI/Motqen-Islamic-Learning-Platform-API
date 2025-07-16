@@ -1,10 +1,13 @@
 using AutoMapper;
-using MotqenIslamicLearningPlatform_API.DTOs.SubjectDtos;
+using MotqenIslamicLearningPlatform_API.DTOs.SubjectDTOs;
 using MotqenIslamicLearningPlatform_API.Models.Shared;
 using MotqenIslamicLearningPlatform_API.DTOs.ParentDTOs;
 using MotqenIslamicLearningPlatform_API.DTOs.StudentDTOs;
 using MotqenIslamicLearningPlatform_API.Models.HalaqaModel;
 using MotqenIslamicLearningPlatform_API.Models.StudentModel;
+using MotqenIslamicLearningPlatform_API.DTOs.TeacherDTOs;
+using MotqenIslamicLearningPlatform_API.Models.TeacherModel;
+using MotqenIslamicLearningPlatform_API.DTOs.TeacherDTOs.TeacherAttendanceDtos;
 
 namespace MotqenIslamicLearningPlatform_API.MappingConfig
 {
@@ -12,6 +15,7 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
     {
         public MapperConfig()
         {
+            //Subject Mapping
             CreateMap<Subject , SubjectDto>().ReverseMap();
             CreateMap<Subject , CreateSubjectDto>().ReverseMap();
             CreateMap<Subject , UpdateSubjectDto>().ReverseMap();
@@ -26,6 +30,15 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => $"{src.Student.User.FirstName} {src.Student.User.LastName}"));
             // HalaqaStudent => StudentHalaqaFormDTO
             CreateMap<HalaqaStudent, StudentHalaqaFormDTO>().ReverseMap();
+            //Teacher  Mapping
+            CreateMap<Teacher, TeacherDto>().ReverseMap();
+            CreateMap<Teacher,CreateTeacherDto >().ReverseMap();
+            CreateMap<Teacher, UpdateTeacherDto>().ReverseMap();
+            //TeacherAttendance Mapping
+            CreateMap<TeacherAttendance, TeacherAttendanceDto>()
+                .ForMember(dest => dest.TeacherName, opt => opt.MapFrom(src => $"{src.Teacher.User.FirstName} {src.Teacher.User.LastName}"));
+            CreateMap<TeacherAttendance, CreateTeacherAttendanceDto>().ReverseMap();
+            CreateMap<TeacherAttendance, UpdateTeacherAttendanceDto>().ReverseMap();
         }
     }
 }

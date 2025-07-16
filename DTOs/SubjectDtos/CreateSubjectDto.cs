@@ -1,4 +1,4 @@
-﻿namespace MotqenIslamicLearningPlatform_API.DTOs.SubjectDtos
+﻿namespace MotqenIslamicLearningPlatform_API.DTOs.SubjectDTOs
 {
     public class CreateSubjectDto
     {

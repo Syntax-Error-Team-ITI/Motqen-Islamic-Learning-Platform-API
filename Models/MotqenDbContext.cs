@@ -28,6 +28,14 @@ namespace MotqenIslamicLearningPlatform_API.Models
         public DbSet<StudentSubject> StudentSubjects { get; set; }
         public DbSet<Subject> Subjects { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
 
+            // Unique index on TeacherAttendance (TeacherId, HalaqaId, AttendanceDate)
+            modelBuilder.Entity<TeacherAttendance>()
+                .HasIndex(a => new { a.TeacherId, a.HalaqaId, a.AttendanceDate })
+                .IsUnique();
+        }
     }
 }

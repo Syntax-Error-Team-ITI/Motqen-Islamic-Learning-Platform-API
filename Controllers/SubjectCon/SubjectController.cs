@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using MotqenIslamicLearningPlatform_API.DTOs.SubjectDtos;
+using MotqenIslamicLearningPlatform_API.DTOs.SubjectDTOs;
 using MotqenIslamicLearningPlatform_API.Models.Shared;
 using MotqenIslamicLearningPlatform_API.UnitOfWorks;
 
@@ -65,6 +65,10 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.SubjectCon
             {
                 return BadRequest(ModelState);
             }
+            if(id != subjectDto.Id)
+            {
+                return BadRequest("Subject ID mismatch.");
+            }
 
             var existingSubject = Unit.SubjectRepo.GetById(id);
             if (existingSubject == null)
@@ -74,7 +78,8 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.SubjectCon
             Mapper.Map(subjectDto, existingSubject);
             Unit.SubjectRepo.Edit(existingSubject);
             Unit.Save();
-            return NoContent();
+            var result = Mapper.Map<SubjectDto>(existingSubject);
+            return Ok(result);
         }
         [HttpDelete("{id:int}")]
         public IActionResult Delete(int id)
@@ -82,12 +87,12 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.SubjectCon
             var success = Unit.SubjectRepo.SoftDelete(id);
             if (!success)
             {
-                return NotFound();
+                NotFound(new { message = "Subject Not Found!!" });
             }
             Unit.Save();
-            return NoContent();
+            return Ok("Subject Deleted Successfully");
         }
-        [HttpPut("restore/{id :int}")]
+        [HttpPut("restore/{id:int}")]
         public IActionResult Restore(int id)
         {
             var subject = Unit.SubjectRepo.GetById(id);
