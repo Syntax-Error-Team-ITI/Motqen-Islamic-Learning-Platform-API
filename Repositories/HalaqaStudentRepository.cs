@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MotqenIslamicLearningPlatform_API.Models;
 using MotqenIslamicLearningPlatform_API.Models.HalaqaModel;
-using MotqenIslamicLearningPlatform_API.Models.StudentModel;
 
 namespace MotqenIslamicLearningPlatform_API.Repositories
 {
@@ -12,7 +11,7 @@ namespace MotqenIslamicLearningPlatform_API.Repositories
         }
         public HalaqaStudent? GetHalaqaStudent(int studentId, int halaqaId)
         {
-            return Db.HalaqaStudent.Find(new HalaqaStudent {StudentId= studentId, HalaqaId = halaqaId });
+            return Db.HalaqaStudent.FirstOrDefault(hs => hs.StudentId == studentId && hs.HalaqaId == halaqaId);
         }
         public ICollection<HalaqaStudent> getAllStudentsByHalaqaId(int halaqaId, bool includeDeleted = false)
         {
@@ -21,14 +20,28 @@ namespace MotqenIslamicLearningPlatform_API.Repositories
                 return halaqaStudents.Where(hs => hs.Student.IsDeleted == false).ToList();
             return halaqaStudents;
         }
-        public HalaqaStudent? getStudentByHalaqaId(int studentId,int halaqaId)
+        public ICollection<HalaqaStudent> getAllHalaqaByStudentId(int studentId, bool includeDeleted = false)
+        {
+            var halaqaStudents = Db.
+                HalaqaStudent.Where(hs => hs.StudentId == studentId)
+                .Include(hs => hs.Halaqa)
+                .ThenInclude(hs => hs.HalaqaTeachers)
+                .ThenInclude(ht => ht.Teacher)
+                .ThenInclude(t => t.User)
+                .Include(hs => hs.Halaqa)
+                .ThenInclude(h => h.Subject).ToList();
+            if (!includeDeleted)
+                return halaqaStudents.Where(hs => !hs.Halaqa.IsDeleted).ToList();
+            return halaqaStudents;
+        }
+        public HalaqaStudent? getStudentByHalaqaId(int studentId, int halaqaId)
         {
             return Db.HalaqaStudent.FirstOrDefault(hs => hs.StudentId == studentId && hs.HalaqaId == halaqaId);
         }
-        public void RemoveStudentFromHalaqa(int studentId,int halaqaId)
+        public void RemoveStudentFromHalaqa(int studentId, int halaqaId)
         {
             var halaqaStudent = GetHalaqaStudent(studentId, halaqaId);
-            if (halaqaStudent != null) 
+            if (halaqaStudent != null)
                 Db.HalaqaStudent.Remove(halaqaStudent);
         }
     }

@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MotqenIslamicLearningPlatform_API.DTOs.SubjectDTOs;
 using MotqenIslamicLearningPlatform_API.Models.Shared;
@@ -40,14 +39,14 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.SubjectCon
         public IActionResult GetDeletedSubjects()
         {
             var deletedSubjects = Unit.SubjectRepo.GetDeleted();
-            
+
             var result = Mapper.Map<IEnumerable<SubjectDto>>(deletedSubjects);
             return Ok(result);
         }
         [HttpPost]
         public IActionResult Create(CreateSubjectDto subjectDto)
         {
-            if (  subjectDto == null || !ModelState.IsValid)
+            if (subjectDto == null || !ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
@@ -60,12 +59,12 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.SubjectCon
         [HttpPut("{id:int}")]
         public IActionResult Update(int id, UpdateSubjectDto subjectDto)
         {
-            
-            if ( subjectDto == null || !ModelState.IsValid)
+
+            if (subjectDto == null || !ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            if(id != subjectDto.Id)
+            if (id != subjectDto.Id)
             {
                 return BadRequest("Subject ID mismatch.");
             }
