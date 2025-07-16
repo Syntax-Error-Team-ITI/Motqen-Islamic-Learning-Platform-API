@@ -64,7 +64,9 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.HalaqaCon
             _mapper.Map(halaqaDto, halaqa);
             _unitOfWork.HalaqaRepo.Edit(halaqa);
             _unitOfWork.Save();
-            return NoContent();
+
+            var result = _mapper.Map<HalaqaDto>(halaqa);
+            return Ok(result);
         }
 
         [HttpDelete("{id:int}")]
