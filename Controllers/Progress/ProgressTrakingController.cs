@@ -12,7 +12,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Progress
     {
         UnitOfWork unit;
         IMapper mapper;
-        public ProgressTrakingController(UnitOfWork _unit , IMapper _map)
+        public ProgressTrakingController(UnitOfWork _unit, IMapper _map)
         {
             unit = _unit;
             mapper = _map;
@@ -43,6 +43,65 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Progress
             if (progress == null)
                 return NotFound(new { message = "No Progress for this student at this halaqa" });
             return Ok(mapper.Map<ProgressListDTO>(progress));
+        }
+        [HttpPost]
+        public IActionResult AddProgress(ProgressFormDTO progressFromReq)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
+
+                var existingProgress = unit.ProgressTrackingRepo
+                    .GetProgressByStudentIdAndHalaqaId(progressFromReq.StudentId, progressFromReq.HalaqaId);
+
+                if (existingProgress != null)
+                    return BadRequest("Progress for this student and halaqa is already being tracked");
+
+                var progress = mapper.Map<ProgressTracking>(progressFromReq);
+
+                if (progressFromReq.IsQuranTracking)
+                {
+                    if (!unit.ProgressTrackingRepo.IsQuranProgressValid(progressFromReq))
+                        return BadRequest(new { message = "Invalid Quran progress data. All Quran fields must be provided." });
+
+                    progress.QuranProgressTrackingDetail = new QuranProgressTracking
+                    {
+                        FromAyah = progressFromReq.FromAyah.Value,
+                        ToAyah = progressFromReq.ToAyah.Value,
+                        FromSurah = progressFromReq.FromSurah.Value,
+                        ToSurah = progressFromReq.ToSurah.Value
+                    };
+                }
+                else
+                {
+                    if (!unit.ProgressTrackingRepo.IsIslamicProgressValid(progressFromReq))
+                    {
+                        return BadRequest(new { message = "Invalid Islamic progress data. All subject fields must be provided." });
+                    }
+
+                    progress.IslamicSubjectsProgressTrackingDetail = new IslamicSubjectsProgressTracking
+                    {
+                        FromPage = progressFromReq.FromPage.Value,
+                        ToPage = progressFromReq.ToPage.Value,
+                        Subject = progressFromReq.Subject!,
+                        LessonName = progressFromReq.LessonName!
+                    };
+                }
+
+                unit.ProgressTrackingRepo.Add(progress);
+                var saveResult = unit.Save();
+
+                if (saveResult <= 0)
+                {
+                    return StatusCode(500, "Failed to save progress tracking");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An unexpected error occurred");
+            }
+            return Ok();
         }
 
     }
