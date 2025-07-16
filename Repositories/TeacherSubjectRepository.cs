@@ -8,15 +8,7 @@ namespace MotqenIslamicLearningPlatform_API.Repositories
     {
         public TeacherSubjectRepository(MotqenDbContext db) : base(db)
         { }
-        public List<TeacherSubject> GetByTeacherIdAndSubjectId(int teacherId, int subjectId)
-        {
-            return Db.TeacherSubjects
-                .Where(ts => ts.TeacherId == teacherId && ts.SubjectId == subjectId)
-                .Include(ts => ts.Teacher)
-                .ThenInclude(t => t.User)
-                .Include(ts => ts.Subject)
-                .ToList();
-        }
+       
         public List<TeacherSubject> GetByTeacherId(int teacherId)
         {
             return Db.TeacherSubjects

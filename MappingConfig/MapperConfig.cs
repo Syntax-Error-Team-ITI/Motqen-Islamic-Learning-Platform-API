@@ -12,6 +12,7 @@ using MotqenIslamicLearningPlatform_API.DTOs.HalaqaDTOs;
 using MotqenIslamicLearningPlatform_API.DTOs.ProgressDTOs;
 using MotqenIslamicLearningPlatform_API.DTOs.TeacherDTOs.TeacherSubjectDtos;
 using MotqenIslamicLearningPlatform_API.DTOs.StudentDTOs.StudentAttendanceDtos;
+using MotqenIslamicLearningPlatform_API.DTOs.StudentDTOs.StudentSubjectDtos;
 
 namespace MotqenIslamicLearningPlatform_API.MappingConfig
 {
@@ -47,7 +48,14 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
                     dest.Description = src.Halaqa.Description;
                 }
                 );
-                
+            // StudentSubject Mapping
+            CreateMap<StudentSubject, StudentSubjectDto>()
+                .ForMember(dest => dest.SubjectName, opt => opt.MapFrom(src => src.Subject.Name))
+                //.ForMember(dest => dest.TeacherName, opt => opt.MapFrom(src => $"{src.Teacher.User.FirstName} {src.Teacher.User.LastName}"));
+                .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => $"{src.Student.User.FirstName} {src.Student.User.LastName}"));
+
+            CreateMap<StudentSubject, CreateStudentSubjectDto>().ReverseMap();
+
             //Teacher  Mapping
             CreateMap<Teacher, TeacherDto>().ReverseMap();
             CreateMap<Teacher,CreateTeacherDto >().ReverseMap();
