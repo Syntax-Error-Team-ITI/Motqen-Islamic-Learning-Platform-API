@@ -40,11 +40,8 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.TeacherCon
         public IActionResult GetTeacherAttendanceByTeacherIdAndHalaqaId(int teacherId, int halaqaId)
         {
             var attendance = Unit.TeacherAttendanceRepo.GetByTeacherIdAndHalaqaId(teacherId, halaqaId);
-            if (attendance == null)
-            {
-                return NotFound();
-            }
-            var result = Mapper.Map<TeacherAttendanceDto>(attendance);
+            
+            var result = Mapper.Map< IEnumerable <TeacherAttendanceDto>>(attendance);
             return Ok(result);
         }
 
