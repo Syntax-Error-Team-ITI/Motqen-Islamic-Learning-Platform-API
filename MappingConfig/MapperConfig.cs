@@ -9,6 +9,7 @@ using MotqenIslamicLearningPlatform_API.DTOs.TeacherDTOs;
 using MotqenIslamicLearningPlatform_API.Models.TeacherModel;
 using MotqenIslamicLearningPlatform_API.DTOs.TeacherDTOs.TeacherAttendanceDtos;
 using MotqenIslamicLearningPlatform_API.DTOs.ProgressDTOs;
+using MotqenIslamicLearningPlatform_API.DTOs.TeacherDTOs.TeacherSubjectDtos;
 
 namespace MotqenIslamicLearningPlatform_API.MappingConfig
 {
@@ -37,9 +38,17 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
             CreateMap<Teacher, UpdateTeacherDto>().ReverseMap();
             //TeacherAttendance Mapping
             CreateMap<TeacherAttendance, TeacherAttendanceDto>()
-                .ForMember(dest => dest.TeacherName, opt => opt.MapFrom(src => $"{src.Teacher.User.FirstName} {src.Teacher.User.LastName}"));
+                .ForMember(dest => dest.TeacherName, opt => opt.MapFrom(src => $"{src.Teacher.User.FirstName} {src.Teacher.User.LastName}"))
+                .ForMember(desc => desc.HalaqaName, opt => opt.MapFrom(src => src.Halaqa.Name));
             CreateMap<TeacherAttendance, CreateTeacherAttendanceDto>().ReverseMap();
             CreateMap<TeacherAttendance, UpdateTeacherAttendanceDto>().ReverseMap();
+            // TeacherSubject Mapping
+            CreateMap<TeacherSubject, TeacherSubjectDto>()
+                .ForMember(dest => dest.SubjectName, opt => opt.MapFrom(src => src.Subject.Name))
+                //.ForMember(dest => dest.TeacherName, opt => opt.MapFrom(src => $"{src.Teacher.User.FirstName} {src.Teacher.User.LastName}"));
+                .ForMember(dest => dest.TeacherName, opt => opt.MapFrom(src => $"{src.Teacher.User.FirstName} {src.Teacher.User.LastName}"));
+
+            CreateMap<TeacherSubject, CreateTeacherSubjectDto>().ReverseMap();
 
             // student -> student short display
 
