@@ -39,6 +39,18 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
                 .ForMember(dest => dest.TeacherName, opt => opt.MapFrom(src => $"{src.Teacher.User.FirstName} {src.Teacher.User.LastName}"));
             CreateMap<TeacherAttendance, CreateTeacherAttendanceDto>().ReverseMap();
             CreateMap<TeacherAttendance, UpdateTeacherAttendanceDto>().ReverseMap();
+
+            // student -> student short display
+
+            CreateMap<Student, StudentShortDisplayDTO>()
+             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => $"{src.User.FirstName} {src.User.LastName}"));
+
+            //student -> detailed display
+            CreateMap<Student, StudentDetailedDisplayDTO>()
+                .ForMember(dest => dest.Name, src => src.MapFrom(data => $"{data.User.FirstName} {data.User.LastName}"))
+                .ForMember(dest => dest.Parent, src => src.MapFrom(data => $"{data.Parent.User.FirstName} {data.Parent.User.LastName}"));
+
+
         }
     }
 }
