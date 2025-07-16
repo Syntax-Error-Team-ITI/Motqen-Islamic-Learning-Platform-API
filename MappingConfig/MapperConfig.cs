@@ -8,6 +8,7 @@ using MotqenIslamicLearningPlatform_API.Models.StudentModel;
 using MotqenIslamicLearningPlatform_API.DTOs.TeacherDTOs;
 using MotqenIslamicLearningPlatform_API.Models.TeacherModel;
 using MotqenIslamicLearningPlatform_API.DTOs.TeacherDTOs.TeacherAttendanceDtos;
+using MotqenIslamicLearningPlatform_API.DTOs.HalaqaDTOs;
 using MotqenIslamicLearningPlatform_API.DTOs.ProgressDTOs;
 using MotqenIslamicLearningPlatform_API.DTOs.TeacherDTOs.TeacherSubjectDtos;
 
@@ -32,6 +33,20 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => $"{src.Student.User.FirstName} {src.Student.User.LastName}"));
             // HalaqaStudent => StudentHalaqaFormDTO
             CreateMap<HalaqaStudent, StudentHalaqaFormDTO>().ReverseMap();
+            // HalaqaStudent => HalaqaStudentDisplayHalaqaDTO
+            CreateMap<HalaqaStudent, HalaqaStudentDisplayHalaqaDTO>()
+                .AfterMap(
+                (src, dest,context) =>
+                {
+                    var teacher = src.Halaqa.HalaqaTeachers.FirstOrDefault(ht => ht.HalaqaId == src.HalaqaId).Teacher.User;
+                    dest.Name = $"{teacher.FirstName} {teacher.LastName}";
+                    dest.SubjectName = src.Halaqa.Subject.Name;
+                    dest.LiveLink = src.Halaqa.LiveLink;
+                    dest.Name = src.Halaqa.Name;
+                    dest.Description = src.Halaqa.Description;
+                }
+                );
+                
             //Teacher  Mapping
             CreateMap<Teacher, TeacherDto>().ReverseMap();
             CreateMap<Teacher,CreateTeacherDto >().ReverseMap();

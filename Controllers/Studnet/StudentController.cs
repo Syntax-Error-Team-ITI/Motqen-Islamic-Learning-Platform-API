@@ -41,9 +41,18 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Studnet
         [HttpGet("halaqa/{halaqaId}/all-students")]
         public IActionResult getAllStudentsForHalaqa(int halaqaId,bool includeDeleted = false)
         {
-            var students = Unit.HalaqaStudentRepo.getAllStudentsByHalaqaId(parentId: halaqaId);
+            var students = Unit.HalaqaStudentRepo.getAllStudentsByHalaqaId(halaqaId: halaqaId);
             return Ok(Mapper.Map<List<StudentHalaqaDisplayDTO>>(students));
         }
+        [HttpGet("{studentId}/all-halaqa")]
+        public IActionResult getAllHalaqaForStudent(int studentId,bool includeDeleted = false)
+        {
+            var halaqa = Unit.HalaqaStudentRepo.getAllHalaqaByStudentId(studentId: studentId);
+            if (halaqa == null)
+                return NotFound();
+            return Ok(Mapper.Map<List<HalaqaStudentDisplayHalaqaDTO>>(halaqa));
+        }
+
         [HttpDelete]
         public IActionResult Delete(int id)
         {
