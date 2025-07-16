@@ -29,23 +29,17 @@ namespace MotqenIslamicLearningPlatform_API.Repositories
                 .Where(t => t.HalaqaId == HalaqaId)
                 .ToList();
         }
-        public TeacherAttendance? GetByTeacherIdAndHalaqaId(int teacherId, int halaqaId)
+        public ICollection<TeacherAttendance> GetByTeacherIdAndHalaqaId(int teacherId, int halaqaId)
         {
             return Db.TeacherAttendances
                 .Include(t => t.Teacher)
                     .ThenInclude(u => u.User)
                 .Include(t => t.Halaqa)
-                .FirstOrDefault(t => t.TeacherId == teacherId && t.HalaqaId == halaqaId);
-                
+                .Where(t => t.TeacherId == teacherId && t.HalaqaId == halaqaId)
+                .ToList();
+
         }
-        public void Delete(int teacherId, int halaqaId)
-        {
-            var attendance = GetByTeacherIdAndHalaqaId(teacherId, halaqaId);
-            if (attendance != null)
-            {
-                Db.TeacherAttendances.Remove(attendance);
-            }
-        }
+       
         public TeacherAttendance? GetByComposite(int teacherId ,int halaqaId , DateTime date)
         {
             var targetDate = date.Date;

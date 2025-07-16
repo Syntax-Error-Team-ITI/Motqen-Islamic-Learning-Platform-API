@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using MotqenIslamicLearningPlatform_API.DTOs.StudentDTOs;
-using MotqenIslamicLearningPlatform_API.Models.HalaqaModel;
 using MotqenIslamicLearningPlatform_API.UnitOfWorks;
 
 namespace MotqenIslamicLearningPlatform_API.Controllers.Studnet
@@ -17,7 +16,29 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Studnet
             Unit = unit;
             Mapper = mapper;
         }
-        [HttpGet("{halaqaId}")]
+
+
+        [HttpGet]
+        public IActionResult GetAllStudents(bool includeDeleted = false)
+        {
+            var students = Unit.StudentRepo.GetAllWithMinimalDataInclude(includeDeleted);
+
+            if (students == null || !students.Any())
+                return NotFound(new { message = "No students found" });
+
+            return Ok(Mapper.Map<List<StudentShortDisplayDTO>>(students));
+        }
+
+        [HttpGet("{studentId}")]
+        public IActionResult GetSpecificStudentDetails(int studentId , bool includeDeleted = false)
+        {
+            var student = Unit.StudentRepo.GetSpecificStudentDetailsById(studentId, includeDeleted);
+            if (student == null)
+                return NotFound(new { message = "Student Not Found!!" });
+            return Ok(Mapper.Map<StudentDetailedDisplayDTO>(student));
+        }
+
+        [HttpGet("halaqa/{halaqaId}/all-students")]
         public IActionResult getAllStudentsForHalaqa(int halaqaId,bool includeDeleted = false)
         {
             var students = Unit.HalaqaStudentRepo.getAllStudentsByHalaqaId(parentId: halaqaId);
