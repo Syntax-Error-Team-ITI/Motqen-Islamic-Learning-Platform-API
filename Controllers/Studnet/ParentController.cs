@@ -17,11 +17,23 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Studnet
             Unit = unit;
             Mapper = mapper;
         }
-        [HttpGet("{id}")]
-        public IActionResult getChildren(int id)
+        [HttpGet("{id}/children")]
+        public IActionResult GetChildren(int id)
         {
             var children = Unit.StudentRepo.getStudentByParentId(id);
             return Ok(Mapper.Map<List<ParentChildDTO>>(children));
+        }
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            var parents = Unit.ParentRepo.GetAll();
+            return Ok(Mapper.Map<List<ParentListDTO>>(parents));
+        }
+        [HttpGet("{id}")]
+        public IActionResult GetParent(int id)
+        {
+            var parent = Unit.ParentRepo.GetById(id);
+            return Ok(Mapper.Map<List<ParentChildDTO>>(parent));
         }
     }
 }

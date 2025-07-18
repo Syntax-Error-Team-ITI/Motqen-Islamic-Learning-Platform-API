@@ -8,7 +8,9 @@ namespace MotqenIslamicLearningPlatform_API.Models.HalaqaModel
     {
         public string Name { get; set; }
         public string Description { get; set; }
-        public string LiveLink { get; set; }
+        public string? HostLiveLink { get; set; }
+        public string? GuestLiveLink { get; set; }
+        public string? RoomId { get; set; }
         public string GenderGroup { get; set; }
         public int? SubjectId { get; set; }
         public virtual Subject? Subject { get; set; }

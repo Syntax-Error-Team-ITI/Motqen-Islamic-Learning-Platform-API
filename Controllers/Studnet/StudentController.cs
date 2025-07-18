@@ -47,7 +47,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Studnet
         [HttpGet("{studentId}/all-halaqa")]
         public IActionResult getAllHalaqaForStudent(int studentId,bool includeDeleted = false)
         {
-            var halaqa = Unit.HalaqaStudentRepo.getAllHalaqaByStudentId(studentId: studentId);
+            ICollection<Models.HalaqaModel.HalaqaStudent>? halaqa = Unit.HalaqaStudentRepo.getAllHalaqaByStudentId(studentId: studentId);
             if (halaqa == null)
                 return NotFound();
             return Ok(Mapper.Map<List<HalaqaStudentDisplayHalaqaDTO>>(halaqa));

@@ -14,7 +14,6 @@ using MotqenIslamicLearningPlatform_API.DTOs.TeacherDTOs.TeacherSubjectDtos;
 using MotqenIslamicLearningPlatform_API.DTOs.StudentDTOs.StudentAttendanceDtos;
 using MotqenIslamicLearningPlatform_API.DTOs.StudentDTOs.StudentSubjectDtos;
 using MotqenIslamicLearningPlatform_API.DTOs.TeacherDTOs.HalaqaTeacherDtos;
-using MotqenIslamicLearningPlatform_API.DTOs.ReportesDtos.ParentDtos;
 using MotqenIslamicLearningPlatform_API.DTOs.ReportesDtos.ParentDtos.IslamicSubjectsProgress;
 using MotqenIslamicLearningPlatform_API.DTOs.ReportesDtos.ParentDtos.QuranProgress;
 using MotqenIslamicLearningPlatform_API.DTOs.ReportesDtos.ParentDtos.AttendanceSummary;
@@ -25,6 +24,8 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
     {
         public MapperConfig()
         {
+            /// Parent 
+            CreateMap<Parent, ParentListDTO>().ReverseMap();
             //Subject Mapping
             CreateMap<Subject , SubjectDto>().ReverseMap();
             CreateMap<Subject , CreateSubjectDto>().ReverseMap();
@@ -50,7 +51,7 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
                     var teacher = src.Halaqa.HalaqaTeachers.FirstOrDefault(ht => ht.HalaqaId == src.HalaqaId).Teacher.User;
                     dest.Name = $"{teacher.FirstName} {teacher.LastName}";
                     dest.SubjectName = src.Halaqa.Subject.Name;
-                    dest.LiveLink = src.Halaqa.LiveLink;
+                    dest.GuestLiveLink = src.Halaqa.GuestLiveLink;
                     dest.Name = src.Halaqa.Name;
                     dest.Description = src.Halaqa.Description;
                 }
