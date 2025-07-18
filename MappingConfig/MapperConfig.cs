@@ -32,7 +32,9 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
             //////////// HalaqaStudent 
             // HalaqaStudent => StudentHalaqaDisplayDTO
             CreateMap<HalaqaStudent, StudentHalaqaDisplayDTO>()
-                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => $"{src.Student.User.FirstName} {src.Student.User.LastName}"));
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => $"{src.Student.User.FirstName} {src.Student.User.LastName}"))
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.StudentId))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Student.User.Email));
             // HalaqaStudent => StudentHalaqaFormDTO
             CreateMap<HalaqaStudent, StudentHalaqaFormDTO>().ReverseMap();
             // HalaqaStudent => HalaqaStudentDisplayHalaqaDTO
@@ -57,7 +59,10 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
             CreateMap<StudentSubject, CreateStudentSubjectDto>().ReverseMap();
 
             //Teacher  Mapping
-            CreateMap<Teacher, TeacherDto>().ReverseMap();
+            CreateMap<Teacher, TeacherDto>()
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => $"{src.User.FirstName} {src.User.LastName}"))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User.Email));
+            
             CreateMap<Teacher,CreateTeacherDto >().ReverseMap();
             CreateMap<Teacher, UpdateTeacherDto>().ReverseMap();
             //TeacherAttendance Mapping

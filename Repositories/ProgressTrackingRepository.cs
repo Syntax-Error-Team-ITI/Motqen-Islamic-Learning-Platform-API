@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MotqenIslamicLearningPlatform_API.DTOs.ProgressDTOs;
+using MotqenIslamicLearningPlatform_API.Enums;
 using MotqenIslamicLearningPlatform_API.Models;
 using MotqenIslamicLearningPlatform_API.Models.StudentModel;
 
@@ -60,15 +61,17 @@ namespace MotqenIslamicLearningPlatform_API.Repositories
         }
         public bool IsQuranProgressValid(ProgressFormDTO progress)
         {
-            return progress.FromSurah != null 
-                && progress.ToSurah != null 
+            return progress.FromSurah != null
+                && progress.ToSurah != null
                 && progress.FromAyah != null
-                && progress.ToAyah != null;
+                && progress.ToAyah != null
+                && progress.NumberOfLines != null
+                && (progress.Type == ProgressType.Memorization || progress.Type == ProgressType.Review);
         }
         public bool IsIslamicProgressValid(ProgressFormDTO progress)
         {
-            return progress.FromPage != null 
-                && progress.ToPage != null 
+            return progress.FromPage != null
+                && progress.ToPage != null
                 && progress.Subject != null
                 && progress.LessonName != null;
         }

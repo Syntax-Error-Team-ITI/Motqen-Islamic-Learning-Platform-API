@@ -64,7 +64,9 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Progress
                         FromAyah = progressFromReq.FromAyah.Value,
                         ToAyah = progressFromReq.ToAyah.Value,
                         FromSurah = progressFromReq.FromSurah.Value,
-                        ToSurah = progressFromReq.ToSurah.Value
+                        ToSurah = progressFromReq.ToSurah.Value,
+                        Type = progressFromReq.Type.Value,
+                        NumberOfLines = progressFromReq.NumberOfLines.Value,
                     };
                 }
                 else

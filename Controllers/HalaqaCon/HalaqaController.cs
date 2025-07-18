@@ -2,6 +2,9 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MotqenIslamicLearningPlatform_API.DTOs.HalaqaDTOs;
+using MotqenIslamicLearningPlatform_API.DTOs.StudentDTOs;
+using MotqenIslamicLearningPlatform_API.DTOs.TeacherDTOs;
+using MotqenIslamicLearningPlatform_API.Migrations;
 using MotqenIslamicLearningPlatform_API.Models.HalaqaModel;
 using MotqenIslamicLearningPlatform_API.UnitOfWorks;
 
@@ -96,17 +99,17 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.HalaqaCon
         }
 
         [HttpGet("{id:int}/students")]
-        public IActionResult GetStudents(int id)
+        public IActionResult getAllStudentsForHalaqa(int halaqaId, bool includeDeleted = false)
         {
-            var students = _unitOfWork.HalaqaStudentRepo.getAllStudentsByHalaqaId(id);
-            return Ok(students);
+            var students = _unitOfWork.HalaqaStudentRepo.getAllStudentsByHalaqaId(halaqaId: halaqaId);
+            return Ok(_mapper.Map<List<StudentHalaqaDisplayDTO>>(students));
         }
 
         [HttpGet("{id:int}/teachers")]
         public IActionResult GetTeachers(int id)
         {
-            var teachers = _unitOfWork.HalaqaTeacherRepo.GetAll().Where(t => t.HalaqaId == id);
-            return Ok(teachers);
+            var teachers = _unitOfWork.HalaqaTeacherRepo.GetById(id);
+            return Ok(_mapper.Map<List<TeacherDto>>(teachers));
         }
     }
 }
