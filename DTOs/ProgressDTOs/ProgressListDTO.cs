@@ -4,6 +4,7 @@ namespace MotqenIslamicLearningPlatform_API.DTOs.ProgressDTOs
 {
     public class ProgressListDTO
     {
+        public int Id { get; set; }
         public DateTime Date { get; set; }
         public string Status { get; set; } = string.Empty;
         public string Notes { get; set; } = string.Empty;

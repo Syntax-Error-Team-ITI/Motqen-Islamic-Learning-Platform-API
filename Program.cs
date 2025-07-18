@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using MotqenIslamicLearningPlatform_API.MappingConfig;
 using MotqenIslamicLearningPlatform_API.Models;
+using MotqenIslamicLearningPlatform_API.Services.Reports;
 using MotqenIslamicLearningPlatform_API.UnitOfWorks;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -30,6 +31,8 @@ builder.Services.AddCors(options =>
         }
     );
 });
+builder.Services.AddScoped<IReportService, ReportService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
