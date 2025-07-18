@@ -52,12 +52,6 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Progress
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
 
-                var existingProgress = unit.ProgressTrackingRepo
-                    .GetProgressByStudentIdAndHalaqaId(progressFromReq.StudentId, progressFromReq.HalaqaId);
-
-                if (existingProgress != null)
-                    return BadRequest("Progress for this student and halaqa is already being tracked");
-
                 var progress = mapper.Map<ProgressTracking>(progressFromReq);
 
                 if (progressFromReq.IsQuranTracking)
