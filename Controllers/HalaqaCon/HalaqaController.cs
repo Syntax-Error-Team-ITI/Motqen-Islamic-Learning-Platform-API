@@ -97,17 +97,17 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.HalaqaCon
             return NoContent();
         }
 
-        [HttpGet("{id:int}/students")]
-        public IActionResult getAllStudentsForHalaqa(int halaqaId, bool includeDeleted = false)
+        [HttpGet("{halaqaId:int}/students")]
+        public IActionResult getAllStudentsForHalaqa(int halaqaId)
         {
             var students = _unitOfWork.HalaqaStudentRepo.getAllStudentsByHalaqaId(halaqaId: halaqaId);
             return Ok(_mapper.Map<List<StudentHalaqaDisplayDTO>>(students));
         }
 
-        [HttpGet("{id:int}/teachers")]
-        public IActionResult GetTeachers(int id)
+        [HttpGet("{halaqaId:int}/teachers")]
+        public IActionResult GetTeachers(int halaqaId)
         {
-            var teachers = _unitOfWork.HalaqaTeacherRepo.GetByHalaqaId(id);
+            var teachers = _unitOfWork.HalaqaTeacherRepo.GetByHalaqaId(halaqaId);
             return Ok(_mapper.Map<List<TeacherDto>>(teachers));
         }
     }

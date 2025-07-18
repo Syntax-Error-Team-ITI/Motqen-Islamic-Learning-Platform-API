@@ -30,7 +30,7 @@ namespace MotqenIslamicLearningPlatform_API.Services.Reports
         public List<QuranProgressChartPointDto> GetStudentMemorizationProgressChart(int studentId)
         {
             var progressData = Unit.ProgressTrackingRepo.GetAllProgressForSpecificStudent(studentId)
-                                   .Where(pt => pt.QuranProgressTrackingDetail != null && pt.QuranProgressTrackingDetail.Type == QuranProgressType.Memorization)
+                                   .Where(pt => pt.QuranProgressTrackingDetail != null && pt.QuranProgressTrackingDetail.Type == ProgressType.Memorization)
                                    .OrderBy(pt => pt.Date)
                                    .ToList();
 
@@ -41,7 +41,7 @@ namespace MotqenIslamicLearningPlatform_API.Services.Reports
         public List<QuranProgressChartPointDto> GetStudentReviewProgressChart(int studentId)
         {
             var progressData = Unit.ProgressTrackingRepo.GetAllProgressForSpecificStudent(studentId)
-                                   .Where(pt => pt.QuranProgressTrackingDetail != null && pt.QuranProgressTrackingDetail.Type == QuranProgressType.Review)
+                                   .Where(pt => pt.QuranProgressTrackingDetail != null && pt.QuranProgressTrackingDetail.Type == ProgressType.Review)
                                    .OrderBy(pt => pt.Date)
                                    .ToList();
 
@@ -62,9 +62,9 @@ namespace MotqenIslamicLearningPlatform_API.Services.Reports
                     .Select(g => new WeeklyMonthlyQuranProgressDto
                     {
                         Period = $"Week {g.Key.Split('-')[0]} {g.Key.Split('-')[1]}",
-                        TotalMemorizedLines = g.Where(x => x.QuranProgressTrackingDetail.Type == QuranProgressType.Memorization)
+                        TotalMemorizedLines = g.Where(x => x.QuranProgressTrackingDetail.Type == ProgressType.Memorization)
                                                .Sum(x => x.QuranProgressTrackingDetail?.NumberOfLines ?? 0),
-                        TotalReviewedLines = g.Where(x => x.QuranProgressTrackingDetail.Type == QuranProgressType.Review)
+                        TotalReviewedLines = g.Where(x => x.QuranProgressTrackingDetail.Type == ProgressType.Review)
                                               .Sum(x => x.QuranProgressTrackingDetail?.NumberOfLines ?? 0)
                     })
                     .OrderBy(x => x.Period)
@@ -77,9 +77,9 @@ namespace MotqenIslamicLearningPlatform_API.Services.Reports
                     .Select(g => new WeeklyMonthlyQuranProgressDto
                     {
                         Period = new DateTime(g.Key.Year, g.Key.Month, 1).ToString("MMM yyyy"),
-                        TotalMemorizedLines = g.Where(x => x.QuranProgressTrackingDetail.Type == QuranProgressType.Memorization)
+                        TotalMemorizedLines = g.Where(x => x.QuranProgressTrackingDetail.Type == ProgressType.Memorization)
                                                .Sum(x => x.QuranProgressTrackingDetail?.NumberOfLines ?? 0),
-                        TotalReviewedLines = g.Where(x => x.QuranProgressTrackingDetail.Type == QuranProgressType.Review)
+                        TotalReviewedLines = g.Where(x => x.QuranProgressTrackingDetail.Type == ProgressType.Review)
                                               .Sum(x => x.QuranProgressTrackingDetail?.NumberOfLines ?? 0)
                     })
                     .OrderBy(x => x.Period)
@@ -95,11 +95,11 @@ namespace MotqenIslamicLearningPlatform_API.Services.Reports
                                        .ToList();
 
             int totalMemorizedLines = allQuranProgress
-                .Where(pt => pt.QuranProgressTrackingDetail?.Type == QuranProgressType.Memorization)
+                .Where(pt => pt.QuranProgressTrackingDetail?.Type == ProgressType.Memorization)
                 .Sum(pt => pt.QuranProgressTrackingDetail?.NumberOfLines ?? 0);
 
             int totalReviewedLines = allQuranProgress
-                .Where(pt => pt.QuranProgressTrackingDetail?.Type == QuranProgressType.Review)
+                .Where(pt => pt.QuranProgressTrackingDetail?.Type == ProgressType.Review)
                 .Sum(pt => pt.QuranProgressTrackingDetail?.NumberOfLines ?? 0);
 
             return new QuranSummaryCountersDto
@@ -234,10 +234,10 @@ namespace MotqenIslamicLearningPlatform_API.Services.Reports
 
             // Metric 1: Average Memorized Lines
             decimal? studentAvgMemorizedLines = studentProgress
-                .Where(pt => pt.QuranProgressTrackingDetail?.Type == QuranProgressType.Memorization)
+                .Where(pt => pt.QuranProgressTrackingDetail?.Type == ProgressType.Memorization)
                 .Average(pt => (decimal?)pt.QuranProgressTrackingDetail?.NumberOfLines); // Removed ?? 0 for proper null handling
             decimal? halaqaAvgMemorizedLines = halaqaProgress
-                .Where(pt => pt.QuranProgressTrackingDetail?.Type == QuranProgressType.Memorization)
+                .Where(pt => pt.QuranProgressTrackingDetail?.Type == ProgressType.Memorization)
                 .Average(pt => (decimal?)pt.QuranProgressTrackingDetail?.NumberOfLines); // Removed ?? 0
             reports.Add(new StudentHalaqaComparisonReportDto
             {
@@ -250,10 +250,10 @@ namespace MotqenIslamicLearningPlatform_API.Services.Reports
 
             // Metric 2: Average Reviewed Lines
             decimal? studentAvgReviewedLines = studentProgress
-                .Where(pt => pt.QuranProgressTrackingDetail?.Type == QuranProgressType.Review)
+                .Where(pt => pt.QuranProgressTrackingDetail?.Type == ProgressType.Review)
                 .Average(pt => (decimal?)pt.QuranProgressTrackingDetail?.NumberOfLines); // Removed ?? 0
             decimal? halaqaAvgReviewedLines = halaqaProgress
-                .Where(pt => pt.QuranProgressTrackingDetail?.Type == QuranProgressType.Review)
+                .Where(pt => pt.QuranProgressTrackingDetail?.Type == ProgressType.Review)
                 .Average(pt => (decimal?)pt.QuranProgressTrackingDetail?.NumberOfLines); // Removed ?? 0
             reports.Add(new StudentHalaqaComparisonReportDto
             {

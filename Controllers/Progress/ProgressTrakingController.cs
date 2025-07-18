@@ -52,12 +52,6 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Progress
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
 
-                var existingProgress = unit.ProgressTrackingRepo
-                    .GetProgressByStudentIdAndHalaqaId(progressFromReq.StudentId, progressFromReq.HalaqaId);
-
-                if (existingProgress != null)
-                    return BadRequest("Progress for this student and halaqa is already being tracked");
-
                 var progress = mapper.Map<ProgressTracking>(progressFromReq);
 
                 if (progressFromReq.IsQuranTracking)
@@ -70,7 +64,9 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Progress
                         FromAyah = progressFromReq.FromAyah.Value,
                         ToAyah = progressFromReq.ToAyah.Value,
                         FromSurah = progressFromReq.FromSurah.Value,
-                        ToSurah = progressFromReq.ToSurah.Value
+                        ToSurah = progressFromReq.ToSurah.Value,
+                        Type = progressFromReq.Type.Value,
+                        NumberOfLines = progressFromReq.NumberOfLines.Value,
                     };
                 }
                 else

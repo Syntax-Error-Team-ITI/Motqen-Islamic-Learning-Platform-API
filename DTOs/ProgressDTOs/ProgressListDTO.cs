@@ -1,7 +1,10 @@
-﻿namespace MotqenIslamicLearningPlatform_API.DTOs.ProgressDTOs
+﻿using MotqenIslamicLearningPlatform_API.Enums;
+
+namespace MotqenIslamicLearningPlatform_API.DTOs.ProgressDTOs
 {
     public class ProgressListDTO
     {
+        public int Id { get; set; }
         public DateTime Date { get; set; }
         public string Status { get; set; } = string.Empty;
         public string Notes { get; set; } = string.Empty;
@@ -15,6 +18,9 @@
         public int ToAyah { get; set; }
         public int FromSurah { get; set; }
         public int ToSurah { get; set; }
+        public ProgressType Type { get; set; }
+        public int NumberOfLines { get; set; }
+
 
         // Islamic Subjects Progress Tracking Details
         public string Subject { get; set; } = string.Empty;

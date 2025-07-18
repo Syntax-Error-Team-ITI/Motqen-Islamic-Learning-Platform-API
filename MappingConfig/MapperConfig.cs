@@ -79,7 +79,10 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
             CreateMap<StudentSubject, CreateStudentSubjectDto>().ReverseMap();
 
             //Teacher  Mapping
-            CreateMap<Teacher, TeacherDto>().ReverseMap();
+            CreateMap<Teacher, TeacherDto>()
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => $"{src.User.FirstName} {src.User.LastName}"))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User.Email));
+            
             CreateMap<Teacher,CreateTeacherDto >().ReverseMap();
             CreateMap<Teacher, UpdateTeacherDto>().ReverseMap();
             //TeacherAttendance Mapping
@@ -134,6 +137,8 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
                 .ForMember(ProgrssListDTO => ProgrssListDTO.HalaqaSubject, opt => opt.MapFrom(src => src.Halaqa.Subject.Name))
                 .ForMember(ProgrssListDTO => ProgrssListDTO.FromAyah, opt => opt.MapFrom(src => src.QuranProgressTrackingDetail.FromAyah))
                 .ForMember(ProgrssListDTO => ProgrssListDTO.ToAyah, opt => opt.MapFrom(src => src.QuranProgressTrackingDetail.ToAyah))
+                .ForMember(ProgrssListDTO => ProgrssListDTO.NumberOfLines, opt => opt.MapFrom(src => src.QuranProgressTrackingDetail.NumberOfLines))
+                .ForMember(ProgrssListDTO => ProgrssListDTO.Type, opt => opt.MapFrom(src => src.QuranProgressTrackingDetail.Type))
                 .ForMember(ProgrssListDTO => ProgrssListDTO.FromSurah, opt => opt.MapFrom(src => src.QuranProgressTrackingDetail.FromSurah))
                 .ForMember(ProgrssListDTO => ProgrssListDTO.ToSurah, opt => opt.MapFrom(src => src.QuranProgressTrackingDetail.ToSurah))
                 .ForMember(ProgrssListDTO => ProgrssListDTO.Subject, opt => opt.MapFrom(src => src.IslamicSubjectsProgressTrackingDetail.Subject))
