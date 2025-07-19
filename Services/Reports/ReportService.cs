@@ -5,6 +5,8 @@ using MotqenIslamicLearningPlatform_API.DTOs.ReportesDtos.ParentDtos.IslamicSubj
 using MotqenIslamicLearningPlatform_API.DTOs.ReportesDtos.ParentDtos.QuranProgress;
 using MotqenIslamicLearningPlatform_API.Enums;
 using MotqenIslamicLearningPlatform_API.Migrations;
+using MotqenIslamicLearningPlatform_API.Models.Shared;
+using MotqenIslamicLearningPlatform_API.Models.StudentModel;
 using MotqenIslamicLearningPlatform_API.UnitOfWorks;
 using System.Globalization;
 
@@ -88,33 +90,71 @@ namespace MotqenIslamicLearningPlatform_API.Services.Reports
             return new List<WeeklyMonthlyQuranProgressDto>();
         }
 
+        private int GetJuzBySurah(int surahNumber)
+        {
+            return QuranParts.Parts
+                .Where(p => p.SurahNumber <= surahNumber)
+                .OrderByDescending(p => p.SurahNumber)
+                .FirstOrDefault()?.PartNumber ?? 1;
+        }
+
+        private int GetJuzCountFromSurahs(List<int> surahNumbers)
+        {
+            if (surahNumbers == null || surahNumbers.Count == 0)
+                return 0;
+
+            surahNumbers.Sort();
+            int firstJuz = GetJuzBySurah(surahNumbers.First());
+            int lastJuz = GetJuzBySurah(surahNumbers.Last());
+
+            return (lastJuz - firstJuz) + 1;
+        }
+
         public QuranSummaryCountersDto GetStudentQuranSummaryCounters(int studentId)
         {
-            var allQuranProgress = Unit.ProgressTrackingRepo.GetAllProgressForSpecificStudent(studentId)
-                                       .Where(pt => pt.QuranProgressTrackingDetail != null)
-                                       .ToList();
+            var allQuranProgress = Unit.ProgressTrackingRepo
+                .GetAllProgressForSpecificStudent(studentId)
+                .Where(pt => pt.QuranProgressTrackingDetail != null)
+                .ToList();
 
-            int totalMemorizedLines = allQuranProgress
+            var memorizationProgress = allQuranProgress
                 .Where(pt => pt.QuranProgressTrackingDetail?.Type == ProgressType.Memorization)
+                .ToList();
+
+            var reviewProgress = allQuranProgress
+                .Where(pt => pt.QuranProgressTrackingDetail?.Type == ProgressType.Review)
+                .ToList();
+
+            int totalMemorizedLines = memorizationProgress
                 .Sum(pt => pt.QuranProgressTrackingDetail?.NumberOfLines ?? 0);
 
-            int totalReviewedLines = allQuranProgress
-                .Where(pt => pt.QuranProgressTrackingDetail?.Type == ProgressType.Review)
+            int totalReviewedLines = reviewProgress
                 .Sum(pt => pt.QuranProgressTrackingDetail?.NumberOfLines ?? 0);
+
+            var memorizedSurahNumbers = GetDistinctSurahs(memorizationProgress);
+            var reviewedSurahNumbers = GetDistinctSurahs(reviewProgress);
 
             return new QuranSummaryCountersDto
             {
                 TotalLinesMemorized = totalMemorizedLines,
                 TotalLinesReviewed = totalReviewedLines,
-                // TotalSurahsMemorized, TotalJuzsMemorized, TotalSurahsReviewed, TotalJuzsReviewed
-                // These require mapping Surah numbers to names and calculating distinct counts,
-                // which is beyond a simple sum and may need a separate helper or more data.
-                TotalSurahsMemorized = 0, // Placeholder
-                TotalJuzsMemorized = 0, // Placeholder
-                TotalSurahsReviewed = 0, // Placeholder
-                TotalJuzsReviewed = 0 // Placeholder
+                TotalSurahsMemorized = memorizedSurahNumbers.Count,
+                TotalSurahsReviewed = reviewedSurahNumbers.Count,
+                TotalJuzsMemorized = GetJuzCountFromSurahs(memorizedSurahNumbers),
+                TotalJuzsReviewed = GetJuzCountFromSurahs(reviewedSurahNumbers)
             };
         }
+
+        private List<int> GetDistinctSurahs(List<ProgressTracking> progressList)
+        {
+            return progressList
+                .SelectMany(pt => Enumerable.Range(
+                    pt.QuranProgressTrackingDetail.FromSurah,
+                    pt.QuranProgressTrackingDetail.ToSurah - pt.QuranProgressTrackingDetail.FromSurah + 1))
+                .Distinct()
+                .ToList();
+        }
+
 
         public List<QuranDetailedProgressReportDto> GetStudentQuranDetailedProgressReport(int studentId)
         {

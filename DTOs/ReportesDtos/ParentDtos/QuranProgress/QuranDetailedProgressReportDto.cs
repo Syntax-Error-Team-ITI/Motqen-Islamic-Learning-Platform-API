@@ -3,8 +3,8 @@
     public class QuranDetailedProgressReportDto
     {
         public DateTime Date { get; set; }
-        public string FromSurahName { get; set; } // Need to map FromSurah int to its name
-        public string ToSurahName { get; set; }   // Need to map ToSurah int to its name
+        public int FromSurahNumber { get; set; } // Need to map FromSurah int to its name
+        public int ToSurahNumber { get; set; }   // Need to map ToSurah int to its name
         public int FromAyah { get; set; }
         public int ToAyah { get; set; }
         public int NumberOfLines { get; set; }

@@ -167,8 +167,8 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
             // ProgressTracking for QuranDetailedProgressReportDto
             CreateMap<ProgressTracking, QuranDetailedProgressReportDto>()
                 .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.Date))
-                .ForMember(dest => dest.FromSurahName, opt => opt.Ignore()) // Requires a lookup for Surah name from int, handle in service or a custom resolver
-                .ForMember(dest => dest.ToSurahName, opt => opt.Ignore())   // Requires a lookup for Surah name from int, handle in service or a custom resolver
+                .ForMember(dest => dest.FromSurahNumber, opt => opt.MapFrom(src => src.QuranProgressTrackingDetail.FromSurah))// Requires a lookup for Surah name from int, handle in service or a custom resolver
+                .ForMember(dest => dest.ToSurahNumber, opt => opt.MapFrom(src => src.QuranProgressTrackingDetail.ToSurah))   // Requires a lookup for Surah name from int, handle in service or a custom resolver
                 .ForMember(dest => dest.FromAyah, opt => opt.MapFrom(src => src.QuranProgressTrackingDetail.FromAyah))
                 .ForMember(dest => dest.ToAyah, opt => opt.MapFrom(src => src.QuranProgressTrackingDetail.ToAyah))
                 .ForMember(dest => dest.NumberOfLines, opt => opt.MapFrom(src => src.QuranProgressTrackingDetail.NumberOfLines))
@@ -205,6 +205,11 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
                 .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.ProgressTracking.Date))
                 .ForMember(dest => dest.PagesOrLessonsCompleted, opt => opt.MapFrom(src => src.ToPage - src.FromPage + 1)) // Assuming pages, adjust if lessons
                 .ForMember(dest => dest.SubjectName, opt => opt.MapFrom(src => src.Subject));
+            //test
+            CreateMap<ProgressTracking, IslamicSubjectProgressOverTimeChartDto>()
+                           .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.IslamicSubjectsProgressTrackingDetail.ProgressTracking.Date))
+                           .ForMember(dest => dest.PagesOrLessonsCompleted, opt => opt.MapFrom(src => src.IslamicSubjectsProgressTrackingDetail.ToPage - src.IslamicSubjectsProgressTrackingDetail.FromPage + 1)) // Assuming pages, adjust if lessons
+                           .ForMember(dest => dest.SubjectName, opt => opt.MapFrom(src => src.IslamicSubjectsProgressTrackingDetail.Subject));
 
             // IslamicSubjectsProgressTracking for IslamicSubjectProgressChartDto
             // This DTO expects aggregated total pages/lessons per subject.
@@ -216,8 +221,8 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
 
             // QuranSummaryCountersDto - This DTO is for aggregated summary counters.
             // It will be constructed in the service layer, not via a direct AutoMapper profile.
-        
 
-    }
+
+        }
     }
 }
