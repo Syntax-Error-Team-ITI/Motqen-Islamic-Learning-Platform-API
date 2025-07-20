@@ -3,9 +3,9 @@
     public class QuranSummaryCountersDto
     {
         public int TotalSurahsMemorized { get; set; }
-        public int TotalJuzsMemorized { get; set; } // Assuming Juz is equivalent to Part
+        public decimal TotalJuzsMemorized { get; set; } // Assuming Juz is equivalent to Part
         public int TotalSurahsReviewed { get; set; }
-        public int TotalJuzsReviewed { get; set; }
+        public decimal TotalJuzsReviewed { get; set; }
         public int TotalLinesMemorized { get; set; }
         public int TotalLinesReviewed { get; set; }
     }

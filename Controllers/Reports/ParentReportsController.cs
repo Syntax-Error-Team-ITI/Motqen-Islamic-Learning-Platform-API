@@ -128,6 +128,16 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             }
             return Ok(chartData);
         }
+        [HttpGet("Attendance/datails/{studentid:int}")]
+        public IActionResult GetStudentAttenndanceDetails(int studentid)
+        {
+            var data = ReportService.GetStudentAttenndanceDetails(studentid);
+            if (data == null || !data.Any())
+            {
+                return NotFound("No attendance details found for this student.");
+            }
+            return Ok(data);
+        }
 
         [HttpGet("Attendance/MonthlyWeeklyChart/{studentId}")]
         public ActionResult<List<MonthlyWeeklyAttendanceChartDto>> GetStudentMonthlyWeeklyAttendanceChart(int studentId, [FromQuery] string periodType = "month")

@@ -130,6 +130,9 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
                 .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => $"{src.Student.User.FirstName} {src.Student.User.LastName}"))
                 .ForMember(desc => desc.HalaqaName, opt => opt.MapFrom(src => src.Halaqa.Name));
             CreateMap<StudentAttendance, CreateStudentAttendanceDto>().ReverseMap();
+          
+
+
             CreateMap<StudentAttendance, UpdateStudentAttendanceDto>().ReverseMap();
             // ProgressTracking Mapping
             CreateMap<ProgressTracking, ProgressListDTO>()
@@ -188,8 +191,9 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
 
             // ProgressTracking for IslamicSubjectsDetailedProgressReportDto
             CreateMap<ProgressTracking, IslamicSubjectsDetailedProgressReportDto>()
+                .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => $"{src.Student.User.FirstName} {src.Student.User.LastName}" ))
                 .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.Date))
-                .ForMember(dest => dest.SubjectName, opt => opt.MapFrom(src => src.IslamicSubjectsProgressTrackingDetail.Subject))
+                .ForMember(dest => dest.Subject, opt => opt.MapFrom(src => src.IslamicSubjectsProgressTrackingDetail.Subject))
                 .ForMember(dest => dest.LessonName, opt => opt.MapFrom(src => src.IslamicSubjectsProgressTrackingDetail.LessonName))
                 .ForMember(dest => dest.FromPage, opt => opt.MapFrom(src => src.IslamicSubjectsProgressTrackingDetail.FromPage))
                 .ForMember(dest => dest.ToPage, opt => opt.MapFrom(src => src.IslamicSubjectsProgressTrackingDetail.ToPage))

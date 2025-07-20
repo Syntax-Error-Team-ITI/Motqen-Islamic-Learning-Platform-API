@@ -2,6 +2,7 @@
 using MotqenIslamicLearningPlatform_API.DTOs.ReportesDtos.ParentDtos.AttendanceSummary;
 using MotqenIslamicLearningPlatform_API.DTOs.ReportesDtos.ParentDtos.IslamicSubjectsProgress;
 using MotqenIslamicLearningPlatform_API.DTOs.ReportesDtos.ParentDtos.QuranProgress;
+using MotqenIslamicLearningPlatform_API.DTOs.ReportesDtos.TeacherDtos;
 
 namespace MotqenIslamicLearningPlatform_API.Services.Reports
 {
@@ -22,10 +23,25 @@ namespace MotqenIslamicLearningPlatform_API.Services.Reports
 
         // Student Attendance Reports (beyond existing basic ones)
         List<StudentAttendancePieChartDto> GetStudentAttendanceSummaryPieChart(int studentId);
+        List<StudentAttenndanceDetails> GetStudentAttenndanceDetails(int studentid);
         List<MonthlyWeeklyAttendanceChartDto> GetStudentMonthlyWeeklyAttendanceChart(int studentId, string periodType);
 
         // Student Performance Comparison Report
         List<StudentHalaqaComparisonReportDto> GetStudentPerformanceComparisonReport(int studentId, int halaqaId);
 
+
+        // 1. تقارير القرآن
+        List<QuranProgressChartPointDto> GetHalaqaMemorizationProgress(int halaqaId);
+        TeacherQuranSummaryDto GetHalaqaQuranSummary(int halaqaId);
+
+        // 2. تقارير الحضور
+        List<MonthlyWeeklyAttendanceChartDto> GetHalaqaAttendanceTrend(int halaqaId, string periodType);
+        List<StudentAttendancePieChartDto> GetHalaqaAttendanceSummary(int halaqaId);
+
+        // 3. لوحة التحكم
+        TeacherDashboardDto GetTeacherDashboard(int teacherId);
+
+        // 4. تقارير المواد الإسلامية
+        List<IslamicSubjectsDetailedProgressReportDto> GetHalaqaIslamicProgress(int halaqaId);
     }
 }

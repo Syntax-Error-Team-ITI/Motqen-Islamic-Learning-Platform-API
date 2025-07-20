@@ -1,10 +1,9 @@
 ﻿using AutoMapper;
-using MotqenIslamicLearningPlatform_API.DTOs.ReportesDtos.ParentDtos;
 using MotqenIslamicLearningPlatform_API.DTOs.ReportesDtos.ParentDtos.AttendanceSummary;
 using MotqenIslamicLearningPlatform_API.DTOs.ReportesDtos.ParentDtos.IslamicSubjectsProgress;
 using MotqenIslamicLearningPlatform_API.DTOs.ReportesDtos.ParentDtos.QuranProgress;
+using MotqenIslamicLearningPlatform_API.DTOs.ReportesDtos.TeacherDtos;
 using MotqenIslamicLearningPlatform_API.Enums;
-using MotqenIslamicLearningPlatform_API.Migrations;
 using MotqenIslamicLearningPlatform_API.Models.Shared;
 using MotqenIslamicLearningPlatform_API.Models.StudentModel;
 using MotqenIslamicLearningPlatform_API.UnitOfWorks;
@@ -23,10 +22,6 @@ namespace MotqenIslamicLearningPlatform_API.Services.Reports
         }
 
 
-
-        // ----------------------------------------------------
-        // Implementations for New Parent Reports
-        // ----------------------------------------------------
 
         // Quran Progress Reports
         public List<QuranProgressChartPointDto> GetStudentMemorizationProgressChart(int studentId)
@@ -60,10 +55,12 @@ namespace MotqenIslamicLearningPlatform_API.Services.Reports
             if (periodType.ToLower() == "week")
             {
                 return progressData
-                    .GroupBy(pt => ISOWeek.GetWeekOfYear(pt.Date) + "-" + pt.Date.Year)
+                    .GroupBy(pt => new { Weekkey =ISOWeek.GetWeekOfYear(pt.Date) + "-" + pt.Date.Year , halaqaid =pt.HalaqaId }) 
                     .Select(g => new WeeklyMonthlyQuranProgressDto
                     {
-                        Period = $"Week {g.Key.Split('-')[0]} {g.Key.Split('-')[1]}",
+                        HalaqaId = g.Key.halaqaid,
+                        HalaqaName = g.First().Halaqa.Name,
+                        Period = $"Week {g.Key.Weekkey.Split('-')[0]} {g.Key.Weekkey.Split('-')[1]}",
                         TotalMemorizedLines = g.Where(x => x.QuranProgressTrackingDetail.Type == ProgressType.Memorization)
                                                .Sum(x => x.QuranProgressTrackingDetail?.NumberOfLines ?? 0),
                         TotalReviewedLines = g.Where(x => x.QuranProgressTrackingDetail.Type == ProgressType.Review)
@@ -75,9 +72,11 @@ namespace MotqenIslamicLearningPlatform_API.Services.Reports
             else if (periodType.ToLower() == "month")
             {
                 return progressData
-                    .GroupBy(pt => new { pt.Date.Year, pt.Date.Month })
+                    .GroupBy(pt => new { pt.Date.Year, pt.Date.Month, halaqaid = pt.HalaqaId })
                     .Select(g => new WeeklyMonthlyQuranProgressDto
                     {
+                        HalaqaId = g.Key.halaqaid,
+                        HalaqaName = g.First().Halaqa.Name,
                         Period = new DateTime(g.Key.Year, g.Key.Month, 1).ToString("MMM yyyy"),
                         TotalMemorizedLines = g.Where(x => x.QuranProgressTrackingDetail.Type == ProgressType.Memorization)
                                                .Sum(x => x.QuranProgressTrackingDetail?.NumberOfLines ?? 0),
@@ -90,25 +89,7 @@ namespace MotqenIslamicLearningPlatform_API.Services.Reports
             return new List<WeeklyMonthlyQuranProgressDto>();
         }
 
-        private int GetJuzBySurah(int surahNumber)
-        {
-            return QuranParts.Parts
-                .Where(p => p.SurahNumber <= surahNumber)
-                .OrderByDescending(p => p.SurahNumber)
-                .FirstOrDefault()?.PartNumber ?? 1;
-        }
-
-        private int GetJuzCountFromSurahs(List<int> surahNumbers)
-        {
-            if (surahNumbers == null || surahNumbers.Count == 0)
-                return 0;
-
-            surahNumbers.Sort();
-            int firstJuz = GetJuzBySurah(surahNumbers.First());
-            int lastJuz = GetJuzBySurah(surahNumbers.Last());
-
-            return (lastJuz - firstJuz) + 1;
-        }
+      
 
         public QuranSummaryCountersDto GetStudentQuranSummaryCounters(int studentId)
         {
@@ -140,8 +121,9 @@ namespace MotqenIslamicLearningPlatform_API.Services.Reports
                 TotalLinesReviewed = totalReviewedLines,
                 TotalSurahsMemorized = memorizedSurahNumbers.Count,
                 TotalSurahsReviewed = reviewedSurahNumbers.Count,
-                TotalJuzsMemorized = GetJuzCountFromSurahs(memorizedSurahNumbers),
-                TotalJuzsReviewed = GetJuzCountFromSurahs(reviewedSurahNumbers)
+                TotalJuzsMemorized = (decimal)totalMemorizedLines / (20 * 15)  , // Assuming 15 lines per page and 20 pages per Juz
+                TotalJuzsReviewed = (decimal)totalReviewedLines / (20*15) // Assuming 15 lines per page and 20 pages per Juz
+
             };
         }
 
@@ -166,6 +148,7 @@ namespace MotqenIslamicLearningPlatform_API.Services.Reports
             return Mapper.Map<List<QuranDetailedProgressReportDto>>(detailedProgress);
         }
 
+        /// 
         // Islamic Subjects Progress Reports
         public List<IslamicSubjectProgressChartDto> GetStudentIslamicSubjectPagesChart(int studentId)
         {
@@ -211,16 +194,34 @@ namespace MotqenIslamicLearningPlatform_API.Services.Reports
         // Student Attendance Reports
         public List<StudentAttendancePieChartDto> GetStudentAttendanceSummaryPieChart(int studentId)
         {
-            var attendanceData = Unit.StudentAttendanceRepo.GetByStudentId(studentId).ToList(); // .ToList() to enable multiple enumerations
-
+            var attendanceData = Unit.StudentAttendanceRepo.GetByStudentId(studentId).ToList();
+            var studentName = attendanceData[0].Student?.User != null ? $"{attendanceData[0].Student.User.FirstName} {attendanceData[0].Student.User.LastName}" : "";
             return attendanceData
-                .GroupBy(a => a.Status)
+                .GroupBy(a => new {a.HalaqaId , a.Status})
                 .Select(g => new StudentAttendancePieChartDto
                 {
-                    Status = g.Key.ToString(),
-                    Count = g.Count(),
-                    Percentage = attendanceData.Any() ? (decimal)g.Count() / attendanceData.Count * 100 : 0 // Calculate percentage safely
+                     HalaqaName = g.First().Halaqa?.Name,
+                     HalaqaId = g.Key.HalaqaId,
+                     Status = g.Key.Status.ToString(),
+                     Count = g.Count(),
+                     Percentage = attendanceData.Where(a => a.HalaqaId == g.Key.HalaqaId ).Count() > 0 ?
+                                 (decimal)g.Count() / attendanceData.Where(a => a.HalaqaId == g.Key.HalaqaId).Count() * 100 : 0
+
                 })
+                .ToList();
+        }
+        public List<StudentAttenndanceDetails> GetStudentAttenndanceDetails(int studentid)
+        {
+            var attendanceData = Unit.StudentAttendanceRepo.GetByStudentIdWithSubject(studentid).ToList(); 
+            return attendanceData
+                .Select(a => new StudentAttenndanceDetails
+                {
+                    AttendanceDate = a.AttendanceDate,
+                    Status = a.Status.ToString(),
+                    Halaqa = a.Halaqa?.Name ?? "",
+                    Subject = a.Halaqa?.Subject?.Name ?? ""
+                })
+                .OrderByDescending(a => a.AttendanceDate)
                 .ToList();
         }
 
@@ -265,6 +266,8 @@ namespace MotqenIslamicLearningPlatform_API.Services.Reports
             var studentProgress = Unit.ProgressTrackingRepo.GetAllProgressForSpecificStudent(studentId)
                                       .Where(pt => pt.HalaqaId == halaqaId)
                                       .ToList();
+            var _StudentName = $"{studentProgress[0].Student.User.FirstName} {studentProgress[0].Student.User.LastName}";
+            
             var halaqaProgress = Unit.ProgressTrackingRepo.GetAllProgressForSpecificHalaqa(halaqaId)
                                      .ToList();
             var studentAttendance = Unit.StudentAttendanceRepo.GetByStudentIdAndHalaqaId(studentId, halaqaId).ToList(); // .ToList()
@@ -281,6 +284,7 @@ namespace MotqenIslamicLearningPlatform_API.Services.Reports
                 .Average(pt => (decimal?)pt.QuranProgressTrackingDetail?.NumberOfLines); // Removed ?? 0
             reports.Add(new StudentHalaqaComparisonReportDto
             {
+                StudentName = _StudentName,
                 StudentId = studentId,
                 HalaqaId = halaqaId,
                 Metric = "Average Memorized Lines",
@@ -297,6 +301,7 @@ namespace MotqenIslamicLearningPlatform_API.Services.Reports
                 .Average(pt => (decimal?)pt.QuranProgressTrackingDetail?.NumberOfLines); // Removed ?? 0
             reports.Add(new StudentHalaqaComparisonReportDto
             {
+                StudentName = _StudentName,
                 StudentId = studentId,
                 HalaqaId = halaqaId,
                 Metric = "Average Reviewed Lines",
@@ -313,6 +318,7 @@ namespace MotqenIslamicLearningPlatform_API.Services.Reports
                 .Average(pt => (decimal?)((pt.IslamicSubjectsProgressTrackingDetail?.ToPage ?? 0) - (pt.IslamicSubjectsProgressTrackingDetail?.FromPage ?? 0) + 1)); // Corrected null handling
             reports.Add(new StudentHalaqaComparisonReportDto
             {
+                StudentName = _StudentName,
                 StudentId = studentId,
                 HalaqaId = halaqaId,
                 Metric = "Average Islamic Pages Completed",
@@ -332,6 +338,7 @@ namespace MotqenIslamicLearningPlatform_API.Services.Reports
 
             reports.Add(new StudentHalaqaComparisonReportDto
             {
+                StudentName = _StudentName,
                 StudentId = studentId,
                 HalaqaId = halaqaId,
                 Metric = "Attendance Percentage",
@@ -340,6 +347,173 @@ namespace MotqenIslamicLearningPlatform_API.Services.Reports
             });
 
             return reports;
+        }
+
+        public List<QuranProgressChartPointDto> GetHalaqaMemorizationProgress(int halaqaId)
+        {
+            var progressData = Unit.ProgressTrackingRepo
+                .GetAllProgressForSpecificHalaqa(halaqaId)
+                .Where(pt => pt.QuranProgressTrackingDetail != null)
+                .OrderBy(pt => pt.Date)
+                .ToList();
+
+            return Mapper.Map<List<QuranProgressChartPointDto>>(progressData);
+        }
+
+        public TeacherQuranSummaryDto GetHalaqaQuranSummary(int halaqaId)
+        {
+            var progress = Unit.ProgressTrackingRepo
+                .GetAllProgressForSpecificHalaqa(halaqaId)
+                .Where(pt => pt.QuranProgressTrackingDetail != null)
+                .ToList();
+
+            var students = Unit.HalaqaStudentRepo.getAllStudentsByHalaqaId(halaqaId);
+
+            return new TeacherQuranSummaryDto
+            {
+                HalaqaId = halaqaId,
+                HalaqaName = Unit.HalaqaRepo.GetById(halaqaId)?.Name,
+                TotalStudents = students.Count,
+                TotalLinesMemorized = progress
+                    .Where(p => p.QuranProgressTrackingDetail.Type == ProgressType.Memorization)
+                    .Sum(p => p.QuranProgressTrackingDetail.NumberOfLines),
+                TotalLinesReviewed = progress
+                    .Where(p => p.QuranProgressTrackingDetail.Type == ProgressType.Review)
+                    .Sum(p => p.QuranProgressTrackingDetail.NumberOfLines),
+                AverageLinesPerStudent = students.Count > 0 ?
+                    (decimal)progress.Sum(p => p.QuranProgressTrackingDetail.NumberOfLines) / students.Count : 0
+            };
+        }
+
+
+
+        /// <summary>
+        /// </summary>
+        /// <param name="halaqaId"></param>
+        /// <param name="periodType"></param>
+        /// <returns></returns>
+        public List<MonthlyWeeklyAttendanceChartDto> GetHalaqaAttendanceTrend(int halaqaId, string periodType)
+        {
+            var attendanceData = Unit.StudentAttendanceRepo.GetByHalaqaId(halaqaId);
+
+            if (periodType.ToLower() == "month")
+            {
+                return attendanceData
+                    .GroupBy(a => new { a.AttendanceDate.Year, a.AttendanceDate.Month })
+                    .Select(g => new MonthlyWeeklyAttendanceChartDto
+                    {
+                        Period = new DateTime(g.Key.Year, g.Key.Month, 1).ToString("MMM yyyy"),
+                        PresentCount = g.Count(x => x.Status == AttendanceStatus.Present),
+                        AbsentCount = g.Count(x => x.Status == AttendanceStatus.Absent),
+                        ExcusedCount = g.Count(x => x.Status == AttendanceStatus.Excused)
+                    })
+                    .OrderBy(x => x.Period)
+                    .ToList();
+            } else if (periodType.ToLower() == "week")
+            {
+                return attendanceData
+                    .GroupBy(a => ISOWeek.GetWeekOfYear(a.AttendanceDate) + "-" + a.AttendanceDate.Year)
+                    .Select(g => new MonthlyWeeklyAttendanceChartDto
+                    {
+                        Period = $"Week {g.Key.Split('-')[0]} {g.Key.Split('-')[1]}",
+                        PresentCount = g.Count(x => x.Status == AttendanceStatus.Present),
+                        AbsentCount = g.Count(x => x.Status == AttendanceStatus.Absent),
+                        ExcusedCount = g.Count(x => x.Status == AttendanceStatus.Excused)
+                    })
+                    .OrderBy(x => x.Period)
+                    .ToList();
+            }
+            return new List<MonthlyWeeklyAttendanceChartDto>();
+        }
+
+        public List<StudentAttendancePieChartDto> GetHalaqaAttendanceSummary(int halaqaId)
+        {
+            var attendanceData = Unit.StudentAttendanceRepo.GetByHalaqaId(halaqaId).ToList();
+
+            return attendanceData
+                .GroupBy(a => a.Status)
+                .Select(g => new StudentAttendancePieChartDto
+                {
+                    HalaqaName = attendanceData.FirstOrDefault()?.Halaqa?.Name ?? "",
+                    HalaqaId = halaqaId,
+                    Status = g.Key.ToString(),
+                    Count = g.Count(),
+                    Percentage = (decimal)g.Count() / attendanceData.Count * 100
+                })
+                .ToList();
+        }
+
+
+
+        public TeacherDashboardDto GetTeacherDashboard(int teacherId)
+        {
+            var halaqas = Unit.HalaqaTeacherRepo.GetByTeacherId(teacherId);
+            var dashboard = new TeacherDashboardDto
+            {
+                TotalHalaqas = halaqas.Count,
+                TotalStudents = halaqas.Sum(h =>
+                    Unit.HalaqaStudentRepo.getAllStudentsByHalaqaId(h.HalaqaId).Count),
+                HalaqasProgress = new List<HalaqaProgressSummaryDto>()
+            };
+
+            // حساب مجموع الحضور لجميع الحلقات
+            decimal totalPresent = 0;
+            decimal totalSessions = 0;
+
+            foreach (var halaqa in halaqas)
+            {
+                var students = Unit.HalaqaStudentRepo.getAllStudentsByHalaqaId(halaqa.HalaqaId);
+                var attendance = Unit.StudentAttendanceRepo.GetByHalaqaId(halaqa.HalaqaId);
+
+                var presentCount = attendance.Count(a => a.Status == AttendanceStatus.Present);
+                var totalCount = attendance.Count;
+                var attendanceRate = totalCount > 0 ?
+                    (double)presentCount / totalCount * 100 : 0;
+
+                dashboard.HalaqasProgress.Add(new HalaqaProgressSummaryDto
+                {
+                    HalaqaId = halaqa.HalaqaId,
+                    HalaqaName = halaqa.Halaqa?.Name,
+                    SubjectName = halaqa.Halaqa?.Subject?.Name,
+                    StudentsCount = students.Count,
+                    AttendanceRate = attendanceRate
+                });
+
+                totalPresent += presentCount;
+                totalSessions += totalCount;
+            }
+
+            // حساب معدل الحضور الكلي
+            dashboard.OverallAttendanceRate = totalSessions > 0 ?
+                (decimal)totalPresent / totalSessions * 100 : 0;
+
+            return dashboard;
+        }
+
+        public List<IslamicSubjectsDetailedProgressReportDto> GetHalaqaIslamicProgress(int halaqaId)
+        {
+            // 1. الحصول على جميع تتبع التقدم للحلقة
+            var progressData = Unit.ProgressTrackingRepo
+                .GetAllProgressForSpecificHalaqa(halaqaId)
+                .Where(pt => pt.IslamicSubjectsProgressTrackingDetail != null)
+                .OrderByDescending(pt => pt.Date)
+                .ToList();
+
+            // 2. تحويل البيانات إلى DTO مع إضافة معلومات الطالب
+            var result = new List<IslamicSubjectsDetailedProgressReportDto>();
+
+            foreach (var progress in progressData)
+            {
+                var dto = Mapper.Map<IslamicSubjectsDetailedProgressReportDto>(progress);
+
+                // إضافة معلومات الطالب للمدرس
+
+                dto.StudentName = progress.Student?.User != null ? $"{progress.Student?.User?.FirstName} ${progress.Student?.User?.LastName}" : "";
+
+                result.Add(dto);
+            }
+
+            return result;
         }
     }
 }

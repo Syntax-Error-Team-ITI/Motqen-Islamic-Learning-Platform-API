@@ -2,8 +2,9 @@
 {
     public class IslamicSubjectsDetailedProgressReportDto
     {
+        public string StudentName { get; set; }
         public DateTime Date { get; set; }
-        public string SubjectName { get; set; }
+        public string Subject { get; set; }
         public string LessonName { get; set; }
         public int FromPage { get; set; }
         public int ToPage { get; set; }

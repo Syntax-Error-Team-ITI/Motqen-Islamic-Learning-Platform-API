@@ -2,6 +2,7 @@
 {
     public class StudentHalaqaComparisonReportDto
     {
+        public string StudentName { get; set; }
         public string Metric { get; set; } // e.g., "Average Memorized Lines", "Average Reviewed Lines", "Average Islamic Pages", "Attendance Percentage"
         public decimal StudentValue { get; set; }
         public decimal HalaqaAverageValue { get; set; }

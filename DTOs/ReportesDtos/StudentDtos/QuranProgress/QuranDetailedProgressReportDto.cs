@@ -1,4 +1,6 @@
-﻿namespace MotqenIslamicLearningPlatform_API.DTOs.ReportesDtos.ParentDtos.QuranProgress
+﻿using MotqenIslamicLearningPlatform_API.Enums;
+
+namespace MotqenIslamicLearningPlatform_API.DTOs.ReportesDtos.ParentDtos.QuranProgress
 {
     public class QuranDetailedProgressReportDto
     {
@@ -8,7 +10,7 @@
         public int FromAyah { get; set; }
         public int ToAyah { get; set; }
         public int NumberOfLines { get; set; }
-        public string Type { get; set; } // "Memorization" or "Review"
+        public ProgressType Type { get; set; } // "Memorization" or "Review"
         public string Status { get; set; } // From ProgressTracking
         public string Evaluation { get; set; } // From ProgressTracking
         public string Notes { get; set; } // From ProgressTracking
