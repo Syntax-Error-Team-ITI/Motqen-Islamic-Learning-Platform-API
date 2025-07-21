@@ -13,11 +13,11 @@ namespace MotqenIslamicLearningPlatform_API.Services
     public interface IRoomService
     {
         Task<List<string>> CreateRoom(CreateRoomRequest roomData);
-        List<RoomCodeInfo> GetRoomCodes(string roomId);
+        List<string> GetRoomCodes(string roomId);
+        //List<string> GetRoomJoinLink(string roomId);
         IEnumerable<RoomInfo> ListActiveRooms();
         string GenerateManagementToken();
         bool EndRoom(string roomId);
-        List<string> GetRoomJoinLink(string roomId);
         Task<bool> DisableRoom(string roomId, bool disable);
 
     }
@@ -86,8 +86,7 @@ namespace MotqenIslamicLearningPlatform_API.Services
 
             var roomRequest = new
             {
-                roomData.Name,
-                roomData.Description,
+                name = Guid.NewGuid().ToString(),
                 template_id = _templateId,
                 recording_info = new { enabled = roomData.RecordingEnabled }
             };
@@ -105,7 +104,7 @@ namespace MotqenIslamicLearningPlatform_API.Services
             // Parse the response to get just the room ID
             var responseObject = JObject.Parse(response.Content);
             var roomId = responseObject["id"]?.ToString();
-            var joinLinks = GetRoomJoinLink(roomId);
+            var joinLinks = GetRoomCodes(roomId);
             joinLinks.Add(roomId);
 
             if (string.IsNullOrEmpty(roomId))
@@ -140,24 +139,7 @@ namespace MotqenIslamicLearningPlatform_API.Services
             }
             return true;
         }
-        public List<string> GetRoomJoinLink(string roomId)
-        {
-            var roomCodes = GetRoomCodes(roomId);
-            // Validate we got at least 2 codes
-            if (roomCodes == null || roomCodes.Count < 2)
-            {
-                _logger.LogError("Insufficient room codes returned for room {RoomId}", roomId);
-                throw new Exception("Failed to generate room links - insufficient room codes");
-            }
-
-            List<string> links = new List<string> {
-                $"{_motqenUrl}/meeting/{roomCodes[0].Code}",
-                $"{_motqenUrl}/meeting/{roomCodes[1].Code}"
-            };
-            return links;
-        }
-
-        public List<RoomCodeInfo> GetRoomCodes(string roomId)
+        public List<string> GetRoomCodes(string roomId)
         {
             var client = new RestClient(_apiBaseUrl);
             var request = new RestRequest($"room-codes/room/{roomId}", Method.Post);
@@ -173,8 +155,11 @@ namespace MotqenIslamicLearningPlatform_API.Services
                 throw new Exception($"Failed to get room: {response.StatusCode}");
             }
 
-            return JsonConvert.DeserializeObject<ApiResponse<RoomCodeInfo>>(response.Content)?.Data
-                ?? new List<RoomCodeInfo>();
+            var roomCodes = JsonConvert.DeserializeObject<ApiResponse<RoomCodeInfo>>(response.Content)?.Data;
+            return new List<string> {
+              roomCodes[0].Code,
+              roomCodes[1].Code,
+            };
         }
 
         public IEnumerable<RoomInfo> ListActiveRooms()
