@@ -43,5 +43,7 @@ namespace MotqenIslamicLearningPlatform_API.Services.Reports
 
         // 4. تقارير المواد الإسلامية
         List<IslamicSubjectsDetailedProgressReportDto> GetHalaqaIslamicProgress(int halaqaId);
+
+        List<HalaqaComparisonDto> GetHalaqasComparison(List<int> halaqaIds);
     }
 }

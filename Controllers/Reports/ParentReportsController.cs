@@ -4,6 +4,7 @@ using MotqenIslamicLearningPlatform_API.DTOs.ReportesDtos.ParentDtos;
 using MotqenIslamicLearningPlatform_API.DTOs.ReportesDtos.ParentDtos.AttendanceSummary;
 using MotqenIslamicLearningPlatform_API.DTOs.ReportesDtos.ParentDtos.IslamicSubjectsProgress;
 using MotqenIslamicLearningPlatform_API.DTOs.ReportesDtos.ParentDtos.QuranProgress;
+using MotqenIslamicLearningPlatform_API.DTOs.ReportesDtos.TeacherDtos;
 using MotqenIslamicLearningPlatform_API.Services.Reports;
 
 namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
@@ -18,12 +19,6 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             this. ReportService = _report;
         }
 
-
-        // ----------------------------------------------------
-        // New Parent Report Endpoints
-        // ----------------------------------------------------
-
-        // Quran Progress Charts
         [HttpGet("Quran/MemorizationChart/{studentId}")]
         public ActionResult<List<QuranProgressChartPointDto>> GetQuranMemorizationChart(int studentId)
         {
@@ -165,5 +160,6 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             }
             return Ok(report);
         }
+        
     }
 }

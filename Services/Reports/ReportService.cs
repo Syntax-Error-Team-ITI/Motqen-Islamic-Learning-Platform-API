@@ -515,6 +515,54 @@ namespace MotqenIslamicLearningPlatform_API.Services.Reports
 
             return result;
         }
+
+        public List<HalaqaComparisonDto> GetHalaqasComparison(List<int> halaqaIds)
+        {
+            var comparisonResults = new List<HalaqaComparisonDto>();
+
+            foreach (var halaqaId in halaqaIds)
+            {
+                var halaqa = Unit.HalaqaRepo.GetById(halaqaId);
+                var students = Unit.HalaqaStudentRepo.getAllStudentsByHalaqaId(halaqaId);
+                var progress = Unit.ProgressTrackingRepo
+                    .GetAllProgressForSpecificHalaqa(halaqaId)
+                    .Where(pt => pt.QuranProgressTrackingDetail != null)
+                    .ToList();
+
+                var memorizationProgress = progress
+                    .Where(pt => pt.QuranProgressTrackingDetail.Type == ProgressType.Memorization)
+                    .ToList();
+
+                var reviewProgress = progress
+                    .Where(pt => pt.QuranProgressTrackingDetail.Type == ProgressType.Review)
+                    .ToList();
+
+                var dto = new HalaqaComparisonDto
+                {
+                    HalaqaId = halaqaId,
+                    HalaqaName = halaqa?.Name ?? "غير معروف",
+                    TotalStudents = students.Count,
+                    QuranProgress = new QuranSummaryCountersDto
+                    {
+                        TotalLinesMemorized = memorizationProgress
+                            .Sum(pt => pt.QuranProgressTrackingDetail?.NumberOfLines ?? 0),
+                        TotalLinesReviewed = reviewProgress
+                            .Sum(pt => pt.QuranProgressTrackingDetail?.NumberOfLines ?? 0),
+                        TotalSurahsMemorized = GetDistinctSurahs(memorizationProgress).Count,
+                        TotalSurahsReviewed = GetDistinctSurahs(reviewProgress).Count,
+                        TotalJuzsMemorized = (decimal)memorizationProgress
+                            .Sum(pt => pt.QuranProgressTrackingDetail?.NumberOfLines ?? 0) / (20 * 15),
+                        TotalJuzsReviewed = (decimal)reviewProgress
+                            .Sum(pt => pt.QuranProgressTrackingDetail?.NumberOfLines ?? 0) / (20 * 15)
+                    }
+                };
+
+                comparisonResults.Add(dto);
+            }
+
+            return comparisonResults.OrderByDescending(h => h.QuranProgress.TotalLinesMemorized).ToList();
+        }
+
     }
 }
 

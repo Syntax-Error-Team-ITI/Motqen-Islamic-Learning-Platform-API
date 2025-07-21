@@ -95,6 +95,17 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             }
             return Ok(progressData);
         }
-    
-}
+
+        [HttpGet("Comparison")]
+        public ActionResult<List<HalaqaComparisonDto>> GetHalaqasComparison([FromQuery] List<int> halaqaIds)
+        {
+            if (halaqaIds == null || !halaqaIds.Any())
+            {
+                return BadRequest("You must send ids");
+            }
+
+            var comparison = _reportService.GetHalaqasComparison(halaqaIds);
+            return Ok(comparison);
+        }
+    }
 }
