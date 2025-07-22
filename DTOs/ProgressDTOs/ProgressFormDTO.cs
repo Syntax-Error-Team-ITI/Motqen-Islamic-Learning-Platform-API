@@ -1,4 +1,4 @@
-﻿using MotqenIslamicLearningPlatform_API.Models.StudentModel;
+﻿using MotqenIslamicLearningPlatform_API.Enums;
 
 namespace MotqenIslamicLearningPlatform_API.DTOs.ProgressDTOs
 {
@@ -18,6 +18,9 @@ namespace MotqenIslamicLearningPlatform_API.DTOs.ProgressDTOs
         public int? ToAyah { get; set; }
         public int? FromSurah { get; set; }
         public int? ToSurah { get; set; }
+        public ProgressType? Type { get; set; }
+        public int? NumberOfLines { get; set; }
+
 
         // IslamicSubjectsProgressTracking
         public int? FromPage { get; set; }

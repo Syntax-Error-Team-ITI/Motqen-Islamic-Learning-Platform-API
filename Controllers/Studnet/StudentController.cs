@@ -21,7 +21,17 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Studnet
         [HttpGet]
         public IActionResult GetAllStudents(bool includeDeleted = false)
         {
-            var students = Unit.StudentRepo.GetAllWithMinimalDataInclude(includeDeleted);
+            var students = Unit.StudentRepo.GetAllWithMinimalDataInclude(0,includeDeleted);
+
+            if (students == null || !students.Any())
+                return NotFound(new { message = "No students found" });
+
+            return Ok(Mapper.Map<List<StudentShortDisplayDTO>>(students));
+        }
+        [HttpGet("notInHalaqa/{halaqaId:int}")]
+        public IActionResult GetStudentNotInHalqa(int halaqaId, bool includeDeleted = false)
+        {
+            var students = Unit.StudentRepo.GetAllWithMinimalDataInclude(halaqaId, includeDeleted);
 
             if (students == null || !students.Any())
                 return NotFound(new { message = "No students found" });
@@ -47,7 +57,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Studnet
         [HttpGet("{studentId}/all-halaqa")]
         public IActionResult getAllHalaqaForStudent(int studentId,bool includeDeleted = false)
         {
-            var halaqa = Unit.HalaqaStudentRepo.getAllHalaqaByStudentId(studentId: studentId);
+            ICollection<Models.HalaqaModel.HalaqaStudent>? halaqa = Unit.HalaqaStudentRepo.getAllHalaqaByStudentId(studentId: studentId);
             if (halaqa == null)
                 return NotFound();
             return Ok(Mapper.Map<List<HalaqaStudentDisplayHalaqaDTO>>(halaqa));

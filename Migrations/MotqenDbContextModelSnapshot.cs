@@ -201,15 +201,20 @@ namespace MotqenIslamicLearningPlatform_API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("GuestLiveLink")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("HostLiveLink")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<string>("LiveLink")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
+                    b.Property<string>("RoomId")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("SubjectId")
@@ -487,6 +492,9 @@ namespace MotqenIslamicLearningPlatform_API.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<int>("NumberOfLines")
+                        .HasColumnType("int");
+
                     b.Property<int?>("ProgressTrackingId")
                         .HasColumnType("int");
 
@@ -494,6 +502,9 @@ namespace MotqenIslamicLearningPlatform_API.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("ToSurah")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Type")
                         .HasColumnType("int");
 
                     b.HasKey("Id");

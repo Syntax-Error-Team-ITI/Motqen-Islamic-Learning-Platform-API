@@ -7,6 +7,9 @@ using MotqenIslamicLearningPlatform_API.MappingConfig;
 using MotqenIslamicLearningPlatform_API.Models;
 using MotqenIslamicLearningPlatform_API.Models.Shared;
 using MotqenIslamicLearningPlatform_API.Services;
+using MotqenIslamicLearningPlatform_API.Services;
+using MotqenIslamicLearningPlatform_API.Services.Chat;
+using MotqenIslamicLearningPlatform_API.Services.Reports;
 using MotqenIslamicLearningPlatform_API.UnitOfWorks;
 using System.Text;
 
@@ -91,6 +94,13 @@ builder.Services.AddCors(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
+builder.Services.AddScoped<IReportService, ReportService>();
+builder.Services.AddSingleton<IRoomService, RoomService>();
+builder.Services.AddHttpClient();
+
+// Register the ChatBotService as a singleton
+builder.Services.AddSingleton<ChatBotService>();
 
 var app = builder.Build();
 

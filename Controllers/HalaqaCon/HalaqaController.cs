@@ -2,8 +2,12 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MotqenIslamicLearningPlatform_API.DTOs.HalaqaDTOs;
+using MotqenIslamicLearningPlatform_API.DTOs.StudentDTOs;
+using MotqenIslamicLearningPlatform_API.DTOs.TeacherDTOs;
 using MotqenIslamicLearningPlatform_API.Models.HalaqaModel;
+using MotqenIslamicLearningPlatform_API.Services;
 using MotqenIslamicLearningPlatform_API.UnitOfWorks;
+using System.Threading.Tasks;
 
 namespace MotqenIslamicLearningPlatform_API.Controllers.HalaqaCon
 {
@@ -12,10 +16,12 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.HalaqaCon
     public class HalaqaController : ControllerBase
     {
         private readonly UnitOfWork _unitOfWork;
+        private readonly IRoomService roomService;
         private readonly IMapper _mapper;
-        public HalaqaController(IMapper mapper, UnitOfWork unitOfWork)
+        public HalaqaController(IMapper mapper, UnitOfWork unitOfWork, IRoomService roomService)
         {
             _unitOfWork = unitOfWork;
+            this.roomService = roomService;
             _mapper = mapper;
         }
 
@@ -38,16 +44,24 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.HalaqaCon
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] CreateHalaqaDto halaqaDto)
+        public async Task<IActionResult> Create([FromBody] CreateHalaqaDto halaqaDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            var room = await roomService.CreateRoom(new CreateRoomRequest { Name = halaqaDto.Name,Description = halaqaDto.Description});
+
             var halaqa = _mapper.Map<Halaqa>(halaqaDto);
+
+            halaqa.HostLiveLink = room[0];
+            halaqa.GuestLiveLink = room[1];
+            halaqa.RoomId = room[2];
+
             _unitOfWork.HalaqaRepo.Add(halaqa);
             _unitOfWork.Save();
 
             var result = _mapper.Map<HalaqaDto>(halaqa);
+           
             return CreatedAtAction(nameof(GetById), new { id = halaqa.Id }, result);
         }
 
@@ -95,18 +109,18 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.HalaqaCon
             return NoContent();
         }
 
-        [HttpGet("{id:int}/students")]
-        public IActionResult GetStudents(int id)
+        [HttpGet("{halaqaId:int}/students")]
+        public IActionResult getAllStudentsForHalaqa(int halaqaId)
         {
-            var students = _unitOfWork.HalaqaStudentRepo.getAllStudentsByHalaqaId(id);
-            return Ok(students);
+            var students = _unitOfWork.HalaqaStudentRepo.getAllStudentsByHalaqaId(halaqaId: halaqaId);
+            return Ok(_mapper.Map<List<StudentHalaqaDisplayDTO>>(students));
         }
 
-        [HttpGet("{id:int}/teachers")]
-        public IActionResult GetTeachers(int id)
+        [HttpGet("{halaqaId:int}/teachers")]
+        public IActionResult GetTeachers(int halaqaId)
         {
-            var teachers = _unitOfWork.HalaqaTeacherRepo.GetAll().Where(t => t.HalaqaId == id);
-            return Ok(teachers);
+            var teachers = _unitOfWork.HalaqaTeacherRepo.GetByHalaqaId(halaqaId);
+            return Ok(_mapper.Map<List<TeacherDto>>(teachers));
         }
     }
 }

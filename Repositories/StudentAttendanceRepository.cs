@@ -35,6 +35,16 @@ namespace MotqenIslamicLearningPlatform_API.Repositories
                 .Where(t => t.StudentId == StudentId)
                 .ToList();
         }
+        public List<StudentAttendance> GetByStudentIdWithSubject(int StudentId)
+        {
+            return Db.StudentAttendances
+                .Include(t => t.Student)
+                    .ThenInclude(u => u.User)
+                .Include(t => t.Halaqa)
+                .ThenInclude(t => t.Subject)
+                .Where(t => t.StudentId == StudentId)
+                .ToList();
+        }
         public List<StudentAttendance> GetByHalaqaId(int HalaqaId)
         {
             return Db.StudentAttendances

@@ -6,6 +6,6 @@
         public string Description { get; set; }
         public string TeacherName { get; set; }
         public string SubjectName { get; set; }
-        public string LiveLink { get; set; }
+        public string GuestLiveLink { get; set; }
     }
 }
