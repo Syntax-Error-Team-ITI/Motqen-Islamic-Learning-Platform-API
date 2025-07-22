@@ -1,7 +1,7 @@
 ﻿using MotqenIslamicLearningPlatform_API.DTOs.UserDTOs;
 using MotqenIslamicLearningPlatform_API.Models.Shared;
 
-namespace MotqenIslamicLearningPlatform_API.Services
+namespace MotqenIslamicLearningPlatform_API.Services.Email
 {
     public interface IEmailService
     {

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using MotqenIslamicLearningPlatform_API.DTOs.AuthDTOs;
 using MotqenIslamicLearningPlatform_API.DTOs.UserDTOs;
 using MotqenIslamicLearningPlatform_API.Models.Shared;
-using MotqenIslamicLearningPlatform_API.Services;
+using MotqenIslamicLearningPlatform_API.Services.Email;
 using MotqenIslamicLearningPlatform_API.UnitOfWorks;
 
 namespace MotqenIslamicLearningPlatform_API.Controllers.Auth

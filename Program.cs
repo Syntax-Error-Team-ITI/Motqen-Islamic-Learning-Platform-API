@@ -7,8 +7,8 @@ using MotqenIslamicLearningPlatform_API.MappingConfig;
 using MotqenIslamicLearningPlatform_API.Models;
 using MotqenIslamicLearningPlatform_API.Models.Shared;
 using MotqenIslamicLearningPlatform_API.Services;
-using MotqenIslamicLearningPlatform_API.Services;
 using MotqenIslamicLearningPlatform_API.Services.Chat;
+using MotqenIslamicLearningPlatform_API.Services.Email;
 using MotqenIslamicLearningPlatform_API.Services.Reports;
 using MotqenIslamicLearningPlatform_API.UnitOfWorks;
 using System.Text;
@@ -65,7 +65,6 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]!))
     };
 });
-
 
 
 builder.Services.AddScoped<UnitOfWork>();
