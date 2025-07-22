@@ -1,5 +1,5 @@
 ﻿using MotqenIslamicLearningPlatform_API.Models;
-using MotqenIslamicLearningPlatform_API.Models.StudentModel;
+using MotqenIslamicLearningPlatform_API.Models.ParentModel;
 
 namespace MotqenIslamicLearningPlatform_API.Repositories
 {
