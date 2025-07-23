@@ -9,8 +9,7 @@ namespace MotqenIslamicLearningPlatform_API.Models.TeacherModel
         public string Pic { get; set; }
         public string Gender { get; set; }
         public int Age { get; set; }
-        //public int UserId { get; set; }
-        //public virtual OldUser User { get; set; }
+
 
         [ForeignKey("User")]
         public string? UserId { get; set; }

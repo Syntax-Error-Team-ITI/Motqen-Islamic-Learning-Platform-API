@@ -253,24 +253,6 @@ namespace MotqenIslamicLearningPlatform_API.Repositories.AuthRepo
             return principal;
         }
 
-        //public async Task<AuthResult> ChangePassword(string UserId, string OldPassword, string NewPassword)
-        //{
-        //    var user = await userManager.FindByIdAsync(UserId);
-        //    if (user == null)
-        //    {
-        //        return new AuthResult { Succeeded = false, Message = "User not found." };
-        //    }
-        //    var result = await userManager.ChangePasswordAsync(user, OldPassword, NewPassword);
-        //    if (result.Succeeded)
-        //    {
-        //        return new AuthResult { Succeeded = true, Message = "Password changed successfully!" };
-        //    }
-        //    return new AuthResult
-        //    {
-        //        Succeeded = false,
-        //        Message = string.Join(", ", result.Errors.Select(e => e.Description))
-        //    };
-        //}
 
 
 
