@@ -228,6 +228,8 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
             // QuranSummaryCountersDto - This DTO is for aggregated summary counters.
             // It will be constructed in the service layer, not via a direct AutoMapper profile.
 
+            // Admin Report DTOs: No direct entity-to-DTO mapping needed for AdminDashboardSummaryDto or UserSummaryDto (constructed manually in service).
+
 
         }
     }
