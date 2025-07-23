@@ -48,8 +48,9 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
                 .AfterMap(
                 (src, dest,context) =>
                 {
-                    var teacher = src.Halaqa.HalaqaTeachers.FirstOrDefault(ht => ht.HalaqaId == src.HalaqaId).Teacher.User;
-                    dest.TeacherName = $"{teacher.FirstName} {teacher.LastName}";
+                    var teacher = src.Halaqa.HalaqaTeachers?.FirstOrDefault(ht => ht.HalaqaId == src.HalaqaId)?.Teacher.User;
+                    if(teacher != null)
+                        dest.TeacherName = $"{teacher.FirstName} {teacher.LastName}";
                     dest.SubjectName = src.Halaqa.Subject.Name;
                     dest.GuestLiveLink = src.Halaqa.GuestLiveLink;
                     dest.Name = src.Halaqa.Name;

@@ -14,14 +14,14 @@ namespace MotqenIslamicLearningPlatform_API.Repositories
             return Db.Students.Where(s => s.ParentId == parentId).Include(s => s.User).ToList();
         }
 
-        public ICollection<Student>? GetAllWithMinimalDataInclude(bool includeDeleted = false)
+        public ICollection<Student>? GetAllWithMinimalDataInclude(int halaqaId = 0, bool includeDeleted = false)
         {
             return Db.Students
                 .Include(s => s.User)
-                .Where(s => includeDeleted || !s.IsDeleted)
+                .Where(s => (includeDeleted || !s.IsDeleted) && (s.HalaqaStudents.FirstOrDefault(hs => hs.StudentId == s.Id && hs.HalaqaId == halaqaId ) == null))
                 .ToList();
         }
-
+        
 
         public Student? GetSpecificStudentDetailsById(int studentId, bool includeDeleted = false)
         {
