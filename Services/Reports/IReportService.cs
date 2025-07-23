@@ -3,6 +3,7 @@ using MotqenIslamicLearningPlatform_API.DTOs.ReportesDtos.ParentDtos.AttendanceS
 using MotqenIslamicLearningPlatform_API.DTOs.ReportesDtos.ParentDtos.IslamicSubjectsProgress;
 using MotqenIslamicLearningPlatform_API.DTOs.ReportesDtos.ParentDtos.QuranProgress;
 using MotqenIslamicLearningPlatform_API.DTOs.ReportesDtos.TeacherDtos;
+using MotqenIslamicLearningPlatform_API.DTOs.ReportesDtos.AdminDtos;
 
 namespace MotqenIslamicLearningPlatform_API.Services.Reports
 {
@@ -45,5 +46,11 @@ namespace MotqenIslamicLearningPlatform_API.Services.Reports
         List<IslamicSubjectsDetailedProgressReportDto> GetHalaqaIslamicProgress(int halaqaId);
 
         List<HalaqaComparisonDto> GetHalaqasComparison(List<int> halaqaIds);
+
+        List<AdminDashboardSummaryDto> GetAdminDashboardSummary();
+        List<UserSummaryDto> GetUserSummaryReport();
+        List<TeacherPerformanceDto> GetTeacherPerformanceReport();
+        List<StudentPerformanceOverviewDto> GetStudentPerformanceOverview();
+        List<HalaqaHealthReportDto> GetHalaqaHealthReport();
     }
 }

@@ -8,6 +8,8 @@ using MotqenIslamicLearningPlatform_API.Models.Shared;
 using MotqenIslamicLearningPlatform_API.Models.StudentModel;
 using MotqenIslamicLearningPlatform_API.UnitOfWorks;
 using System.Globalization;
+using MotqenIslamicLearningPlatform_API.DTOs.ReportesDtos.AdminDtos;
+using Microsoft.EntityFrameworkCore;
 
 namespace MotqenIslamicLearningPlatform_API.Services.Reports
 {
@@ -561,6 +563,337 @@ namespace MotqenIslamicLearningPlatform_API.Services.Reports
             }
 
             return comparisonResults.OrderByDescending(h => h.QuranProgress.TotalLinesMemorized).ToList();
+        }
+
+        public List<AdminDashboardSummaryDto> GetAdminDashboardSummary()
+        {
+            var db = Unit.StudentRepo.Db;
+            var totalUsers = db.Users.Count(u => !u.IsDeleted);
+            var totalTeachers = db.Teachers.Count(t => !t.IsDeleted);
+            var totalStudents = db.Students.Count(s => !s.IsDeleted);
+            var totalHalaqas = db.Halaqas.Count(h => !h.IsDeleted);
+            // Attendance rate: average of all student attendance
+            var totalAttendance = db.StudentAttendances.Count();
+            var presentAttendance = db.StudentAttendances.Count(a => a.Status == Enums.AttendanceStatus.Present);
+            decimal overallAttendanceRate = totalAttendance > 0 ? (decimal)presentAttendance / totalAttendance * 100 : 0;
+            // New registrations: use earliest DateJoined in HalaqaStudent as proxy
+            var thisMonth = DateTime.UtcNow.Month;
+            var thisYear = DateTime.UtcNow.Year;
+            var newRegistrations = db.HalaqaStudent.Count(hs => hs.DateJoined.Month == thisMonth && hs.DateJoined.Year == thisYear);
+
+            // Chart-ready: RegistrationsOverTime (last 12 months)
+            var registrationsOverTime = new List<TimeSeriesPoint>();
+            var now = DateTime.UtcNow;
+            for (int i = 11; i >= 0; i--) {
+                var dt = now.AddMonths(-i);
+                var count = db.HalaqaStudent.Count(hs => hs.DateJoined.Year == dt.Year && hs.DateJoined.Month == dt.Month);
+                registrationsOverTime.Add(new TimeSeriesPoint {
+                    Period = $"{dt:yyyy-MM}",
+                    Value = count
+                });
+            }
+            // Chart-ready: AttendanceRateOverTime (last 12 months)
+            var attendanceRateOverTime = new List<TimeSeriesPoint>();
+            for (int i = 11; i >= 0; i--) {
+                var dt = now.AddMonths(-i);
+                var monthAttendances = db.StudentAttendances.Where(a => a.AttendanceDate.Year == dt.Year && a.AttendanceDate.Month == dt.Month).ToList();
+                var monthTotal = monthAttendances.Count;
+                var monthPresent = monthAttendances.Count(a => a.Status == Enums.AttendanceStatus.Present);
+                int rate = monthTotal > 0 ? (int)Math.Round((decimal)monthPresent / monthTotal * 100) : 0;
+                attendanceRateOverTime.Add(new TimeSeriesPoint {
+                    Period = $"{dt:yyyy-MM}",
+                    Value = rate
+                });
+            }
+            // Chart-ready: UserRoleBreakdown
+            var userRoleCounts = new[] {
+                new { Role = "Student", Count = db.Students.Count(s => !s.IsDeleted) },
+                new { Role = "Teacher", Count = db.Teachers.Count(t => !t.IsDeleted) },
+                new { Role = "Parent", Count = db.Parents.Count(p => !p.IsDeleted) },
+                new { Role = "Admin", Count = 0 } // If you have admin users, update this
+            };
+            int totalRoles = userRoleCounts.Sum(x => x.Count);
+            var userRoleBreakdown = userRoleCounts.Select(x => new CategoryBreakdown {
+                Category = x.Role,
+                Count = x.Count,
+                Percentage = totalRoles > 0 ? (decimal)x.Count / totalRoles * 100 : 0
+            }).ToList();
+
+            return new List<AdminDashboardSummaryDto> {
+                new AdminDashboardSummaryDto {
+                    TotalUsers = totalUsers,
+                    TotalTeachers = totalTeachers,
+                    TotalStudents = totalStudents,
+                    TotalHalaqas = totalHalaqas,
+                    OverallAttendanceRate = overallAttendanceRate,
+                    NewRegistrationsThisMonth = newRegistrations,
+                    RegistrationsOverTime = registrationsOverTime,
+                    AttendanceRateOverTime = attendanceRateOverTime,
+                    UserRoleBreakdown = userRoleBreakdown
+                }
+            };
+        }
+
+        public List<UserSummaryDto> GetUserSummaryReport()
+        {
+            var db = Unit.StudentRepo.Db;
+            var users = db.Users.Where(u => !u.IsDeleted).ToList();
+            var result = new List<UserSummaryDto>();
+            foreach (var user in users)
+            {
+                string role = user.Teacher != null ? "Teacher" : user.Student != null ? "Student" : user.Parent != null ? "Parent" : "Unknown";
+                // RegistrationDate: use earliest DateJoined in HalaqaStudent for students, null otherwise
+                DateTime? registrationDate = null;
+                if (user.Student != null)
+                {
+                    var studentId = user.Student.Id;
+                    var firstJoin = db.HalaqaStudent.Where(hs => hs.StudentId == studentId).OrderBy(hs => hs.DateJoined).FirstOrDefault();
+                    if (firstJoin != null) registrationDate = firstJoin.DateJoined;
+                }
+                // LastLoginDate and IsActive: not tracked, set to null/true for now
+                result.Add(new UserSummaryDto
+                {
+                    UserId = user.Id,
+                    FullName = $"{user.FirstName} {user.LastName}",
+                    Email = user.Email,
+                    Role = role,
+                    RegistrationDate = registrationDate,
+                    LastLoginDate = null,
+                    IsActive = true
+                });
+            }
+            return result;
+        }
+
+        public List<TeacherPerformanceDto> GetTeacherPerformanceReport()
+        {
+            var db = Unit.StudentRepo.Db;
+            var teachers = db.Teachers.Where(t => !t.IsDeleted)
+                .Include(t =>t.User)
+                .ToList();
+            var now = DateTime.UtcNow;
+            var result = new List<TeacherPerformanceDto>();
+            foreach (var teacher in teachers)
+            {
+                var teacherAttendances = db.TeacherAttendances.Where(a => a.TeacherId == teacher.Id).ToList();
+                var teacherHalaqas = db.HalaqaTeacher.Where(ht => ht.TeacherId == teacher.Id).ToList();
+                var teacherStudents = db.HalaqaStudent.Where(hs => teacherHalaqas.Select(ht => ht.HalaqaId).Contains(hs.HalaqaId)).ToList();
+                var teacherStudentIds = teacherStudents.Select(hs => hs.StudentId).Distinct().ToList();
+                var studentProgress = db.ProgressTrackings.Where(pt => teacherStudentIds.Contains(pt.StudentId ?? 0)).ToList();
+                // Attendance rate
+                var totalAttendance = teacherAttendances.Count;
+                var presentAttendance = teacherAttendances.Count(a => a.Status == Enums.AttendanceStatus.Present);
+                decimal avgAttendanceRate = totalAttendance > 0 ? (decimal)presentAttendance / totalAttendance * 100 : 0;
+                // Student progress: average lines memorized per student
+                decimal avgStudentProgress = 0;
+                if (teacherStudentIds.Count > 0)
+                {
+                    var totalLines = studentProgress.Sum(pt => pt.QuranProgressTrackingDetail != null ? pt.QuranProgressTrackingDetail.NumberOfLines : 0);
+                    avgStudentProgress = teacherStudentIds.Count > 0 ? (decimal)totalLines / teacherStudentIds.Count : 0;
+                }
+                // Chart-ready: AttendanceRateOverTime (last 12 months)
+                var attendanceRateOverTime = new List<TimeSeriesPoint>();
+                for (int i = 11; i >= 0; i--) {
+                    var dt = now.AddMonths(-i);
+                    var monthAttendances = teacherAttendances.Where(a => a.AttendanceDate.Year == dt.Year && a.AttendanceDate.Month == dt.Month).ToList();
+                    var monthTotal = monthAttendances.Count;
+                    var monthPresent = monthAttendances.Count(a => a.Status == Enums.AttendanceStatus.Present);
+                    int rate = monthTotal > 0 ? (int)Math.Round((decimal)monthPresent / monthTotal * 100) : 0;
+                    attendanceRateOverTime.Add(new TimeSeriesPoint {
+                        Period = $"{dt:yyyy-MM}",
+                        Value = rate
+                    });
+                }
+                // Chart-ready: StudentProgressOverTime (last 12 months)
+                var studentProgressOverTime = new List<TimeSeriesPoint>();
+                for (int i = 11; i >= 0; i--) {
+                    var dt = now.AddMonths(-i);
+                    var monthProgress = studentProgress.Where(pt => pt.Date.Year == dt.Year && pt.Date.Month == dt.Month).ToList();
+                    var lines = monthProgress.Sum(pt => pt.QuranProgressTrackingDetail != null ? pt.QuranProgressTrackingDetail.NumberOfLines : 0);
+                    studentProgressOverTime.Add(new TimeSeriesPoint {
+                        Period = $"{dt:yyyy-MM}",
+                        Value = lines
+                    });
+                }
+                // Chart-ready: HalaqaAssignmentBreakdown
+                var halaqaCounts = teacherHalaqas.GroupBy(ht => ht.HalaqaId).Select(g => new { HalaqaId = g.Key, Count = g.Count() }).ToList();
+                int totalHalaqaAssignments = halaqaCounts.Sum(x => x.Count);
+                var halaqaAssignmentBreakdown = halaqaCounts.Select(x => new CategoryBreakdown {
+                    Category = db.Halaqas.FirstOrDefault(h => h.Id == x.HalaqaId)?.Name ?? $"Halaqa {x.HalaqaId}",
+                    Count = x.Count,
+                    Percentage = totalHalaqaAssignments > 0 ? (decimal)x.Count / totalHalaqaAssignments * 100 : 0
+                }).ToList();
+                var user = teacher.User;
+                var teacherName = user != null ? $"{user.FirstName} {user.LastName}" : "Unknown";
+                var email = user?.Email ?? "No email";
+
+                result.Add(new TeacherPerformanceDto {
+                    TeacherId = teacher.Id,
+                    TeacherName = teacherName,
+                    Email = email,
+                    TotalAssignedHalaqas = teacherHalaqas.Count,
+                    AverageAttendanceRate = avgAttendanceRate,
+                    AverageStudentProgress = avgStudentProgress,
+                    AttendanceRateOverTime = attendanceRateOverTime,
+                    StudentProgressOverTime = studentProgressOverTime,
+                    HalaqaAssignmentBreakdown = halaqaAssignmentBreakdown
+                });
+            }
+            return result;
+        }
+
+        public List<StudentPerformanceOverviewDto> GetStudentPerformanceOverview()
+        {
+            var db = Unit.StudentRepo.Db;
+            var students = db.Students.Where(s => !s.IsDeleted)
+                .Include(s=>s.User)
+                .ToList();
+            var now = DateTime.UtcNow;
+            var result = new List<StudentPerformanceOverviewDto>();
+            foreach (var student in students)
+            {
+                var attendances = db.StudentAttendances.Where(a => a.StudentId == student.Id).ToList();
+                var progress = db.ProgressTrackings.Where(pt => pt.StudentId == student.Id).ToList();
+                // Attendance rate
+                var totalAttendance = attendances.Count;
+                var presentAttendance = attendances.Count(a => a.Status == Enums.AttendanceStatus.Present);
+                decimal attendanceRate = totalAttendance > 0 ? (decimal)presentAttendance / totalAttendance * 100 : 0;
+                // Quran memorization/review
+                var quranMemorized = progress.Where(pt => pt.QuranProgressTrackingDetail != null && pt.QuranProgressTrackingDetail.Type == Enums.ProgressType.Memorization).Sum(pt => pt.QuranProgressTrackingDetail.NumberOfLines);
+                var quranReviewed = progress.Where(pt => pt.QuranProgressTrackingDetail != null && pt.QuranProgressTrackingDetail.Type == Enums.ProgressType.Review).Sum(pt => pt.QuranProgressTrackingDetail.NumberOfLines);
+                // Islamic subject progress
+                var islamicPages = progress.Where(pt => pt.IslamicSubjectsProgressTrackingDetail != null).Sum(pt => (pt.IslamicSubjectsProgressTrackingDetail.ToPage - pt.IslamicSubjectsProgressTrackingDetail.FromPage + 1));
+                // Chart-ready: AttendanceOverTime (last 12 months)
+                var attendanceOverTime = new List<TimeSeriesPoint>();
+                for (int i = 11; i >= 0; i--) {
+                    var dt = now.AddMonths(-i);
+                    var monthAttendances = attendances.Where(a => a.AttendanceDate.Year == dt.Year && a.AttendanceDate.Month == dt.Month).ToList();
+                    int present = monthAttendances.Count(a => a.Status == Enums.AttendanceStatus.Present);
+                    attendanceOverTime.Add(new TimeSeriesPoint {
+                        Period = $"{dt:yyyy-MM}",
+                        Value = present
+                    });
+                }
+                // Chart-ready: QuranMemorizationOverTime (last 12 months)
+                var quranMemorizationOverTime = new List<TimeSeriesPoint>();
+                for (int i = 11; i >= 0; i--) {
+                    var dt = now.AddMonths(-i);
+                    var monthMemorized = progress.Where(pt => pt.QuranProgressTrackingDetail != null && pt.QuranProgressTrackingDetail.Type == Enums.ProgressType.Memorization && pt.Date.Year == dt.Year && pt.Date.Month == dt.Month).Sum(pt => pt.QuranProgressTrackingDetail.NumberOfLines);
+                    quranMemorizationOverTime.Add(new TimeSeriesPoint {
+                        Period = $"{dt:yyyy-MM}",
+                        Value = monthMemorized
+                    });
+                }
+                // Chart-ready: QuranReviewOverTime (last 12 months)
+                var quranReviewOverTime = new List<TimeSeriesPoint>();
+                for (int i = 11; i >= 0; i--) {
+                    var dt = now.AddMonths(-i);
+                    var monthReviewed = progress.Where(pt => pt.QuranProgressTrackingDetail != null && pt.QuranProgressTrackingDetail.Type == Enums.ProgressType.Review && pt.Date.Year == dt.Year && pt.Date.Month == dt.Month).Sum(pt => pt.QuranProgressTrackingDetail.NumberOfLines);
+                    quranReviewOverTime.Add(new TimeSeriesPoint {
+                        Period = $"{dt:yyyy-MM}",
+                        Value = monthReviewed
+                    });
+                }
+                // Chart-ready: IslamicProgressOverTime (last 12 months)
+                var islamicProgressOverTime = new List<TimeSeriesPoint>();
+                for (int i = 11; i >= 0; i--) {
+                    var dt = now.AddMonths(-i);
+                    var monthPages = progress.Where(pt => pt.IslamicSubjectsProgressTrackingDetail != null && pt.Date.Year == dt.Year && pt.Date.Month == dt.Month).Sum(pt => (pt.IslamicSubjectsProgressTrackingDetail.ToPage - pt.IslamicSubjectsProgressTrackingDetail.FromPage + 1));
+                    islamicProgressOverTime.Add(new TimeSeriesPoint {
+                        Period = $"{dt:yyyy-MM}",
+                        Value = monthPages
+                    });
+                }
+                var studentName = student.User !=null ? $"{student.User.FirstName} {student.User.LastName}" : "";
+                var email = student.User?.Email ?? "No email";
+                result.Add(new StudentPerformanceOverviewDto {
+                    StudentId = student.Id,
+                    StudentName = studentName,
+                    Email = email,
+                    AttendanceRate = attendanceRate,
+                    TotalQuranLinesMemorized = quranMemorized,
+                    TotalQuranLinesReviewed = quranReviewed,
+                    TotalIslamicPagesCompleted = islamicPages,
+                    AttendanceOverTime = attendanceOverTime,
+                    QuranMemorizationOverTime = quranMemorizationOverTime,
+                    QuranReviewOverTime = quranReviewOverTime,
+                    IslamicProgressOverTime = islamicProgressOverTime
+                });
+            }
+            return result;
+        }
+
+        public List<HalaqaHealthReportDto> GetHalaqaHealthReport()
+        {
+            var db = Unit.StudentRepo.Db;
+            var halaqas = db.Halaqas.Where(h => !h.IsDeleted).ToList();
+            var now = DateTime.UtcNow;
+            var result = new List<HalaqaHealthReportDto>();
+            foreach (var halaqa in halaqas)
+            {
+                var students = db.HalaqaStudent.Where(hs => hs.HalaqaId == halaqa.Id).ToList();
+                var teachers = db.HalaqaTeacher.Where(ht => ht.HalaqaId == halaqa.Id).ToList();
+                var attendances = db.StudentAttendances.Where(a => a.HalaqaId == halaqa.Id).ToList();
+                var progress = db.ProgressTrackings.Where(pt => pt.HalaqaId == halaqa.Id).ToList();
+                // Attendance rate
+                var totalAttendance = attendances.Count;
+                var presentAttendance = attendances.Count(a => a.Status == Enums.AttendanceStatus.Present);
+                decimal avgAttendanceRate = totalAttendance > 0 ? (decimal)presentAttendance / totalAttendance * 100 : 0;
+                // Progress: average lines memorized per student
+                decimal avgProgress = 0;
+                if (students.Count > 0)
+                {
+                    var totalLines = progress.Sum(pt => pt.QuranProgressTrackingDetail != null ? pt.QuranProgressTrackingDetail.NumberOfLines : 0);
+                    avgProgress = students.Count > 0 ? (decimal)totalLines / students.Count : 0;
+                }
+                // Chart-ready: AttendanceRateOverTime (last 12 months)
+                var attendanceRateOverTime = new List<TimeSeriesPoint>();
+                for (int i = 11; i >= 0; i--) {
+                    var dt = now.AddMonths(-i);
+                    var monthAttendances = attendances.Where(a => a.AttendanceDate.Year == dt.Year && a.AttendanceDate.Month == dt.Month).ToList();
+                    var monthTotal = monthAttendances.Count;
+                    var monthPresent = monthAttendances.Count(a => a.Status == Enums.AttendanceStatus.Present);
+                    int rate = monthTotal > 0 ? (int)Math.Round((decimal)monthPresent / monthTotal * 100) : 0;
+                    attendanceRateOverTime.Add(new TimeSeriesPoint {
+                        Period = $"{dt:yyyy-MM}",
+                        Value = rate
+                    });
+                }
+                // Chart-ready: ProgressOverTime (last 12 months)
+                var progressOverTime = new List<TimeSeriesPoint>();
+                for (int i = 11; i >= 0; i--) {
+                    var dt = now.AddMonths(-i);
+                    var monthProgress = progress.Where(pt => pt.Date.Year == dt.Year && pt.Date.Month == dt.Month).ToList();
+                    var lines = monthProgress.Sum(pt => pt.QuranProgressTrackingDetail != null ? pt.QuranProgressTrackingDetail.NumberOfLines : 0);
+                    progressOverTime.Add(new TimeSeriesPoint {
+                        Period = $"{dt:yyyy-MM}",
+                        Value = lines
+                    });
+                }
+                // Chart-ready: RoleBreakdown
+                var roleCounts = new[] {
+                    new { Role = "Student", Count = students.Count },
+                    new { Role = "Teacher", Count = teachers.Count }
+                };
+                int totalRoles = roleCounts.Sum(x => x.Count);
+                var roleBreakdown = roleCounts.Select(x => new CategoryBreakdown {
+                    Category = x.Role,
+                    Count = x.Count,
+                    Percentage = totalRoles > 0 ? (decimal)x.Count / totalRoles * 100 : 0
+                }).ToList();
+                result.Add(new HalaqaHealthReportDto {
+                    HalaqaId = halaqa.Id,
+                    HalaqaName = halaqa.Name,
+                    StudentCount = students.Count,
+                    TeacherCount = teachers.Count,
+                    AverageAttendanceRate = avgAttendanceRate,
+                    AverageProgress = avgProgress,
+                    AttendanceRateOverTime = attendanceRateOverTime,
+                    ProgressOverTime = progressOverTime,
+                    RoleBreakdown = roleBreakdown
+                });
+            }
+            return result;
         }
 
     }
