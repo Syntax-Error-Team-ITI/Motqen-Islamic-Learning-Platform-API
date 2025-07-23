@@ -12,8 +12,7 @@ namespace MotqenIslamicLearningPlatform_API.Models.StudentModel
         public int Age { get; set; }
         public DateTime BirthDate { get; set; }
         public string Nationality { get; set; }
-        //public int UserId { get; set; }
-        //public virtual User User { get; set; }
+
 
         [ForeignKey("Parent")]
         public int? ParentId { get; set; }

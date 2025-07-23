@@ -9,8 +9,8 @@ namespace MotqenIslamicLearningPlatform_API.Models.ParentModel
         public string PhoneNumber { get; set; } = string.Empty;
         public string Address { get; set; } = string.Empty;
         public string Pic { get; set; } = string.Empty;
-        //public int? UserId { get; set; }
-        //public User? User { get; set; }
+
+
 
         [ForeignKey("User")]
         public string? UserId { get; set; }
