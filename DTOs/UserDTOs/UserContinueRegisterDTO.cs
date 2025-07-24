@@ -9,24 +9,25 @@ namespace MotqenIslamicLearningPlatform_API.DTOs.UserDTOs
 
         // common data 
         public string? Pic { get; set; }
-        public string? Gender { get; set; }
-        public int? Age { get; set; }
-
 
         // parent specific data
         public string? PhoneNumber { get; set; }
         public string? Address { get; set; }
 
+        [MaxLength(14), MinLength(14, ErrorMessage = "National number must be 14 digits")]
+        public string? NationalId { get; set; }
+
+
+
 
         // student specific data
         [DataType(DataType.Date)]
         public DateTime? BirthDate { get; set; }
+        public int? Age { get; set; }
+        public string? Gender { get; set; }
         public string? Nationality { get; set; }
 
-
-        // teacher specific data
-        // - pic 
-        // - gender
-        // - age
+        [MaxLength(14), MinLength(14, ErrorMessage = "Parent national number must be 14 digits")]
+        public string? ParentNationalId{ get; set; }
     }
 }
