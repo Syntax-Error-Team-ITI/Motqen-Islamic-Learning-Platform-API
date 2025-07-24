@@ -1,17 +1,20 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using MotqenIslamicLearningPlatform_API.Models.HalaqaModel;
+using MotqenIslamicLearningPlatform_API.Models.ParentModel;
 using MotqenIslamicLearningPlatform_API.Models.Shared;
 using MotqenIslamicLearningPlatform_API.Models.StudentModel;
 using MotqenIslamicLearningPlatform_API.Models.TeacherModel;
 
 namespace MotqenIslamicLearningPlatform_API.Models
 {
-    public class MotqenDbContext : DbContext
+    public class MotqenDbContext : IdentityDbContext<User>
     {
         public MotqenDbContext(DbContextOptions<MotqenDbContext> options) : base(options)
         {
         }
-        public DbSet<User> Users { get; set; }
+        //public DbSet<OldUser> Users { get; set; }
+        // used User: IdentityUser instead of OldUser >> AspNetUsers table will be created automatically by Identity
         public DbSet<Halaqa> Halaqas { get; set; }
         public DbSet<Student> Students { get; set; }
         public DbSet<Teacher> Teachers { get; set; }
