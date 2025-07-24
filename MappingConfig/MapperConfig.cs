@@ -26,7 +26,13 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
         public MapperConfig()
         {
             /// Parent 
-            CreateMap<Parent, ParentListDTO>().ReverseMap();
+            CreateMap<Parent, ParentListDTO>()
+                .AfterMap((src, dest) => {
+                    dest.Name = $"{src.User.FirstName} {src.User.LastName}";
+                    dest.Children = src.Students.Select(s => $"{s.User.FirstName} {s.User.LastName}").ToList();
+                });
+                //.ForMember(dest => dest.Name, opt => opt.MapFrom(src => $"{src.User.FirstName} {src.User.LastName}"))
+                //.ForMember(dest => dest.Children, opt => opt.MapFrom(src => src.Students.Select(ch => new {})));
             //Subject Mapping
             CreateMap<Subject, SubjectDto>().ReverseMap();
             CreateMap<Subject, CreateSubjectDto>().ReverseMap();
@@ -109,6 +115,7 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
             CreateMap<Halaqa, CreateHalaqaDto>().ReverseMap();
             CreateMap<Halaqa, UpdateHalaqaDto>()
                 .ReverseMap();
+            CreateMap<Halaqa, HalaqaNamesListDTO>();
 
             CreateMap<ClassSchedule, ClassScheduleDto>()
                 .ForMember(dest => dest.HalaqaName, opt => opt.MapFrom(src => src.Halaqa.Name))
