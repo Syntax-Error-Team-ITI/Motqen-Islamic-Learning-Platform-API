@@ -24,7 +24,12 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.HalaqaCon
             this.roomService = roomService;
             _mapper = mapper;
         }
-
+        [HttpGet("names")]
+        public IActionResult GetHalaqaNamesList()
+        {
+            var halaqas = _unitOfWork.HalaqaRepo.GetAll();
+            return Ok(_mapper.Map<List<HalaqaNamesListDTO>>(halaqas));
+        }
         [HttpGet]
         public IActionResult GetAll(bool includeDeleted = false)
         {

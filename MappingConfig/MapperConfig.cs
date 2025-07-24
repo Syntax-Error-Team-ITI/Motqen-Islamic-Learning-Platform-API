@@ -26,9 +26,14 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
         public MapperConfig()
         {
 
+
             #region Parent Mapping
 
-            CreateMap<Parent, ParentListDTO>().ReverseMap();
+            CreateMap<Parent, ParentListDTO>()
+                .AfterMap((src, dest) => {
+                    dest.Name = $"{src.User.FirstName} {src.User.LastName}";
+                    dest.Children = src.Students.Select(s => $"{s.User.FirstName} {s.User.LastName}").ToList();
+                });
 
             #endregion
 
@@ -60,7 +65,7 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
             CreateMap<StudentSubject, StudentSubjectDto>()
                 .ForMember(dest => dest.SubjectName, opt => opt.MapFrom(src => src.Subject.Name))
                 .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => $"{src.Student.User.FirstName} {src.Student.User.LastName}"));
-           
+
 
             CreateMap<StudentSubject, CreateStudentSubjectDto>().ReverseMap();
             #endregion
@@ -92,7 +97,7 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
                 .ForMember(ProgrssListDTO => ProgrssListDTO.LessonName, opt => opt.MapFrom(src => src.IslamicSubjectsProgressTrackingDetail.LessonName))
                 .ForMember(ProgrssListDTO => ProgrssListDTO.FromPage, opt => opt.MapFrom(src => src.IslamicSubjectsProgressTrackingDetail.FromPage))
                 .ForMember(ProgrssListDTO => ProgrssListDTO.ToPage, opt => opt.MapFrom(src => src.IslamicSubjectsProgressTrackingDetail.ToPage));
-           
+
             CreateMap<ProgressFormDTO, ProgressTracking>();
 
             #endregion
@@ -110,19 +115,19 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
 
             CreateMap<Halaqa, UpdateHalaqaDto>().ReverseMap();
 
+            CreateMap<Halaqa, HalaqaNamesListDTO>();
+
             #endregion
 
             #region HalaqaStudent Mapping
-            // HalaqaStudent => StudentHalaqaDisplayDTO
+
             CreateMap<HalaqaStudent, StudentHalaqaDisplayDTO>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => $"{src.Student.User.FirstName} {src.Student.User.LastName}"))
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.StudentId))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Student.User.Email));
-            
-            // HalaqaStudent => StudentHalaqaFormDTO
+
             CreateMap<HalaqaStudent, StudentHalaqaFormDTO>().ReverseMap();
-            
-            // HalaqaStudent => HalaqaStudentDisplayHalaqaDTO
+
             CreateMap<HalaqaStudent, HalaqaStudentDisplayHalaqaDTO>()
                 .AfterMap(
                 (src, dest, context) =>
@@ -144,7 +149,7 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
                 .ForMember(dest => dest.HalaqaName, opt => opt.MapFrom(src => src.Halaqa.Name))
                 .ForMember(dest => dest.TeacherName, opt => opt.MapFrom(src => $"{src.Teacher.User.FirstName} {src.Teacher.User.LastName}"))
                 .ForMember(dest => dest.SubjectName, opt => opt.MapFrom(src => src.Halaqa.Subject.Name));
-           
+
             CreateMap<HalaqaTeacher, CreateHalaqaTeacherDto>().ReverseMap();
 
             CreateMap<HalaqaTeacher, TeacherDto>()
@@ -214,11 +219,11 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
 
             CreateMap<ProgressTracking, QuranDetailedProgressReportDto>()
                 .ForMember(dest => dest.FromSurahNumber, opt => opt.MapFrom(src => src.QuranProgressTrackingDetail.FromSurah))
-                .ForMember(dest => dest.ToSurahNumber, opt => opt.MapFrom(src => src.QuranProgressTrackingDetail.ToSurah))  
+                .ForMember(dest => dest.ToSurahNumber, opt => opt.MapFrom(src => src.QuranProgressTrackingDetail.ToSurah))
                 .ForMember(dest => dest.FromAyah, opt => opt.MapFrom(src => src.QuranProgressTrackingDetail.FromAyah))
                 .ForMember(dest => dest.ToAyah, opt => opt.MapFrom(src => src.QuranProgressTrackingDetail.ToAyah))
                 .ForMember(dest => dest.NumberOfLines, opt => opt.MapFrom(src => src.QuranProgressTrackingDetail.NumberOfLines))
-                .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.QuranProgressTrackingDetail.Type.ToString())); 
+                .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.QuranProgressTrackingDetail.Type.ToString()));
 
             CreateMap<ProgressTracking, QuranProgressChartPointDto>()
                 .ForMember(dest => dest.NumberOfLines, opt => opt.MapFrom(src => src.QuranProgressTrackingDetail.NumberOfLines))
@@ -234,12 +239,12 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
 
             CreateMap<IslamicSubjectsProgressTracking, IslamicSubjectProgressOverTimeChartDto>()
                 .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.ProgressTracking.Date))
-                .ForMember(dest => dest.PagesOrLessonsCompleted, opt => opt.MapFrom(src => src.ToPage - src.FromPage + 1)) 
+                .ForMember(dest => dest.PagesOrLessonsCompleted, opt => opt.MapFrom(src => src.ToPage - src.FromPage + 1))
                 .ForMember(dest => dest.SubjectName, opt => opt.MapFrom(src => src.Subject));
-            
+
             CreateMap<ProgressTracking, IslamicSubjectProgressOverTimeChartDto>()
                            .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.IslamicSubjectsProgressTrackingDetail.ProgressTracking.Date))
-                           .ForMember(dest => dest.PagesOrLessonsCompleted, opt => opt.MapFrom(src => src.IslamicSubjectsProgressTrackingDetail.ToPage - src.IslamicSubjectsProgressTrackingDetail.FromPage + 1)) 
+                           .ForMember(dest => dest.PagesOrLessonsCompleted, opt => opt.MapFrom(src => src.IslamicSubjectsProgressTrackingDetail.ToPage - src.IslamicSubjectsProgressTrackingDetail.FromPage + 1))
                            .ForMember(dest => dest.SubjectName, opt => opt.MapFrom(src => src.IslamicSubjectsProgressTrackingDetail.Subject));
             #endregion
 
