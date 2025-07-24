@@ -18,7 +18,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
         [HttpGet("dashboard-summary")]
         public ActionResult<AdminDashboardSummaryDto> GetDashboardSummary()
         {
-            var summary = _reportService.GetAdminDashboardSummary().FirstOrDefault();
+            var summary = _reportService.GetAdminDashboardSummary();
             return Ok(summary);
         }
 

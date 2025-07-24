@@ -10,9 +10,5 @@ namespace MotqenIslamicLearningPlatform_API.DTOs.ReportesDtos.AdminDtos
         public int TotalAssignedHalaqas { get; set; }
         public decimal AverageAttendanceRate { get; set; }
         public decimal AverageStudentProgress { get; set; }
-
-        public List<TimeSeriesPoint>? AttendanceRateOverTime { get; set; } 
-        public List<TimeSeriesPoint>? StudentProgressOverTime { get; set; } 
-        public List<CategoryBreakdown>? HalaqaAssignmentBreakdown { get; set; } 
     }
 } 

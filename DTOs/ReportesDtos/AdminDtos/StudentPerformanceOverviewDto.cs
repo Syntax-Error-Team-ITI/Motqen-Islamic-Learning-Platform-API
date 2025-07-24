@@ -12,11 +12,5 @@ namespace MotqenIslamicLearningPlatform_API.DTOs.ReportesDtos.AdminDtos
         public int TotalQuranLinesMemorized { get; set; }
         public int TotalQuranLinesReviewed { get; set; }
         public int TotalIslamicPagesCompleted { get; set; }
-
-        // Chart-ready fields
-        public List<TimeSeriesPoint>? AttendanceOverTime { get; set; } // e.g., per month
-        public List<TimeSeriesPoint>? QuranMemorizationOverTime { get; set; } // e.g., per month
-        public List<TimeSeriesPoint>? QuranReviewOverTime { get; set; } // e.g., per month
-        public List<TimeSeriesPoint>? IslamicProgressOverTime { get; set; } // e.g., per month
     }
 } 
