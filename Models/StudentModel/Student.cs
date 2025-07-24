@@ -1,6 +1,7 @@
 ﻿using MotqenIslamicLearningPlatform_API.Models.HalaqaModel;
 using MotqenIslamicLearningPlatform_API.Models.ParentModel;
 using MotqenIslamicLearningPlatform_API.Models.Shared;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MotqenIslamicLearningPlatform_API.Models.StudentModel
@@ -13,6 +14,8 @@ namespace MotqenIslamicLearningPlatform_API.Models.StudentModel
         public DateTime BirthDate { get; set; }
         public string Nationality { get; set; }
 
+        [MaxLength(14), MinLength(14, ErrorMessage = "Parent national number must be 14 digits")]
+        public string? ParentNationalId{ get; set; }
 
         [ForeignKey("Parent")]
         public int? ParentId { get; set; }

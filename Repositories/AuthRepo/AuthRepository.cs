@@ -119,14 +119,15 @@ namespace MotqenIslamicLearningPlatform_API.Repositories.AuthRepo
                 .Include(u => u.Parent)
                 .FirstOrDefaultAsync(u => u.UserName == model.Username);
 
-            var roles = await userManager.GetRolesAsync(user);
-            foreach (var role in roles)
-            {
-                if (role != model.Role)
-                {
-                    return new AuthResult { Succeeded = false, Message = "This user does not have the required role!" };
-                }
-            }
+
+            //var roles = await userManager.GetRolesAsync(user);
+            //foreach (var role in roles)
+            //{
+            //    if (role != model.Role)
+            //    {
+            //        return new AuthResult { Succeeded = false, Message = "This user does not have the required role!" };
+            //    }
+            //}
 
             if (user == null)
                 return new AuthResult { Succeeded = false, Message = "Invalid username or password!" };
@@ -134,6 +135,17 @@ namespace MotqenIslamicLearningPlatform_API.Repositories.AuthRepo
                 return new AuthResult { Succeeded = false, Message = "Invalid username or password!" };
             if (!user.EmailConfirmed)
                 return new AuthResult { Succeeded = false, Message = "Email is not confirmed!" };
+
+            if (!await userManager.IsInRoleAsync(user, UserRoles.Admin)
+                && !await userManager.IsInRoleAsync(user, UserRoles.Teacher)
+                && user.Student == null
+                && user.Parent == null
+                )
+                return new AuthResult
+                {
+                    Succeeded = false,
+                    Message = "You have not completed your registration yet. Please continue registration."
+                };
 
             var tokenDTO = await GenerateTokenAsync(user);
 
