@@ -32,6 +32,12 @@ namespace MotqenIslamicLearningPlatform_API.Repositories
                 .Where(s => includeDeleted || !s.IsDeleted)
                 .FirstOrDefault(stud => stud.Id == studentId);
         }
-
+        public ICollection<Student> GetAllWithIncludes(bool includeDeleted = false)
+        {
+            return Db.Students
+                .Include(s => s.User)
+                .Where(s => includeDeleted || !s.IsDeleted)
+                .ToList();
+        }
     }
 }

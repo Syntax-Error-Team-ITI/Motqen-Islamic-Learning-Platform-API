@@ -15,6 +15,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             _reportService = reportService;
         }
 
+        #region Summary
         [HttpGet("dashboard-summary")]
         public ActionResult<AdminDashboardSummaryDto> GetDashboardSummary()
         {
@@ -28,7 +29,9 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             var users = _reportService.GetUserSummaryReport();
             return Ok(users);
         }
+        #endregion
 
+        #region  Performance
         [HttpGet("teacher-performance")]
         public ActionResult<List<TeacherPerformanceDto>> GetTeacherPerformance()
         {
@@ -43,11 +46,15 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             return Ok(data);
         }
 
+        #endregion
+
+        #region Halaqa Health
         [HttpGet("halaqa-health")]
         public ActionResult<List<HalaqaHealthReportDto>> GetHalaqaHealth()
         {
             var data = _reportService.GetHalaqaHealthReport();
             return Ok(data);
         }
+        #endregion
     }
 }
