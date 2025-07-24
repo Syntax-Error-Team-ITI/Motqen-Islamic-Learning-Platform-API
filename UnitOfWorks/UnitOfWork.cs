@@ -2,7 +2,6 @@
 using MotqenIslamicLearningPlatform_API.Models;
 using MotqenIslamicLearningPlatform_API.Models.Shared;
 using MotqenIslamicLearningPlatform_API.Repositories;
-using MotqenIslamicLearningPlatform_API.Repositories.AuthRepo;
 
 namespace MotqenIslamicLearningPlatform_API.UnitOfWorks
 {
@@ -24,24 +23,16 @@ namespace MotqenIslamicLearningPlatform_API.UnitOfWorks
         private StudentSubjectRepository studentSubjectRepo;
         private TeacherAttendanceRepository teacherAttendanceRepo;
         private TeacherSubjectRepository teacherSubjectRepo;
-        private AuthRepository authRepo;
         private UserRepository userRepo;
         private UserManager<User> userManager;
-        private RoleManager<IdentityRole> roleManager;
-        private IConfiguration configuration;
-
 
         public UnitOfWork(
             MotqenDbContext db,
-            UserManager<User> userManager,
-            RoleManager<IdentityRole> roleManager,
-            IConfiguration configuration
+            UserManager<User> userManager
             )
         {
             this.db = db;
             this.userManager = userManager;
-            this.roleManager = roleManager;
-            this.configuration = configuration;
         }
 
         public UserRepository UserRepo
@@ -56,18 +47,6 @@ namespace MotqenIslamicLearningPlatform_API.UnitOfWorks
             }
         }
 
-        public AuthRepository AuthRepo
-        {
-            get
-            {
-                if (authRepo == null)
-                {
-                    authRepo = new AuthRepository(db, userManager, roleManager, configuration);
-                }
-                return this.authRepo;
-            }
-        }
-
         public StudentRepository StudentRepo
         {
             get
@@ -79,6 +58,7 @@ namespace MotqenIslamicLearningPlatform_API.UnitOfWorks
                 return this.studentRepo;
             }
         }
+
         public TeacherRepository TeacherRepo
         {
             get

@@ -2,11 +2,12 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using MotqenIslamicLearningPlatform_API.Authorization;
 using MotqenIslamicLearningPlatform_API.MappingConfig;
 using MotqenIslamicLearningPlatform_API.Models;
 using MotqenIslamicLearningPlatform_API.Models.Shared;
 using MotqenIslamicLearningPlatform_API.Services;
+using MotqenIslamicLearningPlatform_API.Services.Auth;
+using MotqenIslamicLearningPlatform_API.Services.Auth.Utilities;
 using MotqenIslamicLearningPlatform_API.Services.Chat;
 using MotqenIslamicLearningPlatform_API.Services.Email;
 using MotqenIslamicLearningPlatform_API.Services.Reports;
@@ -68,7 +69,7 @@ builder.Services.AddAuthentication(options =>
 
 
 builder.Services.AddScoped<UnitOfWork>();
-//builder.Services.AddScoped<UserManager<User>>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MapperConfig>());
 builder.Services.AddTransient<IEmailService, EmailService>();
 
@@ -110,7 +111,6 @@ using (var scope = app.Services.CreateScope())
     var service = scope.ServiceProvider;
     await RoleInitializer.InitializeAsync(service);
 }
-
 
 
 // Configure the HTTP request pipeline.

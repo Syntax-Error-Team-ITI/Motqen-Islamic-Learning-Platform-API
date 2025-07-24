@@ -50,7 +50,7 @@ namespace MotqenIslamicLearningPlatform_API.Services.Email
             {
                 ToEmail = user.Email,
                 Subject = "Confirm your email",
-                Body = $"userId: [{user.Id}] --- token: [{emailConfirmToken}]"
+                Body = $"userId: [ {user.Id} ] --- token: [ {emailConfirmToken} ]"
             };
 
             // Send

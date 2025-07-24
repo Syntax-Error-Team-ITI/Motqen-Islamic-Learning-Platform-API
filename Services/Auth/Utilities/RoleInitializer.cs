@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace MotqenIslamicLearningPlatform_API.Authorization
+namespace MotqenIslamicLearningPlatform_API.Services.Auth.Utilities
 {
     public static class RoleInitializer
     {

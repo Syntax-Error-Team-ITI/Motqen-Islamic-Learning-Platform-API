@@ -1,14 +1,14 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using MotqenIslamicLearningPlatform_API.Authorization;
 using MotqenIslamicLearningPlatform_API.DTOs.AuthDTOs;
 using MotqenIslamicLearningPlatform_API.DTOs.UserDTOs;
 using MotqenIslamicLearningPlatform_API.Models;
 using MotqenIslamicLearningPlatform_API.Models.ParentModel;
 using MotqenIslamicLearningPlatform_API.Models.Shared;
 using MotqenIslamicLearningPlatform_API.Models.StudentModel;
-using MotqenIslamicLearningPlatform_API.Models.TeacherModel;
+using MotqenIslamicLearningPlatform_API.Services.Auth;
+using MotqenIslamicLearningPlatform_API.Services.Auth.Utilities;
 using MotqenIslamicLearningPlatform_API.Services.Email;
 using MotqenIslamicLearningPlatform_API.UnitOfWorks;
 
@@ -16,7 +16,13 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Auth
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthController(UnitOfWork unit, IEmailService emailService, UserManager<User> userManager, MotqenDbContext db) : ControllerBase
+    public class AuthController(
+        UnitOfWork unit,
+        IEmailService emailService,
+        IAuthService authService,
+        UserManager<User> userManager,
+        MotqenDbContext db
+        ) : ControllerBase
     {
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] UserRegisterDTO userRegisterDto)
@@ -24,7 +30,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Auth
             if (userRegisterDto.Role == UserRoles.Admin || userRegisterDto.Role == UserRoles.Teacher)
                 return BadRequest("You cannot register as an Admin or Teacher. Please contact the system administrator.");
 
-            var registerResult = await unit.AuthRepo.RegisterAsync(userRegisterDto);
+            var registerResult = await authService.RegisterAsync(userRegisterDto);
             if (!registerResult.Succeeded)
             {
                 return BadRequest(registerResult.Message);
@@ -35,12 +41,23 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Auth
 
             return Ok(registerResult.Message);
         }
+        [HttpPost("resend-confirmation-email")]
+        public async Task<IActionResult> ResendConfirmationEmail(string email)
+        {
+            var user = await userManager.FindByEmailAsync(email);
+            if (user == null || (await userManager.IsEmailConfirmedAsync(user)))
+            {
+                return BadRequest("User not found or already confirmed.");
+            }
+            await emailService.SendEmailConfirmationAsync(user);
+            return Ok("Confirmation email sent successfully.");
+        }
 
         // this endpoint is only accessed through the link in the email sent to the user after registration
         [HttpPost("confirm-email")]
         public async Task<IActionResult> ConfirmEmail(EmailConfirmDTO request)
         {
-            var confirmResult = await unit.AuthRepo.ConfirmEmailAsync(request);
+            var confirmResult = await authService.ConfirmEmailAsync(request);
             if (!confirmResult.Succeeded)
             {
                 return BadRequest(confirmResult.Message);
@@ -51,7 +68,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Auth
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] UserLoginDTO model)
         {
-            var loginResult = await unit.AuthRepo.LoginAsync(model);
+            var loginResult = await authService.LoginAsync(model);
             if (!loginResult.Succeeded)
             {
                 return BadRequest(loginResult.Message);
@@ -70,7 +87,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Auth
                 .Include(u => u.Parent)
                 .Include(u => u.Teacher)
                 .SingleOrDefaultAsync(u => u.Email == request.Email);
-            if (user == null || !user.EmailConfirmed)
+            if (user == null || !(await userManager.IsEmailConfirmedAsync(user)))
                 return BadRequest("User not found or not confirmed");
 
             // 2 check if the user has already completed their registration while not being an Admin or Teacher
@@ -126,7 +143,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Auth
                 .Include(u => u.Student)
                 .SingleOrDefaultAsync(u => u.Email == studentEmail);
 
-            if (userStudent == null || userStudent.Student == null || !userStudent.EmailConfirmed)
+            if (userStudent == null || userStudent.Student == null || !(await userManager.IsEmailConfirmedAsync(userStudent)))
                 return BadRequest("Student not found or not registered.");
 
             // 2 check if the parent exists
@@ -134,7 +151,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Auth
                 .Include(u => u.Parent)
                 .SingleOrDefaultAsync(u => u.Email == parentEmail);
 
-            if (userParent == null || userParent.Parent == null || !userParent.EmailConfirmed)
+            if (userParent == null || userParent.Parent == null || !(await userManager.IsEmailConfirmedAsync(userParent)))
                 return BadRequest("Parent not found or not registered.");
 
             // 3 check if the parent is already linked to the student
@@ -156,7 +173,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Auth
         [HttpPost("refresh-token")]
         public async Task<IActionResult> RefreshToken([FromBody] TokenDTO refreshTokenDto)
         {
-            var refreshResult = await unit.AuthRepo.GenerateRefreshTokenAsync(refreshTokenDto);
+            var refreshResult = await authService.GenerateRefreshTokenAsync(refreshTokenDto);
             if (!refreshResult.Succeeded)
             {
                 return BadRequest(refreshResult.Message);
@@ -168,8 +185,8 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Auth
         public async Task<IActionResult> ChangePassword([FromBody] string email, string oldPassword, string newPassword, string confirmNewPassword)
         {
             var user = await userManager.FindByEmailAsync(email);
-            if (user == null)
-                return BadRequest("Invalid request");
+            if (user == null || !(await userManager.IsEmailConfirmedAsync(user)))
+                return BadRequest("Invalid request, or user email not confirmed");
             if (newPassword != confirmNewPassword)
                 return BadRequest("New password and confirm new password do not match.");
             var result = await userManager.ChangePasswordAsync(user, oldPassword, newPassword);
