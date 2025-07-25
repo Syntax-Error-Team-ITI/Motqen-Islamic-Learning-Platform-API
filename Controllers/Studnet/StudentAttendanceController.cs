@@ -48,9 +48,15 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Studnet
         }
 
         [HttpGet("byHalaqaId/{halaqaId:int}")]
-        public IActionResult GetByHalaqaId(int halaqaId)
+        public IActionResult GetByHalaqaId(int halaqaId, [FromQuery] DateTime? attendanceDate = null)
         {
             var attendance = Unit.StudentAttendanceRepo.GetByHalaqaId(halaqaId);
+
+            if (attendanceDate.HasValue)
+            {
+                attendance = attendance.Where(a => a.AttendanceDate.Date == attendanceDate.Value.Date).ToList();
+            }
+
             var result = Mapper.Map<IEnumerable<StudentAttendanceDto>>(attendance);
             return Ok(result);
         }
