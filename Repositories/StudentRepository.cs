@@ -18,6 +18,8 @@ namespace MotqenIslamicLearningPlatform_API.Repositories
         {
             return Db.Students
                 .Include(s => s.User)
+                .Include(c => c.Parent)
+                .ThenInclude(p => p.User)
                 .Where(s => (includeDeleted || !s.IsDeleted) && (s.HalaqaStudents.FirstOrDefault(hs => hs.StudentId == s.Id && hs.HalaqaId == halaqaId ) == null))
                 .ToList();
         }

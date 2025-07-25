@@ -26,7 +26,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Studnet
             if (students == null || !students.Any())
                 return NotFound(new { message = "No students found" });
 
-            return Ok(Mapper.Map<List<StudentShortDisplayDTO>>(students));
+            return Ok(Mapper.Map<List<StudentListDTO>>(students));
         }
         [HttpGet("notInHalaqa/{halaqaId:int}")]
         public IActionResult GetStudentNotInHalqa(int halaqaId, bool includeDeleted = false)

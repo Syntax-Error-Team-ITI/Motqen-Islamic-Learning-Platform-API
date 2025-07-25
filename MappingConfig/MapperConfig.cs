@@ -57,6 +57,10 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
             CreateMap<Student, StudentDetailedDisplayDTO>()
                .ForMember(dest => dest.Name, src => src.MapFrom(data => $"{data.User.FirstName} {data.User.LastName}"))
                .ForMember(dest => dest.Parent, src => src.MapFrom(data => $"{data.Parent.User.FirstName} {data.Parent.User.LastName}"));
+            CreateMap<Student, StudentListDTO>()
+               .ForMember(dest => dest.Name, opt => opt.MapFrom(src => $"{src.User.FirstName} {src.User.LastName}"))
+               .ForMember(dest => dest.Parent, opt => opt.MapFrom(src => $"{src.Parent.User.FirstName} {src.Parent.User.LastName}"))
+               .ForMember(dest => dest.ParentId, opt => opt.MapFrom(src => src.Parent.Id));
 
             #endregion
 
