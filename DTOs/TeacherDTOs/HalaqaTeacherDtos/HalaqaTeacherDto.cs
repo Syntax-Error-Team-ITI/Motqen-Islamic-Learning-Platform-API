@@ -11,6 +11,8 @@ namespace MotqenIslamicLearningPlatform_API.DTOs.TeacherDTOs.HalaqaTeacherDtos
         public string TeacherName { get; set; }
         public string HalaqaName { get; set; }
         public string SubjectName { get; set; }
+        public string GenderGroup { get; set; }
+        public string LiveCode { get; set; }
 
     }
 }

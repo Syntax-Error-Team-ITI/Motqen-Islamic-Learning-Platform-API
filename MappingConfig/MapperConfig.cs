@@ -148,7 +148,9 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
             CreateMap<HalaqaTeacher, HalaqaTeacherDto>()
                 .ForMember(dest => dest.HalaqaName, opt => opt.MapFrom(src => src.Halaqa.Name))
                 .ForMember(dest => dest.TeacherName, opt => opt.MapFrom(src => $"{src.Teacher.User.FirstName} {src.Teacher.User.LastName}"))
-                .ForMember(dest => dest.SubjectName, opt => opt.MapFrom(src => src.Halaqa.Subject.Name));
+                .ForMember(dest => dest.SubjectName, opt => opt.MapFrom(src => src.Halaqa.Subject.Name))
+                .ForMember(dest => dest.LiveCode, opt => opt.MapFrom(src => src.Halaqa.HostLiveLink))
+                .ForMember(dest => dest.GenderGroup, opt =>opt.MapFrom(src => src.Halaqa.GenderGroup));
 
             CreateMap<HalaqaTeacher, CreateHalaqaTeacherDto>().ReverseMap();
 
