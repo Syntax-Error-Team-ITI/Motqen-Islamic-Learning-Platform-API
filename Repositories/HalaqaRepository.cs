@@ -36,5 +36,19 @@ namespace MotqenIslamicLearningPlatform_API.Repositories
                 .FirstOrDefault(h => h.Id == halaqaId);
         }
 
+        public Halaqa GetByIdIncludeSubjectAndClassSchedules(int halaqaId, bool includeDeleted = false)
+        {
+            if (!includeDeleted)
+            {
+                return Db.Halaqas
+                    .Include(h => h.Subject)
+                    .Include(h => h.ClassSchedules)
+                    .FirstOrDefault(h => h.Id == halaqaId && !h.IsDeleted);
+            }
+            return Db.Halaqas
+                .Include(h => h.Subject)
+                .Include(h => h.ClassSchedules)
+                .FirstOrDefault(h => h.Id == halaqaId);
+        }
     }
 }

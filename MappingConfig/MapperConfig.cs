@@ -107,6 +107,10 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
             CreateMap<Halaqa, CreateHalaqaDto>().ReverseMap();
             CreateMap<Halaqa, UpdateHalaqaDto>()
                 .ReverseMap();
+            CreateMap<Halaqa, HalaqaDetailsDto>()
+                .ForMember(destinationMember => destinationMember.ClassSchedules, opt => opt.MapFrom(src => src.ClassSchedules.ToList()))
+                .ForMember(destinationMember => destinationMember.SubjectName, opt => opt.MapFrom(src => src.Subject.Name));
+
 
             CreateMap<ClassSchedule , ClassScheduleDto>()
                 .ForMember(dest => dest.HalaqaName, opt => opt.MapFrom(src => src.Halaqa.Name))

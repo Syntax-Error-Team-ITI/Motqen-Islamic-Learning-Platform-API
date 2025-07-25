@@ -18,7 +18,6 @@ namespace MotqenIslamicLearningPlatform_API.Models.StudentModel
 
         public virtual IList<ProgressTracking> ProgressTrackings { get; set; } = new List<ProgressTracking>();
         public virtual IList<HalaqaStudent> HalaqaStudents { get; set; }
-
         public virtual IList<StudentAttendance> StudentAttendances { get; set; }
         public virtual IList<StudentSubject> StudentSubjects { get; set; } = new List<StudentSubject>();
     }
