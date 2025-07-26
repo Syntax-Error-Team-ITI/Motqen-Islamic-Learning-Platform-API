@@ -5,7 +5,9 @@ using MotqenIslamicLearningPlatform_API.Authorization;
 using MotqenIslamicLearningPlatform_API.DTOs.AuthDTOs;
 using MotqenIslamicLearningPlatform_API.DTOs.UserDTOs;
 using MotqenIslamicLearningPlatform_API.Models;
+using MotqenIslamicLearningPlatform_API.Models.ParentModel;
 using MotqenIslamicLearningPlatform_API.Models.Shared;
+using MotqenIslamicLearningPlatform_API.Models.StudentModel;
 using MotqenIslamicLearningPlatform_API.Services.Auth.Utilities;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -42,14 +44,14 @@ namespace MotqenIslamicLearningPlatform_API.Services.Auth
                 };
             }
 
-            if (!await roleManager.RoleExistsAsync(userRegisterDto.Role))
-            {
-                return new AuthResult
-                {
-                    Succeeded = false,
-                    Message = $"The role '{userRegisterDto.Role}' does not exist. You can only register as \"Student\" or \"Parent\" with national Id"
-                };
-            }
+            //if (!await roleManager.RoleExistsAsync(userRegisterDto.Role))
+            //{
+            //    return new AuthResult
+            //    {
+            //        Succeeded = false,
+            //        Message = $"The role '{userRegisterDto.Role}' does not exist. You can only register as \"Student\" or \"Parent\" with national Id"
+            //    };
+            //}
 
             User user = new User()
             {
@@ -68,13 +70,13 @@ namespace MotqenIslamicLearningPlatform_API.Services.Auth
                     Message = result.Errors.Select(e => e.Description).ToString()
                 };
 
-            var roleResult = await userManager.AddToRoleAsync(user, userRegisterDto.Role);
-            if (!roleResult.Succeeded)
-                return new AuthResult
-                {
-                    Succeeded = false,
-                    Message = "Registration failed! Error occurred at role assigning"
-                };
+            //var roleResult = await userManager.AddToRoleAsync(user, userRegisterDto.Role);
+            //if (!roleResult.Succeeded)
+            //    return new AuthResult
+            //    {
+            //        Succeeded = false,
+            //        Message = "Registration failed! Error occurred at role assigning"
+            //    };
 
             return new AuthResult
             {
@@ -83,6 +85,32 @@ namespace MotqenIslamicLearningPlatform_API.Services.Auth
                 Message = "User registered successfully, please check your email for verification!"
             };
         }
+
+        public async Task SetParentRelation(Student student)
+        {
+            Parent? parent = await db.Parents.FirstOrDefaultAsync(p => p.NationalId == student.ParentNationalId);
+            if (parent == null)
+                return;
+
+            student.Parent = parent;
+
+            await db.SaveChangesAsync();
+        }
+
+        public async Task SetChildrenRelation(Parent parent)
+        {
+            var students = await db.Students.Where(s => s.ParentNationalId == parent.NationalId).ToListAsync();
+            if (students == null || students.Count == 0)
+                return;
+
+            foreach (var student in students)
+            {
+                parent.Students.Add(student);
+            }
+
+            await db.SaveChangesAsync();
+        }
+
         public async Task<AuthResult> ConfirmEmailAsync(EmailConfirmDTO model)
         {
             var user = await userManager.FindByIdAsync(model.UserId);
@@ -99,13 +127,14 @@ namespace MotqenIslamicLearningPlatform_API.Services.Auth
                 Message = string.Join(", ", result.Errors.Select(e => e.Description))
             };
         }
+
         public async Task<AuthResult> LoginAsync(UserLoginDTO model)
         {
             var user = await userManager.Users
                 .Include(u => u.Student)
                 .Include(u => u.Teacher)
                 .Include(u => u.Parent)
-                .FirstOrDefaultAsync(u => u.UserName == model.Username);
+                .FirstOrDefaultAsync(u => u.Email == model.Email);
 
             if (user == null)
                 return new AuthResult { Succeeded = false, Message = "Invalid username or password!" };
@@ -136,6 +165,7 @@ namespace MotqenIslamicLearningPlatform_API.Services.Auth
                 + $"Expiry: [{tokenDTO.RefreshTokenExpiration}]"
             };
         }
+
         public async Task<TokenDTO> GenerateTokenAsync(User user)
         {
             bool isAdmin = await userManager.IsInRoleAsync(user, UserRoles.Admin);
@@ -241,8 +271,6 @@ namespace MotqenIslamicLearningPlatform_API.Services.Auth
             var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out _);
             return principal;
         }
-
-
 
 
 

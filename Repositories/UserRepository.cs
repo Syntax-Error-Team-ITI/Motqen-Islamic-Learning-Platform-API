@@ -133,25 +133,8 @@ namespace MotqenIslamicLearningPlatform_API.Repositories
 
             var result = await db.SaveChangesAsync();
 
-            return result == 1 ? true : false;
+            return result == 1 ? false : true;
         }
 
-        //public async void EditProfile(string id, string imgUrl)
-        //{
-        //    User user = await userManager.FindByIdAsync(id);
-        //    if (user != null)
-        //    {
-        //        user.ImageUrl = imgUrl;
-        //        var result = await userManager.UpdateAsync(user);
-        //        if (!result.Succeeded)
-        //        {
-        //            throw new Exception("Failed to update user profile.");
-        //        }
-        //    }
-        //    else
-        //    {
-        //        throw new Exception("User not found.");
-        //    }
-        //}
     }
 }
