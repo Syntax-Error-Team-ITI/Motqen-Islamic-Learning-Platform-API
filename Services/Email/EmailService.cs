@@ -1,7 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
 using MimeKit;
 using MotqenIslamicLearningPlatform_API.DTOs.UserDTOs;
 using MotqenIslamicLearningPlatform_API.Models.Shared;
+using Newtonsoft.Json.Linq;
+using System.Net;
+using System.Text;
 
 namespace MotqenIslamicLearningPlatform_API.Services.Email
 {
@@ -45,12 +49,18 @@ namespace MotqenIslamicLearningPlatform_API.Services.Email
             // generate confirmation token
             var emailConfirmToken = await userManager.GenerateEmailConfirmationTokenAsync(user);
 
+            //var encodedToken = WebUtility.UrlEncode(emailConfirmToken);
+            var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(emailConfirmToken));
+
+            var link = $"{configuration["URLs:ClientUrl"]}/confirm-email?userId={user.Id}&token={encodedToken}";
+
             // Prepare email
             EmailRequestDTO emailRequest = new EmailRequestDTO
             {
                 ToEmail = user.Email,
                 Subject = "Confirm your email",
-                Body = $"userId: [ {user.Id} ] --- token: [ {emailConfirmToken} ]"
+                //Body = $"Please click this link: {link} , to confirm your email]"
+                Body = $"Please click <a href='{link}'>this link</a> to confirm your email, {encodedToken}"
             };
 
             // Send

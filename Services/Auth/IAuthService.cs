@@ -1,7 +1,9 @@
 ﻿using MotqenIslamicLearningPlatform_API.Authorization;
 using MotqenIslamicLearningPlatform_API.DTOs.AuthDTOs;
 using MotqenIslamicLearningPlatform_API.DTOs.UserDTOs;
+using MotqenIslamicLearningPlatform_API.Models.ParentModel;
 using MotqenIslamicLearningPlatform_API.Models.Shared;
+using MotqenIslamicLearningPlatform_API.Models.StudentModel;
 
 namespace MotqenIslamicLearningPlatform_API.Services.Auth
 {
@@ -12,6 +14,8 @@ namespace MotqenIslamicLearningPlatform_API.Services.Auth
         Task<AuthResult> LoginAsync(UserLoginDTO userLoginDto);
         Task<TokenDTO> GenerateTokenAsync(User user);
         Task<AuthResult> GenerateRefreshTokenAsync(TokenDTO request);
+        Task SetParentRelation(Student student);
+        Task SetChildrenRelation(Parent parent);
         //Task<AuthResult> ChangePassword(UserChangePasswordDTO userChangePasswordDto);
         //Task<AuthResult> ResetPassword(UserResetPasswordDTO userResetPasswordDto);
         //Task<AuthResult> ForgotPassword(UserForgotPasswordDTO userForgotPasswordDto);
