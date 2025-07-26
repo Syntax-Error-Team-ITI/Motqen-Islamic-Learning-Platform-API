@@ -1,4 +1,5 @@
-﻿using MotqenIslamicLearningPlatform_API.Models.Shared;
+﻿using MotqenIslamicLearningPlatform_API.Enums;
+using MotqenIslamicLearningPlatform_API.Models.Shared;
 using MotqenIslamicLearningPlatform_API.Models.StudentModel;
 using MotqenIslamicLearningPlatform_API.Models.TeacherModel;
 
@@ -11,7 +12,7 @@ namespace MotqenIslamicLearningPlatform_API.Models.HalaqaModel
         public string? HostLiveLink { get; set; }
         public string? GuestLiveLink { get; set; }
         public string? RoomId { get; set; }
-        public string GenderGroup { get; set; }
+        public GenderGroup GenderGroup { get; set; }
         public int? SubjectId { get; set; }
         public virtual Subject? Subject { get; set; }
         public virtual IList<ProgressTracking> ProgressTrackings { get; set; } 

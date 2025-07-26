@@ -24,7 +24,12 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.HalaqaCon
             this.roomService = roomService;
             _mapper = mapper;
         }
-
+        [HttpGet("names")]
+        public IActionResult GetHalaqaNamesList()
+        {
+            var halaqas = _unitOfWork.HalaqaRepo.GetAll();
+            return Ok(_mapper.Map<List<HalaqaNamesListDTO>>(halaqas));
+        }
         [HttpGet]
         public IActionResult GetAll(bool includeDeleted = false)
         {
@@ -41,6 +46,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.HalaqaCon
                 return NotFound(new { message = "Halaqa not found." });
             var result = _mapper.Map<HalaqaDetailsDto>(halaqa);
             return Ok(result);
+            //return Ok();
         }
 
         [HttpPost]

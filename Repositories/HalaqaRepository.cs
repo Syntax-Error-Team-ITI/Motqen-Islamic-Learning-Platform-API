@@ -43,7 +43,7 @@ namespace MotqenIslamicLearningPlatform_API.Repositories
                 return Db.Halaqas
                     .Include(h => h.Subject)
                     .Include(h => h.ClassSchedules)
-                    .FirstOrDefault(h => h.Id == halaqaId && !h.IsDeleted);
+                    .FirstOrDefault(h => h.Id == halaqaId );
             }
             return Db.Halaqas
                 .Include(h => h.Subject)

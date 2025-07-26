@@ -43,6 +43,8 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.HalaqaCon
         [HttpPost("halaqa/{halaqaId:int}")]
         public IActionResult Create(int halaqaId, [FromBody] CreateClassScheduleDto dto)
         {
+            Console.WriteLine($"Received request to create schedule for halaqaId: {halaqaId} with DTO: {dto.HalaqaId} {dto.StartTime} {dto.EndTime} {dto.Day}");
+
             if (!ModelState.IsValid || dto.HalaqaId != halaqaId)
                 return BadRequest(ModelState);
 
