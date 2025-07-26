@@ -23,7 +23,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.HalaqaCon
         [HttpGet("halaqa/{halaqaId:int}")]
         public IActionResult GetAllForHalaqa(int halaqaId, bool includeDeleted = false)
         {
-            var schedules = _unitOfWork.ClassScheduleRepo.GetAll()
+            var schedules = _unitOfWork.ClassScheduleRepo.GetAllIncludeHalaqa()
                 .Where(cs => cs.HalaqaId == halaqaId && (includeDeleted || !cs.IsDeleted));
             var result = _mapper.Map<IEnumerable<ClassScheduleDto>>(schedules);
             return Ok(result);
@@ -33,7 +33,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.HalaqaCon
         [HttpGet("halaqa/{halaqaId:int}/{id:int}")]
         public IActionResult GetById(int halaqaId, int id)
         {
-            var schedule = _unitOfWork.ClassScheduleRepo.GetById(id);
+            var schedule = _unitOfWork.ClassScheduleRepo.GetByIdIncludeHalaqa(id);
             if (schedule == null || schedule.HalaqaId != halaqaId)
                 return NotFound();
             var result = _mapper.Map<ClassScheduleDto>(schedule);
@@ -43,6 +43,8 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.HalaqaCon
         [HttpPost("halaqa/{halaqaId:int}")]
         public IActionResult Create(int halaqaId, [FromBody] CreateClassScheduleDto dto)
         {
+            Console.WriteLine($"Received request to create schedule for halaqaId: {halaqaId} with DTO: {dto.HalaqaId} {dto.StartTime} {dto.EndTime} {dto.Day}");
+
             if (!ModelState.IsValid || dto.HalaqaId != halaqaId)
                 return BadRequest(ModelState);
 

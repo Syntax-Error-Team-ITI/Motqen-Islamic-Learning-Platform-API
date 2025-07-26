@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MotqenIslamicLearningPlatform_API.Models;
 using MotqenIslamicLearningPlatform_API.Models.HalaqaModel;
+using System.Linq;
 namespace MotqenIslamicLearningPlatform_API.Repositories
 {
     public class HalaqaRepository : GenericRepository<Halaqa>
@@ -35,6 +36,24 @@ namespace MotqenIslamicLearningPlatform_API.Repositories
                 .Include(h => h.Subject)
                 .FirstOrDefault(h => h.Id == halaqaId);
         }
+        public List<Halaqa> GetHalaqasNotAssignToTeacher(int teacherId)
+        {
+            return Db.Halaqas.Include(h => h.HalaqaTeachers).Where(h => h.HalaqaTeachers.FirstOrDefault(ht => ht.TeacherId == teacherId) == null).ToList();
+        }
 
+        public Halaqa GetByIdIncludeSubjectAndClassSchedules(int halaqaId, bool includeDeleted = false)
+        {
+            if (!includeDeleted)
+            {
+                return Db.Halaqas
+                    .Include(h => h.Subject)
+                    .Include(h => h.ClassSchedules)
+                    .FirstOrDefault(h => h.Id == halaqaId );
+            }
+            return Db.Halaqas
+                .Include(h => h.Subject)
+                .Include(h => h.ClassSchedules)
+                .FirstOrDefault(h => h.Id == halaqaId);
+        }
     }
 }
