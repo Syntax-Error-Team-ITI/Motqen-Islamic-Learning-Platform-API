@@ -606,7 +606,7 @@ namespace MotqenIslamicLearningPlatform_API.Services.Reports
                         UserId = user.Id,
                         FullName = $"{user.FirstName} {user.LastName}",
                         Email = user.Email,
-                        Role = "Teacher",
+                        Role = "معلم",
                         IsActive = true
                     });
                 }
@@ -618,7 +618,7 @@ namespace MotqenIslamicLearningPlatform_API.Services.Reports
                         UserId = user.Id,
                         FullName = $"{user.FirstName} {user.LastName}",
                         Email = user.Email,
-                        Role = "Teacher",
+                        Role = "معلم",
                         IsActive = false
                     });
                 }
@@ -631,7 +631,7 @@ namespace MotqenIslamicLearningPlatform_API.Services.Reports
                         UserId = user.Id,
                         FullName = $"{user.FirstName} {user.LastName}",
                         Email = user.Email,
-                        Role = "Student",
+                        Role = "طالب",
                         IsActive = true
                     });
                 }
@@ -643,7 +643,7 @@ namespace MotqenIslamicLearningPlatform_API.Services.Reports
                         UserId = user.Id,
                         FullName = $"{user.FirstName} {user.LastName}",
                         Email = user.Email,
-                        Role = "Student",
+                        Role = "طالب",
                         IsActive = false
                     });
                 }
@@ -656,7 +656,7 @@ namespace MotqenIslamicLearningPlatform_API.Services.Reports
                         UserId = user.Id,
                         FullName = $"{user.FirstName} {user.LastName}",
                         Email = user.Email,
-                        Role = "Parent",
+                        Role = "ولي امر",
                         IsActive = true
                     });
                 }
@@ -669,7 +669,7 @@ namespace MotqenIslamicLearningPlatform_API.Services.Reports
                         UserId = user.Id,
                         FullName = $"{user.FirstName} {user.LastName}",
                         Email = user.Email,
-                        Role = "Parent",
+                        Role = "ولي امر",
                         IsActive = false
                     });
                 }
