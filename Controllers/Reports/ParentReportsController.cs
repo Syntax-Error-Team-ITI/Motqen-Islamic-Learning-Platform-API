@@ -18,6 +18,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
         {
             this. ReportService = _report;
         }
+        #region Quran
 
         [HttpGet("Quran/MemorizationChart/{studentId}")]
         public ActionResult<List<QuranProgressChartPointDto>> GetQuranMemorizationChart(int studentId)
@@ -60,7 +61,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
         public ActionResult<QuranSummaryCountersDto> GetQuranSummaryCounters(int studentId)
         {
             var counters = ReportService.GetStudentQuranSummaryCounters(studentId);
-            if (counters == null) // This DTO will always be instantiated, but could have all zeros
+            if (counters == null) 
             {
                 return NotFound("No Quran summary data found for this student.");
             }
@@ -78,7 +79,9 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             return Ok(report);
         }
 
-        // Islamic Subjects Progress Reports
+        #endregion
+
+        #region Islamic 
         [HttpGet("IslamicSubjects/PagesChart/{studentId}")]
         public ActionResult<List<IslamicSubjectProgressChartDto>> GetIslamicSubjectPagesChart(int studentId)
         {
@@ -112,7 +115,10 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             return Ok(report);
         }
 
-        // Student Attendance Reports
+        #endregion
+
+        #region Attendance
+
         [HttpGet("Attendance/SummaryPieChart/{studentId}")]
         public ActionResult<List<StudentAttendancePieChartDto>> GetStudentAttendanceSummaryPieChart(int studentId)
         {
@@ -149,7 +155,6 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             return Ok(chartData);
         }
 
-        // Student Performance Comparison Report
         [HttpGet("Performance/Comparison/{studentId}/{halaqaId}")]
         public ActionResult<List<StudentHalaqaComparisonReportDto>> GetStudentPerformanceComparisonReport(int studentId, int halaqaId)
         {
@@ -160,6 +165,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             }
             return Ok(report);
         }
-        
+
+        #endregion
     }
 }

@@ -49,7 +49,10 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
             #region Student Mapping
 
             CreateMap<Student, ParentChildDTO>()
-                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => $"{src.User.FirstName} {src.User.LastName}"));
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => $"{src.User.FirstName} {src.User.LastName}"))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User.Email))
+                .ForMember(dest => dest.Age, opt => opt.MapFrom(src => src.Age))
+                ;
 
             CreateMap<Student, StudentShortDisplayDTO>()
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => $"{src.User.FirstName} {src.User.LastName}"));
@@ -57,6 +60,10 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
             CreateMap<Student, StudentDetailedDisplayDTO>()
                .ForMember(dest => dest.Name, src => src.MapFrom(data => $"{data.User.FirstName} {data.User.LastName}"))
                .ForMember(dest => dest.Parent, src => src.MapFrom(data => $"{data.Parent.User.FirstName} {data.Parent.User.LastName}"));
+            CreateMap<Student, StudentListDTO>()
+               .ForMember(dest => dest.Name, opt => opt.MapFrom(src => $"{src.User.FirstName} {src.User.LastName}"))
+               .ForMember(dest => dest.Parent, opt => opt.MapFrom(src => $"{src.Parent.User.FirstName} {src.Parent.User.LastName}"))
+               .ForMember(dest => dest.ParentId, opt => opt.MapFrom(src => src.Parent.Id));
 
             #endregion
 
@@ -109,7 +116,7 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
             #region Halaqa Mapping
 
             CreateMap<Halaqa, HalaqaDto>()
-            .ForMember(dest => dest.SubjectName, opt => opt.MapFrom(src => src.Subject.Name));
+              .ForMember(dest => dest.SubjectName, opt => opt.MapFrom(src => src.Subject.Name));
             CreateMap<Halaqa, CreateHalaqaDto>().ReverseMap();
             CreateMap<Halaqa, UpdateHalaqaDto>()
                 .ReverseMap();
@@ -117,7 +124,6 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
                 .ForMember(destinationMember => destinationMember.ClassSchedules, opt => opt.MapFrom(src => src.ClassSchedules.ToList()))
                 .ForMember(destinationMember => destinationMember.SubjectName, opt => opt.MapFrom(src => src.Subject.Name));
             CreateMap<Halaqa, HalaqaNamesListDTO>();
-
 
             #endregion
 
@@ -150,7 +156,9 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
             CreateMap<HalaqaTeacher, HalaqaTeacherDto>()
                 .ForMember(dest => dest.HalaqaName, opt => opt.MapFrom(src => src.Halaqa.Name))
                 .ForMember(dest => dest.TeacherName, opt => opt.MapFrom(src => $"{src.Teacher.User.FirstName} {src.Teacher.User.LastName}"))
-                .ForMember(dest => dest.SubjectName, opt => opt.MapFrom(src => src.Halaqa.Subject.Name));
+                .ForMember(dest => dest.SubjectName, opt => opt.MapFrom(src => src.Halaqa.Subject.Name))
+                .ForMember(dest => dest.LiveCode, opt => opt.MapFrom(src => src.Halaqa.HostLiveLink))
+                .ForMember(dest => dest.GenderGroup, opt => opt.MapFrom(src => src.Halaqa.GenderGroup));
 
             CreateMap<HalaqaTeacher, CreateHalaqaTeacherDto>().ReverseMap();
 
@@ -166,9 +174,8 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
 
             #region ClaasSchedule Mapping
 
-
             CreateMap<ClassSchedule, ClassScheduleDto>()
-                .ReverseMap();
+                 .ReverseMap();
             CreateMap<ClassSchedule, CreateClassScheduleDto>()
                 .ReverseMap();
             CreateMap<ClassSchedule, UpdateClassScheduleDto>()
@@ -208,23 +215,6 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
                 .ForMember(dest => dest.TeacherName, opt => opt.MapFrom(src => $"{src.Teacher.User.FirstName} {src.Teacher.User.LastName}"));
 
             CreateMap<TeacherSubject, CreateTeacherSubjectDto>().ReverseMap();
-
-            // student -> student short display
-
-            CreateMap<Student, StudentShortDisplayDTO>()
-             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => $"{src.User.FirstName} {src.User.LastName}"));
-
-            //student -> detailed display
-            CreateMap<Student, StudentDetailedDisplayDTO>()
-                .ForMember(dest => dest.Name, src => src.MapFrom(data => $"{data.User.FirstName} {data.User.LastName}"))
-                .ForMember(dest => dest.Parent, src => src.MapFrom(data => $"{data.Parent.User.FirstName} {data.Parent.User.LastName}"));
-            //studentAttendance Mapping
-            CreateMap<StudentAttendance, StudentAttendanceDto>()
-                .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => $"{src.Student.User.FirstName} {src.Student.User.LastName}"))
-                .ForMember(desc => desc.HalaqaName, opt => opt.MapFrom(src => src.Halaqa.Name));
-            CreateMap<StudentAttendance, CreateStudentAttendanceDto>().ReverseMap();
-
-
 
             #endregion
 
@@ -267,6 +257,7 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
                            .ForMember(dest => dest.PagesOrLessonsCompleted, opt => opt.MapFrom(src => src.IslamicSubjectsProgressTrackingDetail.ToPage - src.IslamicSubjectsProgressTrackingDetail.FromPage + 1))
                            .ForMember(dest => dest.SubjectName, opt => opt.MapFrom(src => src.IslamicSubjectsProgressTrackingDetail.Subject));
             #endregion
+
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MotqenIslamicLearningPlatform_API.DTOs.HalaqaDTOs;
 using MotqenIslamicLearningPlatform_API.DTOs.TeacherDTOs.HalaqaTeacherDtos;
 using MotqenIslamicLearningPlatform_API.Models.HalaqaModel;
 using MotqenIslamicLearningPlatform_API.UnitOfWorks;
@@ -44,6 +45,12 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.TeacherCon
                 return NotFound($"No Halaqa Teachers found for Halaqa ID: {halaqaId}.");
             var halaqaTeacherDtos = Mapper.Map<List<HalaqaTeacherDto>>(halaqaTeachers);
             return Ok(halaqaTeacherDtos);
+        }
+        [HttpGet("halaqaNotAssignForTeacher/{teacherId}")]
+        public IActionResult GetHalaqasNotAssignToTeacher(int teacherId)
+        {
+            var halaqas = Unit.HalaqaRepo.GetHalaqasNotAssignToTeacher(teacherId);
+            return Ok(Mapper.Map<List<HalaqaNamesListDTO>>(halaqas));
         }
         [HttpGet("teacher/{teacherId}/halaqa/{halaqaId}")]
         public IActionResult GetByIds(int teacherId, int halaqaId)

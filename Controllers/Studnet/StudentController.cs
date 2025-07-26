@@ -21,7 +21,17 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Studnet
         [HttpGet]
         public IActionResult GetAllStudents(bool includeDeleted = false)
         {
-            var students = Unit.StudentRepo.GetAllWithMinimalDataInclude(includeDeleted);
+            var students = Unit.StudentRepo.GetAllWithMinimalDataInclude(0,includeDeleted);
+
+            if (students == null || !students.Any())
+                return NotFound(new { message = "No students found" });
+
+            return Ok(Mapper.Map<List<StudentListDTO>>(students));
+        }
+        [HttpGet("notInHalaqa/{halaqaId:int}")]
+        public IActionResult GetStudentNotInHalqa(int halaqaId, bool includeDeleted = false)
+        {
+            var students = Unit.StudentRepo.GetAllWithMinimalDataInclude(halaqaId, includeDeleted);
 
             if (students == null || !students.Any())
                 return NotFound(new { message = "No students found" });

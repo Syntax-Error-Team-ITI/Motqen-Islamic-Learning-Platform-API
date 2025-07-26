@@ -19,8 +19,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
         {
             _reportService = reportService;
         }
-
-        // 1. تقارير القرآن
+        #region Quran
         [HttpGet("Quran/MemorizationProgress/{halaqaId}")]
         public ActionResult<List<QuranProgressChartPointDto>> GetHalaqaMemorizationProgress(int halaqaId)
         {
@@ -43,7 +42,9 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             return Ok(summary);
         }
 
-        // 2. تقارير الحضور
+        #endregion
+
+        #region Attendance
         [HttpGet("Attendance/Trend/{halaqaId}")]
         public ActionResult<List<MonthlyWeeklyAttendanceChartDto>> GetHalaqaAttendanceTrend(
             int halaqaId, [FromQuery] string periodType = "month")
@@ -72,7 +73,11 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             return Ok(summaryData);
         }
 
-        // 3. لوحة التحكم
+
+        #endregion
+
+        #region Dashboard / IslamicProgress / Comparison
+
         [HttpGet("Dashboard/{teacherId}")]
         public ActionResult<TeacherDashboardDto> GetTeacherDashboard(int teacherId)
         {
@@ -84,7 +89,6 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             return Ok(dashboard);
         }
 
-        // 4. تقارير المواد الإسلامية
         [HttpGet("IslamicProgress/{halaqaId}")]
         public ActionResult<List<IslamicSubjectsDetailedProgressReportDto>> GetHalaqaIslamicProgress(int halaqaId)
         {
@@ -107,5 +111,6 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             var comparison = _reportService.GetHalaqasComparison(halaqaIds);
             return Ok(comparison);
         }
+        #endregion
     }
 }

@@ -1,4 +1,6 @@
-﻿using MotqenIslamicLearningPlatform_API.Models;
+﻿using Microsoft.AspNetCore.Identity;
+using MotqenIslamicLearningPlatform_API.Models;
+using MotqenIslamicLearningPlatform_API.Models.Shared;
 using MotqenIslamicLearningPlatform_API.Repositories;
 
 namespace MotqenIslamicLearningPlatform_API.UnitOfWorks
@@ -13,7 +15,7 @@ namespace MotqenIslamicLearningPlatform_API.UnitOfWorks
         private HalaqaRepository halaqaRepo;
         private HalaqaStudentRepository halaqaStudentRepo;
         private HalaqaTeacherRepository halaqaTeacherRepo;
-        private IslamicSubjectsProgressTrackingRepository  islamicSubjectsProgressTrackingRepo;
+        private IslamicSubjectsProgressTrackingRepository islamicSubjectsProgressTrackingRepo;
         private ParentRepository parentRepo;
         private ProgressTrackingRepository progressTrackingRepo;
         private QuranProgressTrackingRepository quranProgressTrackingRepo;
@@ -21,11 +23,30 @@ namespace MotqenIslamicLearningPlatform_API.UnitOfWorks
         private StudentSubjectRepository studentSubjectRepo;
         private TeacherAttendanceRepository teacherAttendanceRepo;
         private TeacherSubjectRepository teacherSubjectRepo;
+        private UserRepository userRepo;
+        private UserManager<User> userManager;
 
-        public UnitOfWork(MotqenDbContext db)
+        public UnitOfWork(
+            MotqenDbContext db,
+            UserManager<User> userManager
+            )
         {
             this.db = db;
+            this.userManager = userManager;
         }
+
+        public UserRepository UserRepo
+        {
+            get
+            {
+                if (userRepo == null)
+                {
+                    userRepo = new UserRepository(db, userManager);
+                }
+                return this.userRepo;
+            }
+        }
+
         public StudentRepository StudentRepo
         {
             get
@@ -37,6 +58,7 @@ namespace MotqenIslamicLearningPlatform_API.UnitOfWorks
                 return this.studentRepo;
             }
         }
+
         public TeacherRepository TeacherRepo
         {
             get
