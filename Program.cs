@@ -40,8 +40,8 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
     options.Password.RequireNonAlphanumeric = false;
     options.User.RequireUniqueEmail = true;
     options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
-    options.SignIn.RequireConfirmedAccount = false;
-    options.SignIn.RequireConfirmedEmail = true;
+    //options.SignIn.RequireConfirmedAccount = false;
+    //options.SignIn.RequireConfirmedEmail = true;
 })
     .AddEntityFrameworkStores<MotqenDbContext>()
     .AddDefaultTokenProviders();
