@@ -53,7 +53,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Progress
             {
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
-
+               
                 var progress = mapper.Map<ProgressTracking>(progressFromReq);
 
                 if (progressFromReq.IsQuranTracking)
@@ -82,7 +82,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Progress
                     {
                         FromPage = progressFromReq.FromPage.Value,
                         ToPage = progressFromReq.ToPage.Value,
-                        Subject = progressFromReq.Subject!,
+                        Subject = unit.HalaqaRepo.GetByIdIncludeSubject(progressFromReq.HalaqaId)?.Subject?.Name ?? "",
                         LessonName = progressFromReq.LessonName!
                     };
                 }
@@ -209,7 +209,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Progress
                     return BadRequest(new { message = "Invalid Islamic progress data. All subject fields must be provided." });
                 progress.FromPage = progressFromReq.FromPage.Value;
                 progress.ToPage = progressFromReq.ToPage.Value;
-                progress.Subject = progressFromReq.Subject!;
+                progress.Subject = unit.HalaqaRepo.GetByIdIncludeSubject(progressFromReq.HalaqaId)?.Subject?.Name ?? "";
                 progress.LessonName = progressFromReq.LessonName!;
                 unit.IslamicSubjectsProgressTrackingRepo.Edit(progress);
                 unit.Save();

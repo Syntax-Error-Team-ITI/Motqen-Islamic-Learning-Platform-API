@@ -26,7 +26,6 @@ namespace MotqenIslamicLearningPlatform_API.DTOs.ProgressDTOs
         public int? FromPage { get; set; }
         public int? ToPage { get; set; }
         public int? ProgressTrackingId { get; set; }
-        public string? Subject { get; set; }
         public string? LessonName { get; set; }
 
     }

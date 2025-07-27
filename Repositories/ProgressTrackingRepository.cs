@@ -72,8 +72,8 @@ namespace MotqenIslamicLearningPlatform_API.Repositories
         {
             return progress.FromPage != null
                 && progress.ToPage != null
-                && progress.Subject != null
                 && progress.LessonName != null;
         }
+        
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MotqenIslamicLearningPlatform_API.Models;
 using MotqenIslamicLearningPlatform_API.Models.HalaqaModel;
+using MotqenIslamicLearningPlatform_API.Models.TeacherModel;
 
 namespace MotqenIslamicLearningPlatform_API.Repositories
 {
@@ -53,6 +54,31 @@ namespace MotqenIslamicLearningPlatform_API.Repositories
                 .Include(ht => ht.Teacher)
                     .ThenInclude(t => t.User)
                     .Where(ht => !ht.Halaqa.IsDeleted && !ht.Teacher.IsDeleted && ht.HalaqaId == halaqaId)
+                .ToList();
+        }
+        public List<Teacher> GetTeachersNotAssignedToHalaqa(int halaqaId)
+        {
+            var assignedTeacherIds = Db.HalaqaTeacher
+                .Where(ht => ht.HalaqaId == halaqaId)
+                .Select(ht => ht.TeacherId)
+                .ToList();
+
+            return Db.Teachers
+                .Include(t => t.User)
+                .Where(t => !assignedTeacherIds.Contains(t.Id))
+                .ToList();
+        }
+        //get teacher assigned to halaqa by halaqaId
+        public List<Teacher> GetTeachersAssignedToHalaqa(int halaqaId)
+        {
+            var AssignedTeacherIds = Db.HalaqaTeacher
+                .Where(ht => ht.HalaqaId == halaqaId)
+                .Select(ht => ht.TeacherId)
+                .ToList();
+
+            return Db.Teachers
+                .Include(t => t.User)
+                .Where(t => AssignedTeacherIds.Contains(t.Id) && !t.IsDeleted)
                 .ToList();
         }
         public void Delete(int teacherId, int halaqaId)

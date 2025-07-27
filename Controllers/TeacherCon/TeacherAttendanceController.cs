@@ -89,7 +89,8 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.TeacherCon
             Unit.TeacherAttendanceRepo.Add(attendance);
             Unit.Save();
             var result = Mapper.Map<TeacherAttendanceDto>(attendance);
-            return CreatedAtAction(nameof(GetById), new {  id = attendance.Id}, result);
+            //return CreatedAtAction(nameof(GetById), new {  id = attendance.Id}, result);
+            return NoContent();
         }
 
 
@@ -109,7 +110,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.TeacherCon
             Unit.TeacherAttendanceRepo.Edit(existingAttendance);
             Unit.Save();
             var result = Mapper.Map<TeacherAttendanceDto>(existingAttendance);
-            return Ok(result);
+            return Ok();
         }
         [HttpDelete("{id:int}")]
         public IActionResult Delete(int id)
