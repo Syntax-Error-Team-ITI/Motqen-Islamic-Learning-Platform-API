@@ -4,7 +4,6 @@ using Newtonsoft.Json.Linq;
 using RestSharp;
 using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
-using System.Net.Http;
 using System.Security.Claims;
 using System.Text;
 
@@ -125,7 +124,7 @@ namespace MotqenIslamicLearningPlatform_API.Services
 
             var disableRequest = new
             {
-                enabled = !disable  
+                enabled = !disable
             };
 
             request.AddJsonBody(disableRequest);
@@ -154,11 +153,12 @@ namespace MotqenIslamicLearningPlatform_API.Services
                 _logger.LogError("Failed to get room codes: {ResponseContent}", response.Content);
                 throw new Exception($"Failed to get room: {response.StatusCode}");
             }
-
             var roomCodes = JsonConvert.DeserializeObject<ApiResponse<RoomCodeInfo>>(response.Content)?.Data;
+            var guest = roomCodes.FirstOrDefault(l => l.Role.Equals("guest"));
+            var host = roomCodes.FirstOrDefault(l => l.Role.Equals("host"));
             return new List<string> {
-              roomCodes[0].Code,
-              roomCodes[1].Code,
+                host.Code,
+                guest.Code,
             };
         }
 

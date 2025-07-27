@@ -5,7 +5,9 @@ using MotqenIslamicLearningPlatform_API.Authorization;
 using MotqenIslamicLearningPlatform_API.DTOs.AuthDTOs;
 using MotqenIslamicLearningPlatform_API.DTOs.UserDTOs;
 using MotqenIslamicLearningPlatform_API.Models;
+using MotqenIslamicLearningPlatform_API.Models.ParentModel;
 using MotqenIslamicLearningPlatform_API.Models.Shared;
+using MotqenIslamicLearningPlatform_API.Models.StudentModel;
 using MotqenIslamicLearningPlatform_API.Services.Auth.Utilities;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -16,7 +18,7 @@ namespace MotqenIslamicLearningPlatform_API.Services.Auth
     public class AuthService(
         MotqenDbContext db,
         UserManager<User> userManager,
-        RoleManager<IdentityRole> roleManager,
+        //RoleManager<IdentityRole> roleManager,
         IConfiguration configuration
         ) : IAuthService
     {
@@ -42,15 +44,6 @@ namespace MotqenIslamicLearningPlatform_API.Services.Auth
                 };
             }
 
-            if (!await roleManager.RoleExistsAsync(userRegisterDto.Role))
-            {
-                return new AuthResult
-                {
-                    Succeeded = false,
-                    Message = $"The role '{userRegisterDto.Role}' does not exist. You can only register as \"Student\" or \"Parent\" with national Id"
-                };
-            }
-
             User user = new User()
             {
                 //SecurityStamp = Guid.NewGuid().ToString(), what is this?
@@ -68,13 +61,6 @@ namespace MotqenIslamicLearningPlatform_API.Services.Auth
                     Message = result.Errors.Select(e => e.Description).ToString()
                 };
 
-            var roleResult = await userManager.AddToRoleAsync(user, userRegisterDto.Role);
-            if (!roleResult.Succeeded)
-                return new AuthResult
-                {
-                    Succeeded = false,
-                    Message = "Registration failed! Error occurred at role assigning"
-                };
 
             return new AuthResult
             {
@@ -83,6 +69,39 @@ namespace MotqenIslamicLearningPlatform_API.Services.Auth
                 Message = "User registered successfully, please check your email for verification!"
             };
         }
+
+        public async Task<bool> CheckNationalIdUniqueness(string nationalId)
+        {
+            bool isUnique = await db.Parents.AnyAsync(p => p.NationalId == nationalId);
+            if (isUnique) return true;
+            return false;
+        }
+
+        public async Task SetParentRelation(Student student)
+        {
+            Parent? parent = await db.Parents.FirstOrDefaultAsync(p => p.NationalId == student.ParentNationalId);
+            if (parent == null)
+                return;
+
+            student.Parent = parent;
+
+            await db.SaveChangesAsync();
+        }
+
+        public async Task SetChildrenRelation(Parent parent)
+        {
+            var students = await db.Students.Where(s => s.ParentNationalId == parent.NationalId).ToListAsync();
+            if (students == null || students.Count == 0)
+                return;
+
+            foreach (var student in students)
+            {
+                parent.Students.Add(student);
+            }
+
+            await db.SaveChangesAsync();
+        }
+
         public async Task<AuthResult> ConfirmEmailAsync(EmailConfirmDTO model)
         {
             var user = await userManager.FindByIdAsync(model.UserId);
@@ -99,43 +118,32 @@ namespace MotqenIslamicLearningPlatform_API.Services.Auth
                 Message = string.Join(", ", result.Errors.Select(e => e.Description))
             };
         }
+
         public async Task<AuthResult> LoginAsync(UserLoginDTO model)
         {
             var user = await userManager.Users
                 .Include(u => u.Student)
                 .Include(u => u.Teacher)
                 .Include(u => u.Parent)
-                .FirstOrDefaultAsync(u => u.UserName == model.Username);
+                .FirstOrDefaultAsync(u => u.Email == model.Email);
 
             if (user == null)
-                return new AuthResult { Succeeded = false, Message = "Invalid username or password!" };
+                return new AuthResult { Succeeded = false, Message = "Invalid email or password!" };
             if (!await userManager.CheckPasswordAsync(user, model.Password))
-                return new AuthResult { Succeeded = false, Message = "Invalid username or password!" };
+                return new AuthResult { Succeeded = false, Message = "Invalid email or password!" };
             if (!user.EmailConfirmed)
                 return new AuthResult { Succeeded = false, Message = "Email is not confirmed!" };
-
-            if (!await userManager.IsInRoleAsync(user, UserRoles.Admin)
-                && !await userManager.IsInRoleAsync(user, UserRoles.Teacher)
-                && user.Student == null
-                && user.Parent == null
-                )
-                return new AuthResult
-                {
-                    Succeeded = false,
-                    Message = "You have not completed your registration yet. Please continue registration."
-                };
 
             var tokenDTO = await GenerateTokenAsync(user);
 
             return new AuthResult
             {
                 Succeeded = true,
-                Message = $"Access Token: [{tokenDTO.AccessToken}],"
-                + $"Expiry: [{tokenDTO.AccessTokenExpiration}], "
-                + $" Refresh Token: [{tokenDTO.RefreshToken}]"
-                + $"Expiry: [{tokenDTO.RefreshTokenExpiration}]"
+                AccessToken = tokenDTO.AccessToken,
+                RefreshToken =  tokenDTO.RefreshToken
             };
         }
+
         public async Task<TokenDTO> GenerateTokenAsync(User user)
         {
             bool isAdmin = await userManager.IsInRoleAsync(user, UserRoles.Admin);
@@ -143,20 +151,21 @@ namespace MotqenIslamicLearningPlatform_API.Services.Auth
 
             var Claims = new List<Claim>
                 {
-                new Claim(ClaimTypes.Name, user.UserName),
                 //new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()), what is this?
+                new Claim("user Id", user.Id),
                 new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Name, user.UserName),
                 new Claim("FirstName", user.FirstName),
                 new Claim("LastName", user.LastName),
                 new Claim("IsAdmin" , isAdmin.ToString())
                 };
 
             if (user.Student != null)
-                Claims.Add(new Claim("StudentId", user.Student.Id.ToString()));
+                Claims.Add(new Claim("Id as student", user.Student.Id.ToString()));
             if (user.Teacher != null)
-                Claims.Add(new Claim("TeacherId", user.Teacher.Id.ToString()));
+                Claims.Add(new Claim("Id as teacher", user.Teacher.Id.ToString()));
             if (user.Parent != null)
-                Claims.Add(new Claim("ParentId", user.Parent.Id.ToString()));
+                Claims.Add(new Claim("Id as parent", user.Parent.Id.ToString()));
 
             foreach (var role in roles)
             {
@@ -176,8 +185,8 @@ namespace MotqenIslamicLearningPlatform_API.Services.Auth
             var accessToken = new JwtSecurityTokenHandler().WriteToken(token);
 
             // 2 refresh token
-            //var refreshToken = Guid.NewGuid().ToString();
-            var refreshToken = "ggggg";
+            var refreshToken = Guid.NewGuid().ToString();
+            //var refreshToken = "ggggg";
 
             // 3. Store refresh token to Users table
             user.RefreshToken = refreshToken;
@@ -241,8 +250,6 @@ namespace MotqenIslamicLearningPlatform_API.Services.Auth
             var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out _);
             return principal;
         }
-
-
 
 
 
