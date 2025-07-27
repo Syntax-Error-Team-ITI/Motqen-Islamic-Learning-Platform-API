@@ -45,6 +45,38 @@ namespace MotqenIslamicLearningPlatform_API.Models
             modelBuilder.Entity<StudentAttendance>()
                 .HasIndex(a => new { a.StudentId, a.HalaqaId, a.AttendanceDate })
                 .IsUnique();
+
+
+            // Configure User-Parent relationship
+            modelBuilder.Entity<Parent>()
+                .HasOne(p => p.User)
+                .WithOne(u => u.Parent)
+                .HasForeignKey<Parent>(p => p.UserId)
+                .OnDelete(DeleteBehavior.Cascade); // This enables cascade delete
+
+            // Configure User-Student relationship
+            modelBuilder.Entity<Student>()
+                .HasOne(s => s.User)
+                .WithOne(u => u.Student)
+                .HasForeignKey<Student>(s => s.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Configure Parent-Student relationship (set null on delete)
+            modelBuilder.Entity<Student>()
+                .HasOne(s => s.Parent)
+                .WithMany(p => p.Students)
+                .HasForeignKey(s => s.ParentId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            // Ensure ParentNationalId can be null when Parent is deleted
+            modelBuilder.Entity<Student>()
+                .Property(s => s.ParentNationalId)
+                .IsRequired(false);
+
+            // Ensure NationalId is unique
+            modelBuilder.Entity<Parent>()
+                .HasIndex(p => p.NationalId)
+                .IsUnique();
         }
     }
 }
