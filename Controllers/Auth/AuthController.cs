@@ -13,6 +13,7 @@ using MotqenIslamicLearningPlatform_API.Services.Auth;
 using MotqenIslamicLearningPlatform_API.Services.Auth.Utilities;
 using MotqenIslamicLearningPlatform_API.Services.Email;
 using MotqenIslamicLearningPlatform_API.UnitOfWorks;
+using Newtonsoft.Json.Linq;
 using System.Net;
 using System.Text;
 using System.Text.Json;
@@ -40,13 +41,13 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Auth
 
             var user = registerResult.AppUser;
 
-            var roleResult = await userManager.AddToRoleAsync(user, UserRoles.Student);
+            await userManager.AddToRoleAsync(user, UserRoles.Student);
 
             user.Student = new Student
             {
                 Pic = "tempUrl",
                 Gender = request.Gender,
-                BirthDate = (DateTime)request.BirthDate,
+                BirthDate = request.BirthDate,
                 Nationality = request.Nationality,
                 //Age = DateTime.Today.Year - request.BirthDate.Value.Year,
                 ParentNationalId = request.ParentNationalId
@@ -70,6 +71,9 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Auth
         [HttpPost("register-parent")]
         public async Task<IActionResult> RegisterAsParent([FromBody] ParentRegisterDTO request)
         {
+            if (await authService.CheckNationalIdUniqueness(request.NationalId))
+                return BadRequest(new { error = "A parent with this national Id is already registered" });
+
             var registerResult = await authService.RegisterAsync(request);
             if (!registerResult.Succeeded)
             {
@@ -78,8 +82,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Auth
 
             var user = registerResult.AppUser;
 
-            var roleResult = await userManager.AddToRoleAsync(user, UserRoles.Parent);
-
+            await userManager.AddToRoleAsync(user, UserRoles.Parent);
 
             user.Parent = new Parent
             {
@@ -120,6 +123,20 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Auth
         }
 
 
+        [HttpGet("resend-confirmation-email")]
+        public async Task<IActionResult> ResendConfirmationEmail([FromQuery] string email)
+        {
+            var user = await userManager.FindByEmailAsync(email);
+            //var user = await userManager.FindByIdAsync(userId);
+
+            if (user == null || (await userManager.IsEmailConfirmedAsync(user)))
+            {
+                return BadRequest(new { gg = "User not found or already confirmed." });
+            }
+            await emailService.SendEmailConfirmationAsync(user);
+            return Ok(new { gg = "Confirmation email sent successfully." });
+        }
+
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] UserLoginDTO model)
         {
@@ -128,20 +145,31 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Auth
             {
                 return BadRequest(new { error = loginResult.Message });
             }
-            return Ok(new { message = loginResult.Message });
-        }
 
-
-        [HttpPost("refresh-token")]
-        public async Task<IActionResult> RefreshToken([FromBody] TokenDTO refreshTokenDto)
-        {
-            var refreshResult = await authService.GenerateRefreshTokenAsync(refreshTokenDto);
-            if (!refreshResult.Succeeded)
+            Response.Cookies.Append("refreshToken", loginResult.RefreshToken!, new CookieOptions
             {
-                return BadRequest(refreshResult.Message);
-            }
-            return Ok(refreshResult);
+                HttpOnly = true,
+                Secure = true, // HTTPS only
+                SameSite = SameSiteMode.Strict,
+                Path = "/api/auth/refresh-token", // Only sent to refresh endpoint
+                Expires = DateTime.UtcNow.AddDays(7)
+            });
+
+            //return Ok(new { accessToken = loginResult.AccessToken , refreshToken = loginResult.RefreshToken });
+            return Ok(new { accessToken = loginResult.AccessToken });
         }
+
+
+        //[HttpPost("refresh-token")]
+        //public async Task<IActionResult> RefreshToken([FromBody] TokenDTO refreshTokenDto)
+        //{
+        //    var refreshResult = await authService.GenerateRefreshTokenAsync(refreshTokenDto);
+        //    if (!refreshResult.Succeeded)
+        //    {
+        //        return BadRequest(refreshResult.Message);
+        //    }
+        //    return Ok(refreshResult);
+        //}
 
 
         //[HttpPost("add-parent")]
@@ -179,19 +207,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Auth
         //    return Ok("Parent " + userParent.FirstName + " added to the student " + userStudent.FirstName + " successfully.");
         //}
 
-        //[HttpPost("resend-confirmation-email")]
-        //public async Task<IActionResult> ResendConfirmationEmail(string userId)
-        //{
-        //    //var user = await userManager.FindByEmailAsync(userId);
-        //    var user = await userManager.FindByIdAsync(userId);
 
-        //    if (user == null || (await userManager.IsEmailConfirmedAsync(user)))
-        //    {
-        //        return BadRequest(new { gg = "User not found or already confirmed." });
-        //    }
-        //    await emailService.SendEmailConfirmationAsync(user);
-        //    return Ok(new { gg = "Confirmation email sent successfully." });
-        //}
 
         //[HttpPost("change-password")]
         //public async Task<IActionResult> ChangePassword([FromBody] string email, string oldPassword, string newPassword, string confirmNewPassword)

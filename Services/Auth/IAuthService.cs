@@ -10,6 +10,7 @@ namespace MotqenIslamicLearningPlatform_API.Services.Auth
     public interface IAuthService
     {
         Task<AuthResult> RegisterAsync(UserRegisterDTO userRegisterDto);
+        Task<bool> CheckNationalIdUniqueness(string nationalId);
         Task<AuthResult> ConfirmEmailAsync(EmailConfirmDTO model);
         Task<AuthResult> LoginAsync(UserLoginDTO userLoginDto);
         Task<TokenDTO> GenerateTokenAsync(User user);
