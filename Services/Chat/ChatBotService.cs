@@ -11,46 +11,50 @@ namespace MotqenIslamicLearningPlatform_API.Services.Chat
         public ChatBotService(IConfiguration configuration)
         {
             client = new HttpClient();
-            apiKey = configuration["OpenAI:ApiKey"] ?? throw new ArgumentNullException("API Key is not configured.");
-            model = configuration["OpenAI:Model"] ?? "gpt-3.5-turbo";
-
-            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
+            apiKey = configuration["Gemini:ApiKey"] ?? throw new ArgumentNullException("Gemini API Key is not configured.");
+            model = configuration["Gemini:Model"] ?? "gemini-2.0-flash";
         }
-
 
         public async Task<string> GetChatResponse(string userMessage)
         {
+            var endpoint = $"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={apiKey}";
 
             var requestBody = new
             {
-                model = model,
-                messages = new[]
+                contents = new[]
                 {
-                    new { role = "user", content = userMessage }
-                },
-                max_tokens = 1000
+                    new
+                    {
+                        parts = new[]
+                        {
+                            new { text = userMessage }
+                        }
+                    }
+                }
             };
 
             var jsonRequest = JsonSerializer.Serialize(requestBody);
             var content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
 
-            var response = await client.PostAsync("https://api.openai.com/v1/chat/completions", content);
+            var response = await client.PostAsync(endpoint, content);
+
             if (!response.IsSuccessStatusCode)
             {
                 var errorContent = await response.Content.ReadAsStringAsync();
-                throw new Exception($"Error from OpenAI API: {errorContent}");
+                throw new Exception($"Error from Gemini API: {errorContent}");
             }
 
             var jsonResponse = await response.Content.ReadAsStringAsync();
             using var doc = JsonDocument.Parse(jsonResponse);
+
             var reply = doc.RootElement
-                           .GetProperty("choices")[0]
-                           .GetProperty("message")
+                           .GetProperty("candidates")[0]
                            .GetProperty("content")
+                           .GetProperty("parts")[0]
+                           .GetProperty("text")
                            .GetString();
 
             return reply;
-
         }
     }
 }

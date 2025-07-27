@@ -152,11 +152,10 @@ namespace MotqenIslamicLearningPlatform_API.Services.Auth
             var Claims = new List<Claim>
                 {
                 //new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()), what is this?
-                new Claim("user Id", user.Id),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Name, user.UserName),
-                new Claim("FirstName", user.FirstName),
-                new Claim("LastName", user.LastName),
+                new Claim("id", user.Id),
+                new Claim("email", user.Email),
+                new Claim("userName", user.UserName),
+                new Claim("fullName", $"{user.FirstName} {user.LastName}"),
                 new Claim("IsAdmin" , isAdmin.ToString())
                 };
 
@@ -169,7 +168,7 @@ namespace MotqenIslamicLearningPlatform_API.Services.Auth
 
             foreach (var role in roles)
             {
-                Claims.Add(new Claim(ClaimTypes.Role, role));
+                Claims.Add(new Claim("role", role));
             }
 
             // 1 access token
