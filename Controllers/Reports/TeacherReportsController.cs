@@ -26,7 +26,9 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             var progressData = _reportService.GetHalaqaMemorizationProgress(halaqaId);
             if (progressData == null || !progressData.Any())
             {
-                return NotFound("No memorization progress data found for this halaqa.");
+                //return NotFound("No memorization progress data found for this halaqa.");
+                return Ok();
+
             }
             return Ok(progressData);
         }
@@ -37,7 +39,9 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             var summary = _reportService.GetHalaqaQuranSummary(halaqaId);
             if (summary == null)
             {
-                return NotFound("No Quran summary data found for this halaqa.");
+                //return NotFound("No Quran summary data found for this halaqa.");
+                return Ok();
+
             }
             return Ok(summary);
         }
@@ -51,13 +55,17 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
         {
             if (periodType.ToLower() != "week" && periodType.ToLower() != "month")
             {
-                return BadRequest("Invalid periodType. Must be 'week' or 'month'.");
+                //return BadRequest("Invalid periodType. Must be 'week' or 'month'.");
+                return Ok();
+
             }
 
             var trendData = _reportService.GetHalaqaAttendanceTrend(halaqaId, periodType);
             if (trendData == null || !trendData.Any())
             {
-                return NotFound($"No {periodType}ly attendance trend data found for this halaqa.");
+                //return NotFound($"No {periodType}ly attendance trend data found for this halaqa.");
+                return Ok();
+
             }
             return Ok(trendData);
         }
@@ -68,7 +76,9 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             var summaryData = _reportService.GetHalaqaAttendanceSummary(halaqaId);
             if (summaryData == null || !summaryData.Any())
             {
-                return NotFound("No attendance summary data found for this halaqa.");
+                //return NotFound("No attendance summary data found for this halaqa.");
+                return Ok();
+
             }
             return Ok(summaryData);
         }
@@ -84,7 +94,9 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             var dashboard = _reportService.GetTeacherDashboard(teacherId);
             if (dashboard == null)
             {
-                return NotFound("No dashboard data found for this teacher.");
+                //return NotFound("No dashboard data found for this teacher.");
+                return Ok();
+
             }
             return Ok(dashboard);
         }
@@ -95,7 +107,9 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             var progressData = _reportService.GetHalaqaIslamicProgress(halaqaId);
             if (progressData == null || !progressData.Any())
             {
-                return NotFound("No Islamic subjects progress data found for this halaqa.");
+                //return NotFound("No Islamic subjects progress data found for this halaqa.");
+                return Ok();
+
             }
             return Ok(progressData);
         }
@@ -105,7 +119,9 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
         {
             if (halaqaIds == null || !halaqaIds.Any())
             {
-                return BadRequest("You must send ids");
+                //return BadRequest("You must send ids");
+                return Ok();
+
             }
 
             var comparison = _reportService.GetHalaqasComparison(halaqaIds);
