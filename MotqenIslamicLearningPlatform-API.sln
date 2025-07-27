@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36203.30 d17.14
+VisualStudioVersion = 17.14.36203.30
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MotqenIslamicLearningPlatform-API", "MotqenIslamicLearningPlatform-API.csproj", "{317841DC-0ABA-4A44-964B-F9E633EE60A3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MotqenIslamicLearningPlatform_API.Tests", "..\MotqenIslamicLearningPlatform_API.Tests\MotqenIslamicLearningPlatform_API.Tests.csproj", "{3084C7CD-6EB7-49A8-A518-769146FA874D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{317841DC-0ABA-4A44-964B-F9E633EE60A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{317841DC-0ABA-4A44-964B-F9E633EE60A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{317841DC-0ABA-4A44-964B-F9E633EE60A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3084C7CD-6EB7-49A8-A518-769146FA874D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3084C7CD-6EB7-49A8-A518-769146FA874D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3084C7CD-6EB7-49A8-A518-769146FA874D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3084C7CD-6EB7-49A8-A518-769146FA874D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
