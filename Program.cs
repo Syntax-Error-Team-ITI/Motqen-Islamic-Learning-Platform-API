@@ -101,6 +101,8 @@ builder.Services.AddHttpClient();
 
 // Register the ChatBotService as a singleton
 builder.Services.AddSingleton<ChatBotService>();
+// for smart bot
+builder.Services.AddScoped<SmartQueryService>();
 
 var app = builder.Build();
 
