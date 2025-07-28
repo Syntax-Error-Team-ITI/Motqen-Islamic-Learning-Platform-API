@@ -21,7 +21,7 @@ namespace MotqenIslamicLearningPlatform_API.Services.Reports
         #region IslamicProgress For student
 
         List<IslamicSubjectProgressChartDto> GetStudentIslamicSubjectPagesChart(int studentId);
-        List<IslamicSubjectProgressOverTimeChartDto> GetStudentIslamicSubjectProgressOverTimeChart(int studentId, int subjectId);
+        List<IslamicSubjectProgressOverTimeChartDto> GetStudentIslamicSubjectProgressOverTimeChart(int studentId, string subjectName);
         List<IslamicSubjectsDetailedProgressReportDto> GetStudentIslamicSubjectsDetailedProgressReport(int studentId);
         #endregion
         #region Attendance For student

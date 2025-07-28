@@ -26,7 +26,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             var chartData = ReportService.GetStudentMemorizationProgressChart(studentId);
             if (chartData == null || !chartData.Any())
             {
-                return NotFound("No memorization progress data found for this student.");
+                return Ok();
             }
             return Ok(chartData);
         }
@@ -37,7 +37,9 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             var chartData = ReportService.GetStudentReviewProgressChart(studentId);
             if (chartData == null || !chartData.Any())
             {
-                return NotFound("No review progress data found for this student.");
+                //return NotFound("No review progress data found for this student.");
+                return Ok();
+
             }
             return Ok(chartData);
         }
@@ -47,12 +49,16 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
         {
             if (periodType.ToLower() != "week" && periodType.ToLower() != "month")
             {
-                return BadRequest("Invalid periodType. Must be 'week' or 'month'.");
+                //return BadRequest("Invalid periodType. Must be 'week' or 'month'.");
+                return Ok();
+
             }
             var data = ReportService.GetStudentWeeklyMonthlyQuranProgress(studentId, periodType);
             if (data == null || !data.Any())
             {
-                return NotFound($"No {periodType}ly Quran progress data found for this student.");
+                //return NotFound($"No {periodType}ly Quran progress data found for this student.");
+                return Ok();
+
             }
             return Ok(data);
         }
@@ -63,7 +69,10 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             var counters = ReportService.GetStudentQuranSummaryCounters(studentId);
             if (counters == null) 
             {
-                return NotFound("No Quran summary data found for this student.");
+                //return NotFound("No Quran summary data found for this student.");
+                return Ok();
+
+
             }
             return Ok(counters);
         }
@@ -74,7 +83,9 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             var report = ReportService.GetStudentQuranDetailedProgressReport(studentId);
             if (report == null || !report.Any())
             {
-                return NotFound("No detailed Quran progress report found for this student.");
+                //return NotFound("No detailed Quran progress report found for this student.");
+                return Ok();
+
             }
             return Ok(report);
         }
@@ -88,18 +99,22 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             var chartData = ReportService.GetStudentIslamicSubjectPagesChart(studentId);
             if (chartData == null || !chartData.Any())
             {
-                return NotFound("No Islamic subjects pages data found for this student.");
+                //return NotFound("No Islamic subjects pages data found for this student.");
+                return Ok();
+
             }
             return Ok(chartData);
         }
 
-        [HttpGet("IslamicSubjects/ProgressOverTimeChart/{studentId}/{subjectId}")]
-        public ActionResult<List<IslamicSubjectProgressOverTimeChartDto>> GetIslamicSubjectProgressOverTimeChart(int studentId, int subjectId)
+        [HttpGet("IslamicSubjects/ProgressOverTimeChart/{studentId}/{subjectName}")]
+        public ActionResult<List<IslamicSubjectProgressOverTimeChartDto>> GetIslamicSubjectProgressOverTimeChart(int studentId, string subjectName)
         {
-            var chartData = ReportService.GetStudentIslamicSubjectProgressOverTimeChart(studentId, subjectId);
+            var chartData = ReportService.GetStudentIslamicSubjectProgressOverTimeChart(studentId, subjectName);
             if (chartData == null || !chartData.Any())
             {
-                return NotFound("No Islamic subject progress over time data found for this student.");
+                //return NotFound("No Islamic subject progress over time data found for this student.");
+                return Ok();
+
             }
             return Ok(chartData);
         }
@@ -110,7 +125,9 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             var report = ReportService.GetStudentIslamicSubjectsDetailedProgressReport(studentId);
             if (report == null || !report.Any())
             {
-                return NotFound("No detailed Islamic subjects progress report found for this student.");
+                //return NotFound("No detailed Islamic subjects progress report found for this student.");
+                return Ok();
+
             }
             return Ok(report);
         }
@@ -125,7 +142,9 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             var chartData = ReportService.GetStudentAttendanceSummaryPieChart(studentId);
             if (chartData == null || !chartData.Any())
             {
-                return NotFound("No attendance summary data found for this student.");
+                //return NotFound("No attendance summary data found for this student.");
+                return Ok();
+
             }
             return Ok(chartData);
         }
@@ -135,7 +154,9 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             var data = ReportService.GetStudentAttenndanceDetails(studentid);
             if (data == null || !data.Any())
             {
-                return NotFound("No attendance details found for this student.");
+                //return NotFound("No attendance details found for this student.");
+                return Ok();
+
             }
             return Ok(data);
         }
@@ -145,12 +166,16 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
         {
             if (periodType.ToLower() != "week" && periodType.ToLower() != "month")
             {
-                return BadRequest("Invalid periodType. Must be 'week' or 'month'.");
+                //return BadRequest("Invalid periodType. Must be 'week' or 'month'.");
+                return Ok();
+
             }
             var chartData = ReportService.GetStudentMonthlyWeeklyAttendanceChart(studentId, periodType);
             if (chartData == null || !chartData.Any())
             {
-                return NotFound($"No {periodType}ly attendance data found for this student.");
+                //return NotFound($"No {periodType}ly attendance data found for this student.");
+                return Ok();
+
             }
             return Ok(chartData);
         }
@@ -161,7 +186,9 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             var report = ReportService.GetStudentPerformanceComparisonReport(studentId, halaqaId);
             if (report == null || !report.Any())
             {
-                return NotFound("No performance comparison data found for this student in this halaqa.");
+                //return NotFound("No performance comparison data found for this student in this halaqa.");
+                return Ok();
+
             }
             return Ok(report);
         }

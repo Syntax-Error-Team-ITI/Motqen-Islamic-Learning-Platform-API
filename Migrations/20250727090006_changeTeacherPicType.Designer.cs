@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MotqenIslamicLearningPlatform_API.Models;
 
@@ -11,9 +12,11 @@ using MotqenIslamicLearningPlatform_API.Models;
 namespace MotqenIslamicLearningPlatform_API.Migrations
 {
     [DbContext(typeof(MotqenDbContext))]
-    partial class MotqenDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250727090006_changeTeacherPicType")]
+    partial class changeTeacherPicType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -291,9 +294,6 @@ namespace MotqenIslamicLearningPlatform_API.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("NationalId")
-                        .IsUnique();
 
                     b.HasIndex("UserId")
                         .IsUnique()
@@ -809,8 +809,7 @@ namespace MotqenIslamicLearningPlatform_API.Migrations
                 {
                     b.HasOne("MotqenIslamicLearningPlatform_API.Models.Shared.User", "User")
                         .WithOne("Parent")
-                        .HasForeignKey("MotqenIslamicLearningPlatform_API.Models.ParentModel.Parent", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("MotqenIslamicLearningPlatform_API.Models.ParentModel.Parent", "UserId");
 
                     b.Navigation("User");
                 });
@@ -852,13 +851,11 @@ namespace MotqenIslamicLearningPlatform_API.Migrations
                 {
                     b.HasOne("MotqenIslamicLearningPlatform_API.Models.ParentModel.Parent", "Parent")
                         .WithMany("Students")
-                        .HasForeignKey("ParentId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .HasForeignKey("ParentId");
 
                     b.HasOne("MotqenIslamicLearningPlatform_API.Models.Shared.User", "User")
                         .WithOne("Student")
-                        .HasForeignKey("MotqenIslamicLearningPlatform_API.Models.StudentModel.Student", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("MotqenIslamicLearningPlatform_API.Models.StudentModel.Student", "UserId");
 
                     b.Navigation("Parent");
 
