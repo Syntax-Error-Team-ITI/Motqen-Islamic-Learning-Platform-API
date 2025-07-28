@@ -1,4 +1,5 @@
-﻿using MotqenIslamicLearningPlatform_API.Authorization;
+﻿using Google.Apis.Auth;
+using MotqenIslamicLearningPlatform_API.Authorization;
 using MotqenIslamicLearningPlatform_API.DTOs.AuthDTOs;
 using MotqenIslamicLearningPlatform_API.DTOs.UserDTOs;
 using MotqenIslamicLearningPlatform_API.Models.ParentModel;
@@ -17,6 +18,8 @@ namespace MotqenIslamicLearningPlatform_API.Services.Auth
         Task<AuthResult> GenerateRefreshTokenAsync(TokenDTO request);
         Task SetParentRelation(Student student);
         Task SetChildrenRelation(Parent parent);
+        Task<GoogleJsonWebSignature.Payload> VerifyGoogleToken(string idToken);
+
         //Task<AuthResult> ChangePassword(UserChangePasswordDTO userChangePasswordDto);
         //Task<AuthResult> ResetPassword(UserResetPasswordDTO userResetPasswordDto);
         //Task<AuthResult> ForgotPassword(UserForgotPasswordDTO userForgotPasswordDto);

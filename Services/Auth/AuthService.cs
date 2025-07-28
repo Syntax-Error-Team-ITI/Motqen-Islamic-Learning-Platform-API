@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Google.Apis.Auth;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.SqlServer.Server;
 using MotqenIslamicLearningPlatform_API.Authorization;
 using MotqenIslamicLearningPlatform_API.DTOs.AuthDTOs;
 using MotqenIslamicLearningPlatform_API.DTOs.UserDTOs;
@@ -68,6 +70,20 @@ namespace MotqenIslamicLearningPlatform_API.Services.Auth
                 Succeeded = true,
                 Message = "User registered successfully, please check your email for verification!"
             };
+        }
+
+        public async Task<GoogleJsonWebSignature.Payload> VerifyGoogleToken(string idToken)
+        {
+            var validationSettings = new GoogleJsonWebSignature.ValidationSettings
+            {
+                // Your Google OAuth Client ID (from Google Cloud Console)
+                Audience = new List<string> { configuration["Authentication:Google:ClientId"] }
+            };
+
+            // Validate the token and get user payload
+            var payload = await GoogleJsonWebSignature.ValidateAsync(idToken, validationSettings);
+
+            return payload;
         }
 
         public async Task<bool> CheckNationalIdUniqueness(string nationalId)
@@ -140,7 +156,7 @@ namespace MotqenIslamicLearningPlatform_API.Services.Auth
             {
                 Succeeded = true,
                 AccessToken = tokenDTO.AccessToken,
-                RefreshToken =  tokenDTO.RefreshToken
+                RefreshToken = tokenDTO.RefreshToken
             };
         }
 

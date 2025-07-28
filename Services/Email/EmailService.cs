@@ -60,7 +60,7 @@ namespace MotqenIslamicLearningPlatform_API.Services.Email
                 ToEmail = user.Email,
                 Subject = "Confirm your email",
                 //Body = $"Please click this link: {link} , to confirm your email]"
-                Body = $"Please click <a href='{link}'>this link</a> to confirm your email, {encodedToken}"
+                Body = $"Please click <a href='{link}'>this link</a> to confirm your email"
             };
 
             // Send
@@ -69,18 +69,19 @@ namespace MotqenIslamicLearningPlatform_API.Services.Email
 
         public async Task SendPasswordResetEmailAsync(User user)
         {
-            // generate reset token
             var passwordResetToken = await userManager.GeneratePasswordResetTokenAsync(user);
+            var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(passwordResetToken));
 
-            // Prepare email
+
+            var link = $"{configuration["URLs:ClientUrl"]}/forgot-password?userId={user.Id}&token={encodedToken}";
+
             EmailRequestDTO emailRequest = new EmailRequestDTO
             {
                 ToEmail = user.Email,
                 Subject = "Password Reset",
-                Body = $"reset token: [{passwordResetToken}]"
+                Body = $"Please click <a href='{link}'>this link</a> to reset your password"
             };
 
-            // Send email
             await SendEmailAsync(emailRequest);
         }
     }
