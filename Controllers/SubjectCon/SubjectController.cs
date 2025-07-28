@@ -9,6 +9,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.SubjectCon
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class SubjectController : ControllerBase
     {
         UnitOfWork Unit { get; }
@@ -18,7 +19,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.SubjectCon
             this.Mapper = _mapper;
             this.Unit = _unit;
         }
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
 
         [HttpGet]
         public IActionResult GetAll(bool includeDelete = false)
@@ -27,7 +28,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.SubjectCon
             var result = Mapper.Map<IEnumerable<SubjectDto>>(subjects);
             return Ok(result);
         }
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
 
         [HttpGet("{id:int}")]
         public IActionResult GetById(int id)
@@ -40,7 +41,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.SubjectCon
             var result = Mapper.Map<SubjectDto>(subject);
             return Ok(result);
         }
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
 
         [HttpGet("deleted")]
         public IActionResult GetDeletedSubjects()
@@ -50,7 +51,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.SubjectCon
             var result = Mapper.Map<IEnumerable<SubjectDto>>(deletedSubjects);
             return Ok(result);
         }
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
 
         [HttpPost]
         public IActionResult Create(CreateSubjectDto subjectDto)
@@ -65,7 +66,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.SubjectCon
             var result = Mapper.Map<SubjectDto>(subject);
             return CreatedAtAction(nameof(GetById), new { id = subject.Id }, result);
         }
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         [HttpPut("{id:int}")]
         public IActionResult Update(int id, UpdateSubjectDto subjectDto)
         {
@@ -90,7 +91,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.SubjectCon
             var result = Mapper.Map<SubjectDto>(existingSubject);
             return Ok(result);
         }
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
 
         [HttpDelete("{id:int}")]
         public IActionResult Delete(int id)
@@ -104,7 +105,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.SubjectCon
 
             return Ok(new {message = "Subject Deleted Successfully" });
         }
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
 
         [HttpPut("restore/{id:int}")]
         public IActionResult Restore(int id)

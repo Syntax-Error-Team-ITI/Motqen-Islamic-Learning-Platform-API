@@ -12,6 +12,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.TeacherCon
 {
     [Route("api/[controller]")]
     [ApiController]
+    //[Authorize]
     public class HalaqaTeacherController : ControllerBase
     {
         IMapper Mapper;
@@ -21,7 +22,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.TeacherCon
             this.Mapper = _mapper;
             this.Unit = _unit;
         }
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         [HttpGet()]
         public IActionResult GetAll()
         {
@@ -31,7 +32,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.TeacherCon
             var halaqaTeacherDtos = Mapper.Map<List<HalaqaTeacherDto>>(halaqaTeachers);
             return Ok(halaqaTeacherDtos);
         }
-        [Authorize(Roles = "Admin, Teacher")]
+        //[Authorize(Roles = "Admin, Teacher")]
 
         [HttpGet("teacher/{teacherId}")]
         public IActionResult GetByTeacherId(int teacherId)
@@ -42,7 +43,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.TeacherCon
             var halaqaTeacherDtos = Mapper.Map<List<HalaqaTeacherDto>>(halaqaTeachers);
             return Ok(halaqaTeacherDtos);
         }
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
 
         [HttpGet("halaqa/{halaqaId}")]
         public IActionResult GetByHalaqaId(int halaqaId)
@@ -53,7 +54,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.TeacherCon
             var halaqaTeacherDtos = Mapper.Map<List<HalaqaTeacherDto>>(halaqaTeachers);
             return Ok(halaqaTeacherDtos);
         }
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
 
         [HttpGet("halaqaNotAssignForTeacher/{teacherId}")]
         public IActionResult GetHalaqasNotAssignToTeacher(int teacherId)
@@ -61,7 +62,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.TeacherCon
             var halaqas = Unit.HalaqaRepo.GetHalaqasNotAssignToTeacher(teacherId);
             return Ok(Mapper.Map<List<HalaqaNamesListDTO>>(halaqas));
         }
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]  
 
         [HttpGet("halaqa/{halaqaId}/notAssignToTeacher")]
         public IActionResult GetTeachersNotAssignedToHalaqa(int halaqaId)
@@ -73,18 +74,19 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.TeacherCon
             return Ok(teacherDtos);
         }
         //get teacher assigned to halaqa by halaqaId
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
 
         [HttpGet("halaqa/{halaqaId}/assignedTeachers")]
         public IActionResult GetTeachersAssignedToHalaqa(int halaqaId)
         {
+            //Console.WriteLine(halaqaId);
             var halaqaTeachers = Unit.HalaqaTeacherRepo.GetTeachersAssignedToHalaqa(halaqaId);
             if (halaqaTeachers == null || halaqaTeachers.Count == 0)
                 return Ok(new List<TeacherDto>());
             var TeacherDtos = Mapper.Map<List<TeacherDto>>(halaqaTeachers);
             return Ok(TeacherDtos);
         }
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
 
         [HttpGet("teacher/{teacherId}/halaqa/{halaqaId}")]
         public IActionResult GetByIds(int teacherId, int halaqaId)
@@ -95,7 +97,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.TeacherCon
             var halaqaTeacherDto = Mapper.Map<HalaqaTeacherDto>(halaqaTeacher);
             return Ok(halaqaTeacherDto);
         }
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
 
         [HttpPost()]
         public IActionResult Create(CreateHalaqaTeacherDto createHalaqaTeacherDto)
@@ -121,7 +123,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.TeacherCon
             Unit.Save();
             return CreatedAtAction(nameof(GetByIds), new { teacherId = halaqaTeacher.TeacherId, halaqaId = halaqaTeacher.HalaqaId }, Mapper.Map<HalaqaTeacherDto>(halaqaTeacher));
         }
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
 
         [HttpDelete("teacher/{teacherId}/halaqa/{halaqaId}")]
         public IActionResult Delete(int teacherId, int halaqaId)

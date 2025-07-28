@@ -20,7 +20,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Studnet
             Mapper = mapper;
         }
 
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
 
         [HttpGet]
         public IActionResult GetAllStudents(bool includeDeleted = false)
@@ -34,7 +34,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Studnet
         }
         [Authorize(Roles = "Admin")]
 
-        [HttpGet("notInHalaqa/{halaqaId:int}")]
+        //[HttpGet("notInHalaqa/{halaqaId:int}")]
         public IActionResult GetStudentNotInHalqa(int halaqaId, bool includeDeleted = false)
         {
             var students = Unit.StudentRepo.GetAllWithMinimalDataInclude(halaqaId, includeDeleted);
@@ -54,7 +54,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Studnet
                 return NotFound(new { message = "Student Not Found!!" });
             return Ok(Mapper.Map<StudentDetailedDisplayDTO>(student));
         }
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
 
         [HttpGet("halaqa/{halaqaId}/all-students")]
         public IActionResult getAllStudentsForHalaqa(int halaqaId,bool includeDeleted = false)
@@ -72,7 +72,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Studnet
                 return NotFound();
             return Ok(Mapper.Map<List<HalaqaStudentDisplayHalaqaDTO>>(halaqa));
         }
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
 
         [HttpDelete]
         public IActionResult Delete(int id)
@@ -84,7 +84,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Studnet
             Unit.Save();
             return Ok();
         }
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
 
         [HttpPut("restore")]
         public IActionResult Restore(int id)
