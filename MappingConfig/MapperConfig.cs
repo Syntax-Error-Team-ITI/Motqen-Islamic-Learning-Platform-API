@@ -143,6 +143,7 @@ namespace MotqenIslamicLearningPlatform_API.MappingConfig
                     var teacher = src.Halaqa.HalaqaTeachers?.FirstOrDefault(ht => ht.HalaqaId == src.HalaqaId)?.Teacher.User;
                     if (teacher != null)
                         dest.TeacherName = $"{teacher.FirstName} {teacher.LastName}";
+                    dest.Id = src.HalaqaId;
                     dest.SubjectName = src.Halaqa.Subject.Name;
                     dest.GuestLiveLink = src.Halaqa.GuestLiveLink;
                     dest.Name = src.Halaqa.Name;
