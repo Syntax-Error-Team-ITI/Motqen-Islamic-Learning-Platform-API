@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ using MotqenIslamicLearningPlatform_API.Models;
 using MotqenIslamicLearningPlatform_API.Models.ParentModel;
 using MotqenIslamicLearningPlatform_API.Models.Shared;
 using MotqenIslamicLearningPlatform_API.Models.StudentModel;
+using MotqenIslamicLearningPlatform_API.Models.TeacherModel;
 using MotqenIslamicLearningPlatform_API.Services.Auth;
 using MotqenIslamicLearningPlatform_API.Services.Auth.Utilities;
 using MotqenIslamicLearningPlatform_API.Services.Email;
@@ -33,29 +35,47 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Auth
         [HttpPost("register-student")]
         public async Task<IActionResult> RegisterAsStudent([FromBody] StudentRegisterDTO request)
         {
-            var registerResult = await authService.RegisterAsync(request);
-            if (!registerResult.Succeeded)
+            User user;
+            AuthResult registerResult = new();
+
+            if (false)
+            //if (request.GoogleIdToken != null)
             {
-                return BadRequest(new { error = registerResult.Message });
+                //var payload = await authService.VerifyGoogleToken(request.GoogleIdToken);
+
+                //user = new User
+                //{
+                //    Email = payload.Email,
+                //    UserName = payload.Email,
+                //    FirstName = request.FirstName ?? payload.GivenName,
+                //    LastName = request.LastName ?? payload.FamilyName,
+                //    EmailConfirmed = true
+                //};
+
+                //var result = await userManager.CreateAsync(user);
+                //if (!result.Succeeded)
+                //    return BadRequest(new { error = string.Join(", ", result.Errors.Select(e => e.Description)) });
+
+                //registerResult.Message = result.Succeeded.ToString();
+            }
+            else
+            {
+                registerResult = await authService.RegisterAsync(request);
+                if (!registerResult.Succeeded)
+                    return BadRequest(new { error = registerResult.Message });
+                user = registerResult.AppUser;
             }
 
-            var user = registerResult.AppUser;
-
             await userManager.AddToRoleAsync(user, UserRoles.Student);
-
             user.Student = new Student
             {
                 Pic = "tempUrl",
                 Gender = request.Gender,
                 BirthDate = request.BirthDate,
                 Nationality = request.Nationality,
-                //Age = DateTime.Today.Year - request.BirthDate.Value.Year,
+                //Age = make function to set age
                 ParentNationalId = request.ParentNationalId
             };
-            //if (request.BirthDate.Value.Date > DateTime.Today.AddYears(-user.Student.Age))
-            //{
-            //    user.Student.Age--;
-            //}
 
             var updateResult = await userManager.UpdateAsync(user);
             if (!updateResult.Succeeded)
@@ -63,7 +83,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Auth
 
             await authService.SetParentRelation(user.Student);
 
-            await emailService.SendEmailConfirmationAsync(registerResult.AppUser!);
+            await emailService.SendEmailConfirmationAsync(user);
 
             return Ok(new { message = registerResult.Message });
         }
@@ -103,6 +123,35 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Auth
             return Ok(new { message = registerResult.Message });
         }
 
+        //[Authorize(Roles = UserRoles.Admin)]
+        [HttpPost("add-teacher")]
+        public async Task<IActionResult> AddTeacher(AddTeacherDTO request)
+        {
+            var registerResult = await authService.RegisterAsync(request);
+            if (!registerResult.Succeeded)
+            {
+                return BadRequest(new { error = registerResult.Message });
+            }
+
+            var user = registerResult.AppUser;
+
+            user.EmailConfirmed = true;
+
+            await userManager.AddToRoleAsync(user, UserRoles.Teacher);
+
+            user.Teacher = new Teacher
+            {
+                Pic = "tempUrl",
+                Gender = request.Gender,
+                Age = request.Age
+            };
+
+            var updateResult = await userManager.UpdateAsync(user);
+            if (!updateResult.Succeeded)
+                return BadRequest(new { error = updateResult.Errors });
+
+            return Ok(new { message = "Teacher added successfully" });
+        }
 
         // this endpoint is only accessed through the link in the email sent to the user after registration
         [HttpGet("confirm-email")]
@@ -160,6 +209,47 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Auth
         }
 
 
+        // user click on button on login page to get to this end point
+        // which will send an email with a link another front end page which is a form to fill in
+        // the new password and click on a button to get to the next end point in the process => [HttpPost("reset-password")]
+        [HttpGet("forgot-password")]
+        public async Task<IActionResult> SendForgotPasswordMail([FromQuery] string email)
+        {
+            var user = await userManager.FindByEmailAsync(email);
+            if (user == null || !(await userManager.IsEmailConfirmedAsync(user)))
+            {
+                return Ok(new { mesage = "Check you email for password reset link." });
+            }
+
+            await emailService.SendPasswordResetEmailAsync(user);
+
+            return Ok(new { mesage = "Check you email for password reset link." }); //(front-end) link to reset password form/ page
+        }
+
+        //after the user submits the form with the new password OnSubmit() request will be sent to this end point
+        [HttpPost("forgot-password/reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] UserResetPasswordDTO model)
+        {
+            var user = await userManager.FindByIdAsync(model.userId);
+            if (user == null)
+                return BadRequest(new { error = "Invalid request" });
+
+            if (model.NewPassword != model.ConfirmNewPassword)
+                return BadRequest(new { error = "Password and confirm password do not match." });
+
+            var decodedTokenBytes = WebEncoders.Base64UrlDecode(model.Token);
+            var decodedToken = Encoding.UTF8.GetString(decodedTokenBytes);
+
+            var result = await userManager.ResetPasswordAsync(user, decodedToken, model.NewPassword);
+
+            if (result.Succeeded)
+                return Ok(new { message = "Password has been reset successfully." });
+
+            return BadRequest(new { error = result.Errors });
+        }
+
+
+
         //[HttpPost("refresh-token")]
         //public async Task<IActionResult> RefreshToken([FromBody] TokenDTO refreshTokenDto)
         //{
@@ -170,43 +260,6 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Auth
         //    }
         //    return Ok(refreshResult);
         //}
-
-
-        //[HttpPost("add-parent")]
-        //public async Task<IActionResult> AddParent(string studentEmail, string parentEmail, string parentNationalId)
-        //{
-        //    // 1 check if the student exists
-        //    var userStudent = await db.Users
-        //        .Include(u => u.Student)
-        //        .SingleOrDefaultAsync(u => u.Email == studentEmail);
-
-        //    if (userStudent == null || userStudent.Student == null || !(await userManager.IsEmailConfirmedAsync(userStudent)))
-        //        return BadRequest("Student not found or not registered.");
-
-        //    // 2 check if the parent exists
-        //    var userParent = await db.Users
-        //        .Include(u => u.Parent)
-        //        .SingleOrDefaultAsync(u => u.Email == parentEmail);
-
-        //    if (userParent == null || userParent.Parent == null || !(await userManager.IsEmailConfirmedAsync(userParent)))
-        //        return BadRequest("Parent not found or not registered.");
-
-        //    // 3 check if the parent is already linked to the student
-        //    if (userStudent.Student.ParentNationalId == userParent.Parent.NationalId)
-        //        return BadRequest("This parent is already linked to the student.");
-
-        //    // 4 link the parent to the student
-        //    userStudent.Student.ParentNationalId = userParent.Parent.NationalId;
-        //    userStudent.Student.Parent = userParent.Parent;
-
-        //    // 5 update the student in the database
-        //    var updateResult = await userManager.UpdateAsync(userStudent);
-        //    if (!updateResult.Succeeded)
-        //        return BadRequest(updateResult.Errors);
-
-        //    return Ok("Parent " + userParent.FirstName + " added to the student " + userStudent.FirstName + " successfully.");
-        //}
-
 
 
         //[HttpPost("change-password")]
@@ -223,105 +276,8 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Auth
         //    return BadRequest(result.Errors);
         //}
 
-        //// user click on button on login page to get to this end point
-        //// which will send an email with a link another front end page which is a form to fill in
-        //// the new password and click on a button to get to the next end point in the process => [HttpPost("reset-password")]
-        //[HttpPost("forgot-password")]
-        //public async Task<IActionResult> SendForgotPasswordMail(string email)
-        //{
-        //    var user = await userManager.FindByEmailAsync(email);
-        //    if (user == null || !(await userManager.IsEmailConfirmedAsync(user)))
-        //    {
-        //        // Don't reveal that the user does not exist or is not confirmed
-        //        return Ok("Check you email for password reset link.");
-        //    }
-
-        //    await emailService.SendPasswordResetEmailAsync(user);
-
-        //    return Ok("Check you email for password reset link."); //(front-end) link to reset password form/ page
-        //}
-
-        ////after the user submits the form with the new password OnSubmit() request will be sent to this end point
-        //[HttpPost("forgot-password/reset-password")]
-        //public async Task<IActionResult> ResetPassword([FromBody] UserResetPasswordDTO model)
-        //{
-        //    var user = await userManager.FindByEmailAsync(model.Email);
-        //    if (user == null)
-        //        return BadRequest("Invalid request");
-
-        //    if (model.NewPassword != model.ConfirmNewPassword)
-        //        return BadRequest("Password and confirm password do not match.");
-
-        //    var result = await userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
-
-        //    if (result.Succeeded)
-        //        return Ok("Password has been reset successfully.");
-
-        //    return BadRequest(result.Errors);
-        //}
-
-        //[HttpPost("continue-registration")]
-        //after successful login, the user will be redirected to this endpoint only for the first time
-        //public async Task<IActionResult> ContinueRegistration([FromBody] UserContinueRegisterDTO request)
-        //{
-        //    // 1 check if the request email is valid
-        //    var user = await db.Users
-        //        .Include(u => u.Student)
-        //        .Include(u => u.Parent)
-        //        .Include(u => u.Teacher)
-        //        .SingleOrDefaultAsync(u => u.Email == request.Email);
-        //    if (user == null || !(await userManager.IsEmailConfirmedAsync(user)))
-        //        return BadRequest(new { error = "User not found or not confirmed" });
 
 
-        //    // 2 check if the user has already completed their registration while not being an Admin or Teacher
-        //    if (user.Teacher is not null)
-        //        return BadRequest(new { error = "As a " + UserRoles.Teacher + " contact the administration to continue your registration" });
-        //    if (user.Student is not null)
-        //        return BadRequest(new { error = "You have already completed your registration as a " + UserRoles.Student });
-        //    if (user.Parent is not null)
-        //        return BadRequest(new { error = "You have already completed your registration as a " + UserRoles.Parent });
-
-        //    // 3 check if the role is valid and not Admin or Teacher
-        //    if (request.Role != UserRoles.Student && request.Role != UserRoles.Parent)
-        //        return BadRequest(new { error = "You can only register as Student or Parent. For other roles please contact the system administrator." });
-
-        //    // 4 create a new user profile based on the role
-        //    switch (request.Role)
-        //    {
-        //        case UserRoles.Student:
-        //            user.Student = new Student
-        //            {
-        //                Pic = request.Pic,
-        //                Gender = request.Gender,
-        //                Age = DateTime.Today.Year - request.BirthDate.Value.Year,
-        //                BirthDate = (DateTime)request.BirthDate,
-        //                Nationality = request.Nationality,
-        //                ParentNationalId = request.ParentNationalId
-        //            };
-        //            if (request.BirthDate.Value.Date > DateTime.Today.AddYears(-user.Student.Age))
-        //            {
-        //                user.Student.Age--;
-        //            }
-        //            break;
-
-        //        case UserRoles.Parent:
-        //            user.PhoneNumber = request.PhoneNumber;
-        //            user.Parent = new Parent
-        //            {
-        //                Pic = request.Pic,
-        //                Address = request.Address,
-        //                NationalId = request.NationalId
-        //            };
-        //            break;
-        //    }
-        //    // 5 update the user in the database
-        //    var updateResult = await userManager.UpdateAsync(user);
-        //    if (!updateResult.Succeeded)
-        //        return BadRequest(new { error = updateResult.Errors });
-
-        //    return Ok(new { pk = updateResult });
-        //}
 
     }
 }

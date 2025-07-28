@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MotqenIslamicLearningPlatform_API.DTOs.ReportesDtos.ParentDtos;
 using MotqenIslamicLearningPlatform_API.DTOs.ReportesDtos.ParentDtos.AttendanceSummary;
@@ -19,7 +20,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             this. ReportService = _report;
         }
         #region Quran
-
+        [Authorize(Roles = "Admin , Parent")]
         [HttpGet("Quran/MemorizationChart/{studentId}")]
         public ActionResult<List<QuranProgressChartPointDto>> GetQuranMemorizationChart(int studentId)
         {
@@ -31,6 +32,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             return Ok(chartData);
         }
 
+        [Authorize(Roles = "Admin , Parent")]
         [HttpGet("Quran/ReviewChart/{studentId}")]
         public ActionResult<List<QuranProgressChartPointDto>> GetQuranReviewChart(int studentId)
         {
@@ -44,6 +46,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             return Ok(chartData);
         }
 
+        [Authorize(Roles = "Admin , Parent")]
         [HttpGet("Quran/WeeklyMonthlyProgress/{studentId}")]
         public ActionResult<List<WeeklyMonthlyQuranProgressDto>> GetQuranWeeklyMonthlyProgress(int studentId, [FromQuery] string periodType = "month")
         {
@@ -63,6 +66,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             return Ok(data);
         }
 
+        [Authorize(Roles = "Admin , Parent")]
         [HttpGet("Quran/SummaryCounters/{studentId}")]
         public ActionResult<QuranSummaryCountersDto> GetQuranSummaryCounters(int studentId)
         {
@@ -77,6 +81,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             return Ok(counters);
         }
 
+        [Authorize(Roles = "Admin , Parent")]
         [HttpGet("Quran/DetailedProgressReport/{studentId}")]
         public ActionResult<List<QuranDetailedProgressReportDto>> GetQuranDetailedProgressReport(int studentId)
         {
@@ -93,6 +98,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
         #endregion
 
         #region Islamic 
+        [Authorize(Roles = "Admin , Parent")]
         [HttpGet("IslamicSubjects/PagesChart/{studentId}")]
         public ActionResult<List<IslamicSubjectProgressChartDto>> GetIslamicSubjectPagesChart(int studentId)
         {
@@ -105,7 +111,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             }
             return Ok(chartData);
         }
-
+        [Authorize(Roles = "Admin , Parent")]
         [HttpGet("IslamicSubjects/ProgressOverTimeChart/{studentId}/{subjectName}")]
         public ActionResult<List<IslamicSubjectProgressOverTimeChartDto>> GetIslamicSubjectProgressOverTimeChart(int studentId, string subjectName)
         {
@@ -119,6 +125,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             return Ok(chartData);
         }
 
+        [Authorize(Roles = "Admin , Parent")]
         [HttpGet("IslamicSubjects/DetailedProgressReport/{studentId}")]
         public ActionResult<List<IslamicSubjectsDetailedProgressReportDto>> GetIslamicSubjectsDetailedProgressReport(int studentId)
         {
@@ -135,6 +142,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
         #endregion
 
         #region Attendance
+        [Authorize(Roles = "Admin , Parent")]
 
         [HttpGet("Attendance/SummaryPieChart/{studentId}")]
         public ActionResult<List<StudentAttendancePieChartDto>> GetStudentAttendanceSummaryPieChart(int studentId)
@@ -148,6 +156,8 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             }
             return Ok(chartData);
         }
+        [Authorize(Roles = "Admin , Parent")]
+
         [HttpGet("Attendance/datails/{studentid:int}")]
         public IActionResult GetStudentAttenndanceDetails(int studentid)
         {
@@ -160,6 +170,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             }
             return Ok(data);
         }
+        [Authorize(Roles = "Admin , Parent")]
 
         [HttpGet("Attendance/MonthlyWeeklyChart/{studentId}")]
         public ActionResult<List<MonthlyWeeklyAttendanceChartDto>> GetStudentMonthlyWeeklyAttendanceChart(int studentId, [FromQuery] string periodType = "month")
@@ -179,6 +190,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             }
             return Ok(chartData);
         }
+        [Authorize(Roles = "Admin , Parent")]
 
         [HttpGet("Performance/Comparison/{studentId}/{halaqaId}")]
         public ActionResult<List<StudentHalaqaComparisonReportDto>> GetStudentPerformanceComparisonReport(int studentId, int halaqaId)

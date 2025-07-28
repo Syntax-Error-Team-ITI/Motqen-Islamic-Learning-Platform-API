@@ -4,6 +4,8 @@ namespace MotqenIslamicLearningPlatform_API.DTOs.UserDTOs
 {
     public class UserRegisterDTO
     {
+        //public string? GoogleIdToken { get; set; }
+
         [Required(ErrorMessage = "Email is required."), DataType(DataType.EmailAddress)]
         public string Email { get; set; } = string.Empty;
 

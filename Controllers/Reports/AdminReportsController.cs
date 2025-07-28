@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MotqenIslamicLearningPlatform_API.Services.Reports;
 using MotqenIslamicLearningPlatform_API.DTOs.ReportesDtos.AdminDtos;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
 {
@@ -16,6 +17,8 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
         }
 
         #region Summary
+
+        [Authorize (Roles = "Admin")]
         [HttpGet("dashboard-summary")]
         public ActionResult<AdminDashboardSummaryDto> GetDashboardSummary()
         {
@@ -23,6 +26,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             return Ok(summary);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("user-summary")]
         public ActionResult<List<UserSummaryDto>> GetUserSummary()
         {
@@ -32,12 +36,15 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
         #endregion
 
         #region  Performance
+        [Authorize(Roles = "Admin")]
+
         [HttpGet("teacher-performance")]
         public ActionResult<List<TeacherPerformanceDto>> GetTeacherPerformance()
         {
             var data = _reportService.GetTeacherPerformanceReport();
             return Ok(data);
         }
+        [Authorize(Roles = "Admin")]
 
         [HttpGet("student-performance")]
         public ActionResult<List<StudentPerformanceOverviewDto>> GetStudentPerformance()
@@ -49,6 +56,8 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
         #endregion
 
         #region Halaqa Health
+        [Authorize(Roles = "Admin")]
+
         [HttpGet("halaqa-health")]
         public ActionResult<List<HalaqaHealthReportDto>> GetHalaqaHealth()
         {

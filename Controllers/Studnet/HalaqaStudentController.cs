@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MotqenIslamicLearningPlatform_API.DTOs.StudentDTOs;
 using MotqenIslamicLearningPlatform_API.Models.HalaqaModel;
@@ -17,6 +18,8 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Studnet
             Unit = unit;
             Mapper = mapper;
         }
+        [Authorize(Roles = "Admin")]
+
         [HttpPost]
         public IActionResult assignStudentToHalaqa(StudentHalaqaFormDTO studentHalaqaFromReq)
         {
@@ -35,6 +38,8 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Studnet
             Unit.Save();
             return Ok();
         }
+        [Authorize(Roles = "Admin")]
+
         [HttpDelete]
         public IActionResult RemoveStudentFromHalaqa(int studentId, int halaqaId)
         {

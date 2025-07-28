@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MotqenIslamicLearningPlatform_API.DTOs.HalaqaDTOs;
@@ -19,7 +20,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.HalaqaCon
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-
+        [Authorize(Roles = "Teacher")]
         [HttpGet("halaqa/{halaqaId:int}")]
         public IActionResult GetAllForHalaqa(int halaqaId, bool includeDeleted = false)
         {
@@ -29,6 +30,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.HalaqaCon
             return Ok(result);
         }
 
+        [Authorize(Roles = "Teacher")]
 
         [HttpGet("halaqa/{halaqaId:int}/{id:int}")]
         public IActionResult GetById(int halaqaId, int id)
@@ -39,6 +41,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.HalaqaCon
             var result = _mapper.Map<ClassScheduleDto>(schedule);
             return Ok(result);
         }
+        [Authorize(Roles = "Teacher")]
 
         [HttpPost("halaqa/{halaqaId:int}")]
         public IActionResult Create(int halaqaId, [FromBody] CreateClassScheduleDto dto)
@@ -55,6 +58,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.HalaqaCon
             var result = _mapper.Map<ClassScheduleDto>(schedule);
             return CreatedAtAction(nameof(GetById), new { halaqaId = halaqaId, id = schedule.Id }, result);
         }
+        [Authorize(Roles = "Teacher")]
 
         [HttpPut("halaqa/{halaqaId:int}/{id:int}")]
         public IActionResult Update(int halaqaId, int id, [FromBody] UpdateClassScheduleDto dto)
@@ -71,6 +75,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.HalaqaCon
             _unitOfWork.Save();
             return NoContent();
         }
+        [Authorize(Roles = "Teacher")]
 
         [HttpDelete("halaqa/{halaqaId:int}/{id:int}")]
         public IActionResult Delete(int halaqaId, int id)
@@ -84,6 +89,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.HalaqaCon
             _unitOfWork.Save();
             return Ok(new { message = "Schedule deleted successfully." });
         }
+        [Authorize(Roles = "Teacher")]
 
         [HttpPut("halaqa/{halaqaId:int}/restore/{id:int}")]
         public IActionResult Restore(int halaqaId, int id)
