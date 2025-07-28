@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MotqenIslamicLearningPlatform_API.DTOs.HalaqaDTOs;
+using MotqenIslamicLearningPlatform_API.DTOs.TeacherDTOs;
 using MotqenIslamicLearningPlatform_API.DTOs.TeacherDTOs.HalaqaTeacherDtos;
 using MotqenIslamicLearningPlatform_API.Models.HalaqaModel;
 using MotqenIslamicLearningPlatform_API.UnitOfWorks;
@@ -51,6 +52,26 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.TeacherCon
         {
             var halaqas = Unit.HalaqaRepo.GetHalaqasNotAssignToTeacher(teacherId);
             return Ok(Mapper.Map<List<HalaqaNamesListDTO>>(halaqas));
+        }
+
+        [HttpGet("halaqa/{halaqaId}/notAssignToTeacher")]
+        public IActionResult GetTeachersNotAssignedToHalaqa(int halaqaId)
+        {
+            var teachers = Unit.HalaqaTeacherRepo.GetTeachersNotAssignedToHalaqa(halaqaId);
+            if (teachers == null || teachers.Count == 0)
+                return Ok(new List<TeacherDto>());
+            var teacherDtos = Mapper.Map<List<TeacherDto>>(teachers);
+            return Ok(teacherDtos);
+        }
+        //get teacher assigned to halaqa by halaqaId
+        [HttpGet("halaqa/{halaqaId}/assignedTeachers")]
+        public IActionResult GetTeachersAssignedToHalaqa(int halaqaId)
+        {
+            var halaqaTeachers = Unit.HalaqaTeacherRepo.GetTeachersAssignedToHalaqa(halaqaId);
+            if (halaqaTeachers == null || halaqaTeachers.Count == 0)
+                return Ok(new List<TeacherDto>());
+            var TeacherDtos = Mapper.Map<List<TeacherDto>>(halaqaTeachers);
+            return Ok(TeacherDtos);
         }
         [HttpGet("teacher/{teacherId}/halaqa/{halaqaId}")]
         public IActionResult GetByIds(int teacherId, int halaqaId)

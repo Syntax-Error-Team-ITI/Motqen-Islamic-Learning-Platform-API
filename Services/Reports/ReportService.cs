@@ -166,9 +166,9 @@ namespace MotqenIslamicLearningPlatform_API.Services.Reports
                 .ToList();
         }
 
-        public List<IslamicSubjectProgressOverTimeChartDto> GetStudentIslamicSubjectProgressOverTimeChart(int studentId, int subjectId)
+        public List<IslamicSubjectProgressOverTimeChartDto> GetStudentIslamicSubjectProgressOverTimeChart(int studentId, string subjectName)
         {
-            var subjectName = Unit.SubjectRepo.GetById(subjectId)?.Name;
+            
             if (subjectName == null) return new List<IslamicSubjectProgressOverTimeChartDto>();
 
             var progressData = Unit.ProgressTrackingRepo.GetAllProgressForSpecificStudent(studentId)
@@ -292,7 +292,7 @@ namespace MotqenIslamicLearningPlatform_API.Services.Reports
                 StudentName = _StudentName,
                 StudentId = studentId,
                 HalaqaId = halaqaId,
-                Metric = "Average Memorized Lines",
+                Metric = "متوسط اسطر الجديد ",
                 StudentValue = studentAvgMemorizedLines ?? 0,
                 HalaqaAverageValue = halaqaAvgMemorizedLines ?? 0
             });
@@ -309,7 +309,7 @@ namespace MotqenIslamicLearningPlatform_API.Services.Reports
                 StudentName = _StudentName,
                 StudentId = studentId,
                 HalaqaId = halaqaId,
-                Metric = "Average Reviewed Lines",
+                Metric = "متوسط اسطر المراجعه",
                 StudentValue = studentAvgReviewedLines ?? 0,
                 HalaqaAverageValue = halaqaAvgReviewedLines ?? 0
             });
@@ -326,7 +326,7 @@ namespace MotqenIslamicLearningPlatform_API.Services.Reports
                 StudentName = _StudentName,
                 StudentId = studentId,
                 HalaqaId = halaqaId,
-                Metric = "Average Islamic Pages Completed",
+                Metric = "متوسط عدد الصفحات في المواد الاسلاميه",
                 StudentValue = studentAvgIslamicPages ?? 0,
                 HalaqaAverageValue = halaqaAvgIslamicPages ?? 0
             });
@@ -346,7 +346,7 @@ namespace MotqenIslamicLearningPlatform_API.Services.Reports
                 StudentName = _StudentName,
                 StudentId = studentId,
                 HalaqaId = halaqaId,
-                Metric = "Attendance Percentage",
+                Metric = "متوسط الحضور ",
                 StudentValue = studentAttendancePercentage,
                 HalaqaAverageValue = halaqaAttendancePercentage
             });
@@ -434,7 +434,7 @@ namespace MotqenIslamicLearningPlatform_API.Services.Reports
                 {
                     HalaqaName = attendanceData.FirstOrDefault()?.Halaqa?.Name ?? "",
                     HalaqaId = halaqaId,
-                    Status = g.Key.ToString(),
+                    Status = g.Key.ToString() == "Present"? "حاضر" : g.Key.ToString() == "Absent" ? "غائب": "غائب بعذر" ,
                     Count = g.Count(),
                     Percentage = (decimal)g.Count() / attendanceData.Count * 100
                 })

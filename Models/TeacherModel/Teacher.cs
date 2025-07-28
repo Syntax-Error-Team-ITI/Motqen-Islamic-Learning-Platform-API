@@ -6,7 +6,7 @@ namespace MotqenIslamicLearningPlatform_API.Models.TeacherModel
 {
     public class Teacher : BaseEntity
     {
-        public string Pic { get; set; }
+        public string? Pic { get; set; }
         public string Gender { get; set; }
         public int Age { get; set; }
 

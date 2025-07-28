@@ -89,7 +89,8 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.SubjectCon
                 NotFound(new { message = "Subject Not Found!!" });
             }
             Unit.Save();
-            return Ok("Subject Deleted Successfully");
+
+            return Ok(new {message = "Subject Deleted Successfully" });
         }
         [HttpPut("restore/{id:int}")]
         public IActionResult Restore(int id)

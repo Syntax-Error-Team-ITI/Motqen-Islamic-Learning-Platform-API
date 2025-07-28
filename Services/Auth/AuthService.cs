@@ -168,24 +168,23 @@ namespace MotqenIslamicLearningPlatform_API.Services.Auth
             var Claims = new List<Claim>
                 {
                 //new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()), what is this?
-                new Claim("user Id", user.Id),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Name, user.UserName),
-                new Claim("FirstName", user.FirstName),
-                new Claim("LastName", user.LastName),
+                new Claim("userId", user.Id),
+                new Claim("email", user.Email),
+                new Claim("userName", user.UserName),
+                new Claim("fullName", $"{user.FirstName} {user.LastName}"),
                 new Claim("IsAdmin" , isAdmin.ToString())
                 };
 
             if (user.Student != null)
-                Claims.Add(new Claim("Id as student", user.Student.Id.ToString()));
+                Claims.Add(new Claim("id", user.Student.Id.ToString()));
             if (user.Teacher != null)
-                Claims.Add(new Claim("Id as teacher", user.Teacher.Id.ToString()));
+                Claims.Add(new Claim("id", user.Teacher.Id.ToString()));
             if (user.Parent != null)
-                Claims.Add(new Claim("Id as parent", user.Parent.Id.ToString()));
+                Claims.Add(new Claim("id", user.Parent.Id.ToString()));
 
             foreach (var role in roles)
             {
-                Claims.Add(new Claim(ClaimTypes.Role, role));
+                Claims.Add(new Claim("role", role));
             }
 
             // 1 access token
