@@ -152,7 +152,7 @@ namespace MotqenIslamicLearningPlatform_API.Services.Auth
             var Claims = new List<Claim>
                 {
                 //new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()), what is this?
-                //new Claim("id", user.Id),
+                new Claim("userId", user.Id),
                 new Claim("email", user.Email),
                 new Claim("userName", user.UserName),
                 new Claim("fullName", $"{user.FirstName} {user.LastName}"),

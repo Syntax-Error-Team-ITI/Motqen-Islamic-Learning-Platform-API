@@ -30,7 +30,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers
                 //    Console.WriteLine($"{claim.Type}: {claim.Value}");
                 //}
                 // Get user ID and role from JWT token using your custom claim names
-                var Id = User.FindFirst("id")?.Value;
+                var Id = User.FindFirst("userId")?.Value;
                 var role = User.FindFirst("http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
 
                 if (string.IsNullOrEmpty(Id) || string.IsNullOrEmpty(role))
