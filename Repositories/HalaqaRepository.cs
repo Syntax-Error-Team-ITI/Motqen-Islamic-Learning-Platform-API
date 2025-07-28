@@ -24,7 +24,7 @@ namespace MotqenIslamicLearningPlatform_API.Repositories
                 .Include(h => h.Subject)
                 .ToList();
         }
-        public Halaqa GetByIdIncludeSubject(int halaqaId,bool includeDeleted = false  )
+        public Halaqa GetByIdIncludeSubject(int halaqaId, bool includeDeleted = false)
         {
             if (!includeDeleted)
             {
@@ -48,7 +48,7 @@ namespace MotqenIslamicLearningPlatform_API.Repositories
                 return Db.Halaqas
                     .Include(h => h.Subject)
                     .Include(h => h.ClassSchedules)
-                    .FirstOrDefault(h => h.Id == halaqaId );
+                    .FirstOrDefault(h => h.Id == halaqaId);
             }
             return Db.Halaqas
                 .Include(h => h.Subject)
