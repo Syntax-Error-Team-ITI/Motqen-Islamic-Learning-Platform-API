@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MotqenIslamicLearningPlatform_API.DTOs.TeacherDTOs;
@@ -18,6 +19,8 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.TeacherCon
             this.Unit = _unit;
             this.Mapper = _mapper;
         }
+        [Authorize(Roles = "Admin")]
+
         [HttpGet]
         public IActionResult GetAll(bool includeDelete = false)
         {
@@ -25,6 +28,8 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.TeacherCon
             var result = Mapper.Map<IEnumerable<TeacherDto>>(teachers);
             return Ok(result);
         }
+        [Authorize(Roles = "Admin")]
+
         [HttpGet("{id:int}")]
         public IActionResult GetById(int id)
         {
@@ -36,6 +41,8 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.TeacherCon
             var result = Mapper.Map<TeacherDto>(teacher);
             return Ok(result);
         }
+        [Authorize(Roles = "Admin")]
+
         [HttpGet("deleted")]
         public IActionResult GetDeletedTeachers()
         {
@@ -43,6 +50,8 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.TeacherCon
             var result = Mapper.Map<IEnumerable<TeacherDto>>(deletedTeachers);
             return Ok(result);
         }
+        [Authorize(Roles = "Admin")]
+
         [HttpPost]
         public IActionResult Create(CreateTeacherDto teacherDto)
         {
@@ -56,6 +65,8 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.TeacherCon
             var result = Mapper.Map<TeacherDto>(teacher);
             return CreatedAtAction(nameof(GetById), new { id = teacher.Id }, result);
         }
+        [Authorize(Roles = "Admin")]
+
         [HttpPut("{id:int}")]
         public IActionResult Update(int id , UpdateTeacherDto teacherDto)
         {
@@ -78,6 +89,8 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.TeacherCon
             var result = Mapper.Map<TeacherDto>(existingTeacher);
             return Ok(result);
         }
+        [Authorize(Roles = "Admin")]
+
         [HttpDelete("{id:int}")]
         public IActionResult Delete(int id)
         {
@@ -89,6 +102,8 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.TeacherCon
             Unit.Save();
             return Ok(new { message = "Teacher deleted successfully" });
         }
+        [Authorize(Roles = "Admin")]
+
         [HttpPut("restore/{id:int}")]
         public IActionResult Restore(int id)
         {

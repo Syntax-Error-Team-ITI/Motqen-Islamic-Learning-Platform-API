@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MotqenIslamicLearningPlatform_API.DTOs.HalaqaDTOs;
@@ -24,12 +25,15 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.HalaqaCon
             this.roomService = roomService;
             _mapper = mapper;
         }
+        [Authorize(Roles = "Teacher,Admin")]
         [HttpGet("names")]
         public IActionResult GetHalaqaNamesList()
         {
             var halaqas = _unitOfWork.HalaqaRepo.GetAll();
             return Ok(_mapper.Map<List<HalaqaNamesListDTO>>(halaqas));
         }
+        [Authorize(Roles = "Teacher,Admin")]
+
         [HttpGet]
         public IActionResult GetAll(bool includeDeleted = false)
         {
@@ -37,6 +41,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.HalaqaCon
             var result = _mapper.Map<IEnumerable<HalaqaDto>>(halaqas);
             return Ok(result);
         }
+        [Authorize(Roles = "Teacher,Admin")]
 
         [HttpGet("{id:int}")]
         public IActionResult GetById(int id)
@@ -48,7 +53,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.HalaqaCon
             return Ok(result);
             //return Ok();
         }
-
+        [Authorize(Roles = "Teacher,Admin")]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateHalaqaDto halaqaDto)
         {
@@ -70,6 +75,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.HalaqaCon
            
             return CreatedAtAction(nameof(GetById), new { id = halaqa.Id }, result);
         }
+        [Authorize(Roles = "Teacher,Admin")]
 
         [HttpPut("{id:int}")]
         public IActionResult Update(int id, [FromBody] UpdateHalaqaDto halaqaDto)
@@ -88,6 +94,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.HalaqaCon
             var result = _mapper.Map<HalaqaDto>(halaqa);
             return Ok(result);
         }
+        [Authorize(Roles = "Teacher,Admin")]
 
         [HttpDelete("{id:int}")]
         public IActionResult Delete(int id)
@@ -99,6 +106,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.HalaqaCon
             _unitOfWork.Save();
             return Ok(new { message = "Halaqa deleted successfully." });
         }
+        [Authorize(Roles = "Teacher,Admin")]
 
         [HttpPut("restore/{id:int}")]
         public IActionResult Restore(int id)

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MotqenIslamicLearningPlatform_API.DTOs.ParentDTOs;
 using MotqenIslamicLearningPlatform_API.UnitOfWorks;
@@ -17,18 +18,24 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Studnet
             Unit = unit;
             Mapper = mapper;
         }
+        [Authorize(Roles = "Admin , Parent")]
+
         [HttpGet("{id}/children")]
         public IActionResult GetChildren(int id)
         {
             var children = Unit.StudentRepo.getStudentByParentId(id);
             return Ok(Mapper.Map<List<ParentChildDTO>>(children));
         }
+        [Authorize(Roles = "Admin , Parent")]
+
         [HttpGet]
         public IActionResult GetAll()
         {
             var parents = Unit.ParentRepo.GetAll();
             return Ok(Mapper.Map<List<ParentListDTO>>(parents));
         }
+        [Authorize(Roles = "Admin , Parent")]
+
         [HttpGet("{id}")]
         public IActionResult GetParent(int id)
         {

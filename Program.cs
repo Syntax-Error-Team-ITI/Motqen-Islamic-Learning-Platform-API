@@ -65,6 +65,10 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]!))
     };
+}).AddGoogle(options =>
+{
+    options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+    options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
 });
 
 
@@ -89,6 +93,19 @@ builder.Services.AddCors(options =>
         }
     );
 });
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularApp", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
+
+
 
 
 builder.Services.AddEndpointsApiExplorer();
@@ -123,7 +140,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(op => op.SwaggerEndpoint("/openapi/v1.json", "v1"));
 
 }
-
+// In the app configuration section:
+app.UseCors("AllowAngularApp");
 
 app.UseHttpsRedirection();
 

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MotqenIslamicLearningPlatform_API.DTOs.ProgressDTOs;
 using MotqenIslamicLearningPlatform_API.Models.StudentModel;
@@ -19,7 +20,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Progress
             mapper = _map;
             this.env = env;
         }
-
+        [Authorize(Roles = "Teacher")]
         [HttpGet("student/{studentId}")]
         public IActionResult GetAllProgressForStudent(int studentId, bool includeDeleted = false)
         {
@@ -28,7 +29,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Progress
                 return NotFound(new { message = "No progress found for this student" });
             return Ok(mapper.Map<List<ProgressListDTO>>(progress));
         }
-
+        [Authorize(Roles = "Teacher")]
         [HttpGet("halaqa/{halaqaId}")]
         public IActionResult GetAllProgressForHalaqa(int halaqaId, bool includeDeleted = false)
         {
@@ -37,7 +38,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Progress
                 return NotFound(new { message = "No progress found for this halaqa" });
             return Ok(mapper.Map<List<ProgressListDTO>>(progress));
         }
-
+        [Authorize(Roles = "Teacher")]
         [HttpGet("student/{studentId}/halaqa/{halaqaId}")]
         public IActionResult GetProgresForHalaqa(int studentId, int halaqaId)
         {
@@ -46,6 +47,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Progress
                 return NotFound(new { message = "No Progress for this student at this halaqa" });
             return Ok(mapper.Map<ProgressListDTO>(progress));
         }
+        [Authorize(Roles = "Teacher")]
         [HttpPost]
         public IActionResult AddProgress(ProgressFormDTO progressFromReq)
         {
@@ -102,6 +104,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Progress
             return Ok();
         }
 
+        [Authorize (Roles = "Teacher")]
         [HttpDelete("Quran/{progressId}")]
         public IActionResult DeleteProgressAtQuran(int progressId)
         {
@@ -130,6 +133,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Progress
             return Ok("Progress Deleted Successfully");
         }
 
+        [Authorize(Roles = "Teacher")]
         [HttpDelete("IslamicMatrial/{progressId}")]
         public IActionResult DeleteProgressAtIslamicMaterial(int progressId)
         {
@@ -155,6 +159,8 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Progress
             }
             return Ok("Progress Deleted Successfully");
         }
+
+        [Authorize(Roles = "Teacher")]
 
         [HttpPut("Quran/{progressId}")]
         public IActionResult UpdateProgressAtQuran(int progressId, ProgressFormDTO progressFromReq)
@@ -194,6 +200,8 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Progress
             }
             return Ok("Progress Updated Successfully");
         }
+
+        [Authorize(Roles = "Teacher")]
 
         [HttpPut("IslamicMaterial/{progressId}")]
         public IActionResult UpdateProgressAtIslamicMaterial(int progressId, ProgressFormDTO progressFromReq)

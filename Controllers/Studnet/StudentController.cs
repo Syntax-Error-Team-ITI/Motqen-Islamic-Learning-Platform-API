@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MotqenIslamicLearningPlatform_API.DTOs.StudentDTOs;
 using MotqenIslamicLearningPlatform_API.UnitOfWorks;
@@ -7,16 +8,19 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Studnet
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class StudentController : ControllerBase
     {
         UnitOfWork Unit { get; }
         IMapper Mapper { get; }
+
         public StudentController(UnitOfWork unit, IMapper mapper)
         {
             Unit = unit;
             Mapper = mapper;
         }
 
+        [Authorize(Roles = "Admin")]
 
         [HttpGet]
         public IActionResult GetAllStudents(bool includeDeleted = false)
@@ -28,6 +32,8 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Studnet
 
             return Ok(Mapper.Map<List<StudentListDTO>>(students));
         }
+        [Authorize(Roles = "Admin")]
+
         [HttpGet("notInHalaqa/{halaqaId:int}")]
         public IActionResult GetStudentNotInHalqa(int halaqaId, bool includeDeleted = false)
         {
@@ -38,6 +44,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Studnet
 
             return Ok(Mapper.Map<List<StudentShortDisplayDTO>>(students));
         }
+        [Authorize(Roles = "Admin")]
 
         [HttpGet("{studentId}")]
         public IActionResult GetSpecificStudentDetails(int studentId , bool includeDeleted = false)
@@ -47,6 +54,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Studnet
                 return NotFound(new { message = "Student Not Found!!" });
             return Ok(Mapper.Map<StudentDetailedDisplayDTO>(student));
         }
+        [Authorize(Roles = "Admin")]
 
         [HttpGet("halaqa/{halaqaId}/all-students")]
         public IActionResult getAllStudentsForHalaqa(int halaqaId,bool includeDeleted = false)
@@ -54,6 +62,8 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Studnet
             var students = Unit.HalaqaStudentRepo.getAllStudentsByHalaqaId(halaqaId: halaqaId);
             return Ok(Mapper.Map<List<StudentHalaqaDisplayDTO>>(students));
         }
+        [Authorize(Roles = "Admin , Student")]
+
         [HttpGet("{studentId}/all-halaqa")]
         public IActionResult getAllHalaqaForStudent(int studentId,bool includeDeleted = false)
         {
@@ -62,6 +72,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Studnet
                 return NotFound();
             return Ok(Mapper.Map<List<HalaqaStudentDisplayHalaqaDTO>>(halaqa));
         }
+        [Authorize(Roles = "Admin")]
 
         [HttpDelete]
         public IActionResult Delete(int id)
@@ -73,6 +84,8 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Studnet
             Unit.Save();
             return Ok();
         }
+        [Authorize(Roles = "Admin")]
+
         [HttpPut("restore")]
         public IActionResult Restore(int id)
         {

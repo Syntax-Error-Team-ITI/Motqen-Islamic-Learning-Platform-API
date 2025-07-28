@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MotqenIslamicLearningPlatform_API.DTOs.TeacherDTOs.TeacherAttendanceDtos;
@@ -19,6 +20,8 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.TeacherCon
             this.Unit = _unit;
             this.Mapper = _mapper;
         }
+        [Authorize(Roles = "Admin")]
+
         [HttpGet]
         public IActionResult GetAll()
         {
@@ -26,6 +29,8 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.TeacherCon
             var result = Mapper.Map<IEnumerable<TeacherAttendanceDto>>(attendances);
             return Ok(result);
         }
+        [Authorize(Roles = "Admin")]
+
         [HttpGet("{id:int}")]
         public IActionResult GetById(int id)
         {
@@ -36,6 +41,8 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.TeacherCon
             var result = Mapper.Map<TeacherAttendanceDto>(attendance);
             return Ok(result);
         }
+        [Authorize(Roles = "Admin")]
+
         [HttpGet("byComposite/{teacherId:int}/{halaqaId:int}")]
         public IActionResult GetByTeacherIdAndHalaqaId(int teacherId, int halaqaId)
         {
@@ -44,6 +51,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.TeacherCon
             var result = Mapper.Map< IEnumerable <TeacherAttendanceDto>>(attendance);
             return Ok(result);
         }
+        [Authorize(Roles = "Admin")]
 
         [HttpGet("byTeacherId/{teacherId:int}")]
         public IActionResult GetByTeacherId(int teacherId)
@@ -53,6 +61,8 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.TeacherCon
             var result = Mapper.Map<IEnumerable< TeacherAttendanceDto>>(attendance);
             return Ok(result);
         }
+        [Authorize(Roles = "Admin")]
+
         [HttpGet("byHalaqaId/{halaqaId:int}")]
         public IActionResult GetByHalaqaId(int halaqaId)
         {
@@ -61,6 +71,8 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.TeacherCon
             var result = Mapper.Map<IEnumerable<TeacherAttendanceDto>>(attendance);
             return Ok(result);
         }
+        [Authorize(Roles = "Admin")]
+
         [HttpPost]
         public IActionResult Create(CreateTeacherAttendanceDto attendanceDto)
         {
@@ -93,6 +105,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.TeacherCon
             return NoContent();
         }
 
+        [Authorize(Roles = "Admin")]
 
         [HttpPut("{id:int}")]
         public IActionResult Update(int id, UpdateTeacherAttendanceDto attendanceDto)
