@@ -21,7 +21,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             _reportService = reportService;
         }
         #region Quran
-        [Authorize(Roles = "Admin , Parent")]
+        [Authorize(Roles = "Admin , Teacher")]
         [HttpGet("Quran/MemorizationProgress/{halaqaId}")]
         public ActionResult<List<QuranProgressChartPointDto>> GetHalaqaMemorizationProgress(int halaqaId)
         {
@@ -34,7 +34,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             }
             return Ok(progressData);
         }
-        [Authorize(Roles = "Admin , Parent")]
+        [Authorize(Roles = "Admin , Teacher")]
         [HttpGet("Quran/Summary/{halaqaId}")]
         public ActionResult<TeacherQuranSummaryDto> GetHalaqaQuranSummary(int halaqaId)
         {
@@ -51,7 +51,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
         #endregion
 
         #region Attendance
-        [Authorize(Roles = "Admin , Parent")]
+        [Authorize(Roles = "Admin , Teacher")]
 
         [HttpGet("Attendance/Trend/{halaqaId}")]
         public ActionResult<List<MonthlyWeeklyAttendanceChartDto>> GetHalaqaAttendanceTrend(
@@ -73,7 +73,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             }
             return Ok(trendData);
         }
-        [Authorize(Roles = "Admin , Parent")]
+        [Authorize(Roles = "Admin , Teacher")]
 
         [HttpGet("Attendance/Summary/{halaqaId}")]
         public ActionResult<List<StudentAttendancePieChartDto>> GetHalaqaAttendanceSummary(int halaqaId)
@@ -92,7 +92,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
         #endregion
 
         #region Dashboard / IslamicProgress / Comparison
-        [Authorize(Roles = "Admin , Parent")]
+        [Authorize(Roles = "Admin , Teacher")]
 
         [HttpGet("Dashboard/{teacherId}")]
         public ActionResult<TeacherDashboardDto> GetTeacherDashboard(int teacherId)
@@ -106,7 +106,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             }
             return Ok(dashboard);
         }
-        [Authorize(Roles = "Admin , Parent")]
+        [Authorize(Roles = "Admin , Teacher")]
 
         [HttpGet("IslamicProgress/{halaqaId}")]
         public ActionResult<List<IslamicSubjectsDetailedProgressReportDto>> GetHalaqaIslamicProgress(int halaqaId)
@@ -120,7 +120,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Reports
             }
             return Ok(progressData);
         }
-        [Authorize(Roles = "Admin , Parent")]
+        [Authorize(Roles = "Admin , Teacher")]
 
         [HttpGet("Comparison")]
         public ActionResult<List<HalaqaComparisonDto>> GetHalaqasComparison([FromQuery] List<int> halaqaIds)

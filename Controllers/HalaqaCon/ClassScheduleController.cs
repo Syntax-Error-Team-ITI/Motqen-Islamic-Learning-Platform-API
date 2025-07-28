@@ -10,6 +10,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.HalaqaCon
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ClassScheduleController : ControllerBase
     {
         private readonly UnitOfWork _unitOfWork;
@@ -20,7 +21,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.HalaqaCon
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-        [Authorize(Roles = "Teacher")]
+        [Authorize(Roles = "Teacher,Admin,Student,Parent")]
         [HttpGet("halaqa/{halaqaId:int}")]
         public IActionResult GetAllForHalaqa(int halaqaId, bool includeDeleted = false)
         {
@@ -30,7 +31,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.HalaqaCon
             return Ok(result);
         }
 
-        [Authorize(Roles = "Teacher")]
+        [Authorize(Roles = "Teacher,Admin,Student,Parent")]
 
         [HttpGet("halaqa/{halaqaId:int}/{id:int}")]
         public IActionResult GetById(int halaqaId, int id)
@@ -58,7 +59,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.HalaqaCon
             var result = _mapper.Map<ClassScheduleDto>(schedule);
             return CreatedAtAction(nameof(GetById), new { halaqaId = halaqaId, id = schedule.Id }, result);
         }
-        [Authorize(Roles = "Teacher")]
+        [Authorize(Roles = "Admin")]
 
         [HttpPut("halaqa/{halaqaId:int}/{id:int}")]
         public IActionResult Update(int halaqaId, int id, [FromBody] UpdateClassScheduleDto dto)
@@ -75,7 +76,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.HalaqaCon
             _unitOfWork.Save();
             return NoContent();
         }
-        [Authorize(Roles = "Teacher")]
+        [Authorize(Roles = "Admin")]
 
         [HttpDelete("halaqa/{halaqaId:int}/{id:int}")]
         public IActionResult Delete(int halaqaId, int id)
@@ -89,7 +90,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.HalaqaCon
             _unitOfWork.Save();
             return Ok(new { message = "Schedule deleted successfully." });
         }
-        [Authorize(Roles = "Teacher")]
+        [Authorize(Roles = "Admin")]
 
         [HttpPut("halaqa/{halaqaId:int}/restore/{id:int}")]
         public IActionResult Restore(int halaqaId, int id)

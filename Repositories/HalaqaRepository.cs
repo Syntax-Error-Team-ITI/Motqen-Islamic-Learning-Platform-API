@@ -39,6 +39,10 @@ namespace MotqenIslamicLearningPlatform_API.Repositories
         public List<Halaqa> GetHalaqasNotAssignToTeacher(int teacherId)
         {
             return Db.Halaqas.Include(h => h.HalaqaTeachers).Where(h => h.HalaqaTeachers.FirstOrDefault(ht => ht.TeacherId == teacherId) == null).ToList();
+        } 
+        public List<Halaqa> GetHalaqasAssignToTeacher(int teacherId)
+        {
+            return Db.Halaqas.Include(h => h.HalaqaTeachers).Where(h => h.HalaqaTeachers.FirstOrDefault(ht => ht.TeacherId == teacherId) != null).ToList();
         }
 
         public Halaqa GetByIdIncludeSubjectAndClassSchedules(int halaqaId, bool includeDeleted = false)

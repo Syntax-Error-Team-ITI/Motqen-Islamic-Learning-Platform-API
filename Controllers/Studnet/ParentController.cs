@@ -26,7 +26,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Studnet
             var children = Unit.StudentRepo.getStudentByParentId(id);
             return Ok(Mapper.Map<List<ParentChildDTO>>(children));
         }
-        [Authorize(Roles = "Admin , Parent")]
+        [Authorize(Roles = "Admin")]
 
         [HttpGet]
         public IActionResult GetAll()
@@ -34,7 +34,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Studnet
             var parents = Unit.ParentRepo.GetAll();
             return Ok(Mapper.Map<List<ParentListDTO>>(parents));
         }
-        [Authorize(Roles = "Admin , Parent")]
+        [Authorize(Roles = "Admin")]
 
         [HttpGet("{id}")]
         public IActionResult GetParent(int id)

@@ -31,7 +31,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.TeacherCon
             var halaqaTeacherDtos = Mapper.Map<List<HalaqaTeacherDto>>(halaqaTeachers);
             return Ok(halaqaTeacherDtos);
         }
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Teacher")]
 
         [HttpGet("teacher/{teacherId}")]
         public IActionResult GetByTeacherId(int teacherId)
