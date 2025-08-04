@@ -35,6 +35,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.HalaqaCon
         //[Authorize(Roles = "Teacher,Admin")]
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult GetAll(bool includeDeleted = false)
         {
             var halaqas = _unitOfWork.HalaqaRepo.GetAllIncludeSubject(includeDeleted);
