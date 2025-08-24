@@ -34,7 +34,7 @@ namespace MotqenIslamicLearningPlatform_API.Controllers.Studnet
         }
         [Authorize(Roles = "Admin")]
 
-        //[HttpGet("notInHalaqa/{halaqaId:int}")]
+        [HttpGet("notInHalaqa/{halaqaId:int}")]
         public IActionResult GetStudentNotInHalqa(int halaqaId, bool includeDeleted = false)
         {
             var students = Unit.StudentRepo.GetAllWithMinimalDataInclude(halaqaId, includeDeleted);
